@@ -1,12 +1,14 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import * as THREE from 'three'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
 const sceneContainer = ref(null)
 
 let scene
 let camera
 let renderer
+let controls
 let cube
 let animationFrameId
 
@@ -33,6 +35,19 @@ const initScene = () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
   container.appendChild(renderer.domElement)
+
+  controls = new OrbitControls(camera, renderer.domElement)
+
+  controls.enableDamping = true
+
+  controls.dampingFactor = 0.05
+
+  controls.minDistance = 3
+  controls.maxDistance = 12
+
+  controls.target.set(0, 0, 0)
+
+  controls.update()
 }
 
 const createCube = () => {
@@ -62,6 +77,8 @@ const createLights = () => {
 
 const animate = () => {
   animationFrameId = requestAnimationFrame(animate)
+
+  controls.update()
 
   renderer.render(scene, camera)
 }
@@ -93,6 +110,8 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(animationFrameId)
 
   window.removeEventListener('resize', handleResize)
+
+  controls?.dispose()
 
   if (cube) {
     cube.geometry.dispose()
