@@ -2,6 +2,7 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { buildings } from '../../data/buildings'
 
 const sceneContainer = ref(null)
 const emit = defineEmits(['floor-selected'])
@@ -159,16 +160,16 @@ const handleFloorClick = () => {
 const createBuilding = () => {
   building = new THREE.Group()
 
-  const floorCount = 5
+  const buildingData = buildings[0]
+
+  const floorCount = buildingData.floors.length
   const floorHeight = 0.7
   const floorGap = 0.06
   const buildingWidth = 3.6
   const buildingDepth = 2.4
 
-  const apartmentsPerFloor = [4, 6, 6, 6, 4]
-  const availableApartmentsPerFloor = [2, 4, 3, 5, 1]
-
   for (let i = 0; i < floorCount; i += 1) {
+    const floorData = buildingData.floors[i]
     const geometry = new THREE.BoxGeometry(buildingWidth, floorHeight, buildingDepth)
 
     const material = new THREE.MeshStandardMaterial({
@@ -182,11 +183,9 @@ const createBuilding = () => {
 
     floor.userData = {
       type: 'floor',
-      buildingId: 'building-a',
-      buildingName: 'Budynek A',
-      floorNumber: i,
-      apartmentCount: apartmentsPerFloor[i],
-      availableApartments: availableApartmentsPerFloor[i],
+      buildingId: buildingData.id,
+      buildingName: buildingData.name,
+      ...floorData,
     }
 
     floor.position.y = floorHeight / 2 + i * (floorHeight + floorGap)
@@ -280,9 +279,9 @@ onBeforeUnmount(() => {
   }
 
   if (renderer) {
-    renderer?.domElement.removeEventListener('pointermove', handlePointerMove)
+    renderer.domElement.removeEventListener('pointermove', handlePointerMove)
 
-    renderer?.domElement.removeEventListener('click', handleFloorClick)
+    renderer.domElement.removeEventListener('click', handleFloorClick)
 
     renderer.dispose()
     renderer.domElement.remove()
