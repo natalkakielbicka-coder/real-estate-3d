@@ -161,6 +161,16 @@ const clearApartmentPreview = () => {
   selectedApartmentMesh = null
 }
 
+const clearSelectedApartment = () => {
+  if (!selectedApartmentMesh) {
+    return
+  }
+
+  selectedApartmentMesh = null
+
+  updateApartmentsSelection()
+}
+
 const showApartmentsForFloor = (floor) => {
   selectedApartmentMesh = null
 
@@ -244,6 +254,7 @@ const clearSelectedFloor = () => {
 
 defineExpose({
   clearSelectedFloor,
+  clearSelectedApartment,
 })
 
 const updateApartmentsSelection = () => {

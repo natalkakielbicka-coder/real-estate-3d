@@ -23,6 +23,8 @@ const handleApartmentSelected = (apartment) => {
 const handleApartmentBack = () => {
   panelTransitionDirection.value = 'backward'
   selectedApartment.value = null
+
+  threeScene.value?.clearSelectedApartment?.()
 }
 
 const handlePanelClose = () => {
