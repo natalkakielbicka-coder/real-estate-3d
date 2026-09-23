@@ -20,6 +20,11 @@ let selectedFloor = null
 let selectedApartmentMesh = null
 let apartmentPreview = null
 let apartmentPreviewFloor = null
+let isPointerDown = false
+let pointerDragged = false
+let pointerDownX = 0
+let pointerDownY = 0
+const dragThreshold = 6
 const raycaster = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
 const floorHeight = 0.7
@@ -265,6 +270,14 @@ const updateApartmentsSelection = () => {
 }
 
 const handlePointerMove = (event) => {
+  if (isPointerDown) {
+    const distance = Math.hypot(event.clientX - pointerDownX, event.clientY - pointerDownY)
+
+    if (distance > dragThreshold) {
+      pointerDragged = true
+    }
+  }
+
   const container = sceneContainer.value
   const rect = container.getBoundingClientRect()
 
@@ -342,7 +355,25 @@ const handlePointerMove = (event) => {
   updateFloorAppearance(hoveredFloor)
 }
 
+const handlePointerDown = (event) => {
+  isPointerDown = true
+  pointerDragged = false
+
+  pointerDownX = event.clientX
+  pointerDownY = event.clientY
+}
+
+const handlePointerUp = () => {
+  isPointerDown = false
+}
+
 const handleSceneClick = (event) => {
+  if (pointerDragged) {
+    pointerDragged = false
+
+    return
+  }
+
   const container = sceneContainer.value
   const rect = container.getBoundingClientRect()
 
@@ -524,6 +555,10 @@ onMounted(() => {
 
   renderer.domElement.addEventListener('click', handleSceneClick)
 
+  renderer.domElement.addEventListener('pointerdown', handlePointerDown)
+
+  renderer.domElement.addEventListener('pointerup', handlePointerUp)
+
   window.addEventListener('resize', handleResize)
 })
 
@@ -549,7 +584,11 @@ onBeforeUnmount(() => {
   }
 
   if (renderer) {
+    renderer.domElement.removeEventListener('pointerdown', handlePointerDown)
+
     renderer.domElement.removeEventListener('pointermove', handlePointerMove)
+
+    renderer.domElement.removeEventListener('pointerup', handlePointerUp)
 
     renderer.domElement.removeEventListener('click', handleSceneClick)
 
