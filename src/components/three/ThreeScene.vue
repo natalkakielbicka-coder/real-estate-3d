@@ -5,7 +5,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { buildings } from '../../data/buildings'
 
 const sceneContainer = ref(null)
-const emit = defineEmits(['floor-selected'])
+const emit = defineEmits(['floor-selected', 'apartment-selected'])
 
 let scene
 let camera
@@ -15,6 +15,7 @@ let building
 let ground
 let animationFrameId
 let hoveredFloor = null
+let hoveredApartment = null
 let selectedFloor = null
 let apartmentPreview = null
 let apartmentPreviewFloor = null
@@ -115,7 +116,19 @@ const clearHoveredFloor = () => {
   updateFloorAppearance(previousHoveredFloor)
 }
 
+const clearHoveredApartment = () => {
+  if (!hoveredApartment) {
+    return
+  }
+
+  hoveredApartment.material.emissive.set(0x000000)
+
+  hoveredApartment = null
+}
+
 const clearApartmentPreview = () => {
+  clearHoveredApartment()
+
   if (apartmentPreviewFloor) {
     apartmentPreviewFloor.visible = true
   }
@@ -222,19 +235,42 @@ const handlePointerMove = (event) => {
 
   raycaster.setFromCamera(pointer, camera)
 
-  const intersections = raycaster.intersectObjects(building.children, false)
+  const intersections = raycaster.intersectObjects(building.children, true)
 
   if (intersections.length === 0) {
     clearHoveredFloor()
+    clearHoveredApartment()
+
     renderer.domElement.style.cursor = 'default'
+
     return
   }
 
   const hoveredObject = intersections[0].object
 
+  if (hoveredObject.userData.type === 'apartment') {
+    clearHoveredFloor()
+
+    if (hoveredApartment !== hoveredObject) {
+      clearHoveredApartment()
+
+      hoveredApartment = hoveredObject
+
+      hoveredApartment.material.emissive.set(0x303630)
+    }
+
+    renderer.domElement.style.cursor = 'pointer'
+
+    return
+  }
+
+  clearHoveredApartment()
+
   if (hoveredObject.userData.type !== 'floor') {
     clearHoveredFloor()
+
     renderer.domElement.style.cursor = 'default'
+
     return
   }
 
@@ -251,14 +287,40 @@ const handlePointerMove = (event) => {
   updateFloorAppearance(hoveredFloor)
 }
 
-const handleFloorClick = () => {
-  if (!hoveredFloor) {
+const handleSceneClick = (event) => {
+  const container = sceneContainer.value
+  const rect = container.getBoundingClientRect()
+
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+  raycaster.setFromCamera(pointer, camera)
+
+  const intersections = raycaster.intersectObjects(building.children, true)
+
+  const apartmentIntersection = intersections.find(
+    (intersection) => intersection.object.userData.type === 'apartment',
+  )
+
+  if (apartmentIntersection) {
+    emit('apartment-selected', apartmentIntersection.object.userData)
+
     return
   }
 
+  const floorIntersection = intersections.find(
+    (intersection) => intersection.object.userData.type === 'floor',
+  )
+
+  if (!floorIntersection) {
+    return
+  }
+
+  const clickedFloor = floorIntersection.object
   const previousSelectedFloor = selectedFloor
 
-  selectedFloor = hoveredFloor
+  selectedFloor = clickedFloor
 
   showApartmentsForFloor(selectedFloor)
 
@@ -363,7 +425,7 @@ onMounted(() => {
 
   renderer.domElement.addEventListener('pointermove', handlePointerMove)
 
-  renderer.domElement.addEventListener('click', handleFloorClick)
+  renderer.domElement.addEventListener('click', handleSceneClick)
 
   window.addEventListener('resize', handleResize)
 })
@@ -392,7 +454,7 @@ onBeforeUnmount(() => {
   if (renderer) {
     renderer.domElement.removeEventListener('pointermove', handlePointerMove)
 
-    renderer.domElement.removeEventListener('click', handleFloorClick)
+    renderer.domElement.removeEventListener('click', handleSceneClick)
 
     renderer.dispose()
     renderer.domElement.remove()

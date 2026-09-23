@@ -42,7 +42,11 @@ const handlePanelClose = () => {
         'presentation__scene--panel-open': selectedFloor,
       }"
     >
-      <ThreeScene ref="threeScene" @floor-selected="handleFloorSelected" />
+      <ThreeScene
+        ref="threeScene"
+        @floor-selected="handleFloorSelected"
+        @apartment-selected="handleApartmentSelected"
+      />
     </div>
 
     <Transition name="panel">
