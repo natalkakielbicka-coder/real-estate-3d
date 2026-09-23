@@ -12,6 +12,7 @@ let controls
 let building
 let ground
 let animationFrameId
+let hoveredFloor = null
 const raycaster = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
 
@@ -82,16 +83,24 @@ const handlePointerMove = (event) => {
   const intersections = raycaster.intersectObjects(building.children, false)
 
   if (intersections.length === 0) {
+    hoveredFloor = null
     return
   }
 
   const hoveredObject = intersections[0].object
 
   if (hoveredObject.userData.type !== 'floor') {
+    hoveredFloor = null
     return
   }
 
-  console.log(hoveredObject.name, hoveredObject.userData)
+  if (hoveredFloor === hoveredObject) {
+    return
+  }
+
+  hoveredFloor = hoveredObject
+
+  console.log('Hovered floor:', hoveredFloor.userData.floorNumber)
 }
 
 const createBuilding = () => {
