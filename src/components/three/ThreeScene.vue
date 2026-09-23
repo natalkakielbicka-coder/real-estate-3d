@@ -188,17 +188,21 @@ const showApartmentsForFloor = (floor) => {
 
     const apartmentMesh = new THREE.Mesh(geometry, material)
 
-    apartmentMesh.position.set(
-      -buildingWidth / 2 + gap + apartmentWidth / 2 + column * (apartmentWidth + gap),
+    const targetX = -buildingWidth / 2 + gap + apartmentWidth / 2 + column * (apartmentWidth + gap)
 
-      floor.position.y,
+    const targetZ = -buildingDepth / 2 + gap + apartmentDepth / 2 + row * (apartmentDepth + gap)
 
-      -buildingDepth / 2 + gap + apartmentDepth / 2 + row * (apartmentDepth + gap),
-    )
+    apartmentMesh.position.set(0, floor.position.y, 0)
+
+    apartmentMesh.scale.set(0.82, 0.82, 0.82)
 
     apartmentMesh.userData = {
       type: 'apartment',
       ...apartment,
+      targetX,
+      targetZ,
+      animationProgress: 0,
+      animationDelay: index * 0.06,
     }
 
     apartmentPreview.add(apartmentMesh)
@@ -417,6 +421,39 @@ const animate = () => {
   animationFrameId = requestAnimationFrame(animate)
 
   controls.update()
+
+  if (apartmentPreview) {
+    apartmentPreview.children.forEach((apartmentMesh) => {
+      if (apartmentMesh.userData.animationProgress >= 1) {
+        return
+      }
+
+      apartmentMesh.userData.animationProgress += 0.045
+
+      const rawProgress =
+        apartmentMesh.userData.animationProgress - apartmentMesh.userData.animationDelay
+
+      const progress = THREE.MathUtils.clamp(rawProgress, 0, 1)
+
+      const easedProgress = 1 - Math.pow(1 - progress, 3)
+
+      apartmentMesh.position.x = THREE.MathUtils.lerp(
+        0,
+        apartmentMesh.userData.targetX,
+        easedProgress,
+      )
+
+      apartmentMesh.position.z = THREE.MathUtils.lerp(
+        0,
+        apartmentMesh.userData.targetZ,
+        easedProgress,
+      )
+
+      const scale = THREE.MathUtils.lerp(0.82, 1, easedProgress)
+
+      apartmentMesh.scale.set(scale, scale, scale)
+    })
+  }
 
   renderer.render(scene, camera)
 }
