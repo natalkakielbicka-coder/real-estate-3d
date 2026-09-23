@@ -16,8 +16,20 @@ let ground
 let animationFrameId
 let hoveredFloor = null
 let selectedFloor = null
+let apartmentPreview = null
+let apartmentPreviewFloor = null
 const raycaster = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
+const floorHeight = 0.7
+const floorGap = 0.06
+const buildingWidth = 3.6
+const buildingDepth = 2.4
+
+const apartmentStatusColors = {
+  available: 0x6f8f75,
+  reserved: 0x9b8050,
+  sold: 0x666b67,
+}
 
 const initScene = () => {
   const container = sceneContainer.value
@@ -103,12 +115,93 @@ const clearHoveredFloor = () => {
   updateFloorAppearance(previousHoveredFloor)
 }
 
+const clearApartmentPreview = () => {
+  if (apartmentPreviewFloor) {
+    apartmentPreviewFloor.visible = true
+  }
+
+  if (apartmentPreview) {
+    apartmentPreview.traverse((object) => {
+      if (!object.isMesh) {
+        return
+      }
+
+      object.geometry.dispose()
+      object.material.dispose()
+    })
+
+    building.remove(apartmentPreview)
+  }
+
+  apartmentPreview = null
+  apartmentPreviewFloor = null
+}
+
+const showApartmentsForFloor = (floor) => {
+  clearApartmentPreview()
+
+  const apartments = floor.userData.apartments
+
+  if (!apartments?.length) {
+    return
+  }
+
+  apartmentPreview = new THREE.Group()
+  apartmentPreview.name = 'apartment-preview'
+
+  apartmentPreviewFloor = floor
+
+  floor.visible = false
+
+  const columns = apartments.length <= 4 ? 2 : 3
+  const rows = Math.ceil(apartments.length / columns)
+
+  const gap = 0.08
+
+  const apartmentWidth = (buildingWidth - gap * (columns + 1)) / columns
+
+  const apartmentDepth = (buildingDepth - gap * (rows + 1)) / rows
+
+  apartments.forEach((apartment, index) => {
+    const column = index % columns
+    const row = Math.floor(index / columns)
+
+    const geometry = new THREE.BoxGeometry(apartmentWidth, floorHeight, apartmentDepth)
+
+    const material = new THREE.MeshStandardMaterial({
+      color: apartmentStatusColors[apartment.status] ?? 0x777777,
+      roughness: 0.7,
+    })
+
+    const apartmentMesh = new THREE.Mesh(geometry, material)
+
+    apartmentMesh.position.set(
+      -buildingWidth / 2 + gap + apartmentWidth / 2 + column * (apartmentWidth + gap),
+
+      floor.position.y,
+
+      -buildingDepth / 2 + gap + apartmentDepth / 2 + row * (apartmentDepth + gap),
+    )
+
+    apartmentMesh.userData = {
+      type: 'apartment',
+      ...apartment,
+    }
+
+    apartmentPreview.add(apartmentMesh)
+  })
+
+  building.add(apartmentPreview)
+}
+
 const clearSelectedFloor = () => {
   if (!selectedFloor) {
     return
   }
 
   const previousSelectedFloor = selectedFloor
+
+  clearApartmentPreview()
 
   selectedFloor = null
 
@@ -167,6 +260,8 @@ const handleFloorClick = () => {
 
   selectedFloor = hoveredFloor
 
+  showApartmentsForFloor(selectedFloor)
+
   updateFloorAppearance(previousSelectedFloor)
   updateFloorAppearance(selectedFloor)
 
@@ -179,10 +274,6 @@ const createBuilding = () => {
   const buildingData = buildings[0]
 
   const floorCount = buildingData.floors.length
-  const floorHeight = 0.7
-  const floorGap = 0.06
-  const buildingWidth = 3.6
-  const buildingDepth = 2.4
 
   for (let i = 0; i < floorCount; i += 1) {
     const floorData = buildingData.floors[i]
