@@ -11,7 +11,12 @@ const tooltip = ref({
   visible: false,
   x: 0,
   y: 0,
+  type: '',
   title: '',
+  status: '',
+  area: '',
+  floor: '',
+  rooms: '',
   description: '',
 })
 const emit = defineEmits(['floor-selected', 'apartment-selected'])
@@ -434,17 +439,20 @@ const hideTooltip = () => {
 }
 
 const showTooltip = (object, event, rect) => {
-  tooltip.value.x = event.clientX - rect.left + 16
-  tooltip.value.y = event.clientY - rect.top + 16
+  tooltip.value.x = event.clientX - rect.left - 72
+  tooltip.value.y = event.clientY - rect.top
 
   if (object.userData.type === 'apartment') {
-    tooltip.value.title = `Mieszkanie ${object.userData.number}`
+    tooltip.value.type = 'apartment'
+    tooltip.value.title = object.userData.number
+    tooltip.value.status = object.userData.status
+    tooltip.value.area = `${object.userData.area} m²`
+    tooltip.value.floor =
+      selectedFloor?.userData.floorNumber === 0
+        ? 'Parter'
+        : `Piętro ${selectedFloor?.userData.floorNumber}`
 
-    tooltip.value.description = [
-      `${object.userData.area} m²`,
-      getRoomsLabel(object.userData.rooms),
-      apartmentStatusLabels[object.userData.status],
-    ].join(' · ')
+    tooltip.value.rooms = getRoomsLabel(object.userData.rooms)
   }
 
   if (object.userData.type === 'floor') {
@@ -452,6 +460,7 @@ const showTooltip = (object, event, rect) => {
       object.userData.floorNumber === 0 ? 'Parter' : `Piętro ${object.userData.floorNumber}`
 
     tooltip.value.description = `${object.userData.availableApartments} z ${object.userData.apartmentCount} dostępnych`
+    tooltip.value.type = 'floor'
   }
 
   tooltip.value.visible = true
@@ -745,11 +754,56 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="sceneContainer" class="three-scene"></div>
+  <div ref="sceneContainer" class="three-scene">
+    <div
+      v-if="tooltip.visible"
+      class="three-scene__tooltip"
+      :style="{
+        left: `${tooltip.x}px`,
+        top: `${tooltip.y}px`,
+      }"
+    >
+      <template v-if="tooltip.type === 'apartment'">
+        <div class="three-scene__tooltip-header">
+          <strong>
+            {{ tooltip.title }}
+          </strong>
+
+          <span
+            class="three-scene__tooltip-status"
+            :class="`three-scene__tooltip-status--${tooltip.status}`"
+          ></span>
+        </div>
+
+        <span>
+          area <strong>{{ tooltip.area }}</strong>
+        </span>
+
+        <span>
+          floor <strong>{{ tooltip.floor }}</strong>
+        </span>
+
+        <span>
+          rooms <strong>{{ tooltip.rooms }}</strong>
+        </span>
+      </template>
+
+      <template v-else>
+        <strong>
+          {{ tooltip.title }}
+        </strong>
+
+        <span>
+          {{ tooltip.description }}
+        </span>
+      </template>
+    </div>
+  </div>
 </template>
 
 <style scoped>
 .three-scene {
+  position: relative;
   width: 100%;
   height: 100vh;
 }
@@ -758,5 +812,87 @@ onBeforeUnmount(() => {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.three-scene__tooltip {
+  position: absolute;
+  z-index: 30;
+  display: grid;
+  gap: 2px;
+  min-width: 118px;
+  padding: 14px 16px;
+  pointer-events: none;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.16),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: translate(-100%, -50%);
+  color: #151515;
+}
+
+.three-scene__tooltip::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 64px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-50%);
+}
+
+.three-scene__tooltip::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 64px);
+  width: 10px;
+  height: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  background: #42a84b;
+  transform: translate(-50%, -50%);
+}
+
+.three-scene__tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 6px;
+}
+
+.three-scene__tooltip-header strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.three-scene__tooltip > span {
+  font-size: 11px;
+  line-height: 1.25;
+  color: #242424;
+}
+
+.three-scene__tooltip > span strong {
+  font-weight: 600;
+}
+
+.three-scene__tooltip-status {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.three-scene__tooltip-status--available {
+  background: #42a84b;
+}
+
+.three-scene__tooltip-status--reserved {
+  background: #c59b3d;
+}
+
+.three-scene__tooltip-status--sold {
+  background: #8a8a8a;
 }
 </style>
