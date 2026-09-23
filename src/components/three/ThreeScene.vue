@@ -71,13 +71,34 @@ const createGround = () => {
   scene.add(ground)
 }
 
+const updateFloorAppearance = (floor) => {
+  if (!floor) {
+    return
+  }
+
+  if (floor === selectedFloor) {
+    floor.material.emissive.set(0x75624a)
+    return
+  }
+
+  if (floor === hoveredFloor) {
+    floor.material.emissive.set(0x435047)
+    return
+  }
+
+  floor.material.emissive.set(0x000000)
+}
+
 const clearHoveredFloor = () => {
   if (!hoveredFloor) {
     return
   }
 
-  hoveredFloor.material.emissive.set(0x000000)
+  const previousHoveredFloor = hoveredFloor
+
   hoveredFloor = null
+
+  updateFloorAppearance(previousHoveredFloor)
 }
 
 const handlePointerMove = (event) => {
@@ -116,7 +137,7 @@ const handlePointerMove = (event) => {
 
   hoveredFloor = hoveredObject
 
-  hoveredFloor.material.emissive.set(0x435047)
+  updateFloorAppearance(hoveredFloor)
 }
 
 const handleFloorClick = () => {
@@ -124,7 +145,12 @@ const handleFloorClick = () => {
     return
   }
 
+  const previousSelectedFloor = selectedFloor
+
   selectedFloor = hoveredFloor
+
+  updateFloorAppearance(previousSelectedFloor)
+  updateFloorAppearance(selectedFloor)
 
   console.log('Selected floor:', selectedFloor.userData.floorNumber)
 }
