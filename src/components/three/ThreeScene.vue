@@ -13,6 +13,7 @@ let building
 let ground
 let animationFrameId
 let hoveredFloor = null
+let selectedFloor = null
 const raycaster = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
 
@@ -93,6 +94,7 @@ const handlePointerMove = (event) => {
 
   if (intersections.length === 0) {
     clearHoveredFloor()
+    renderer.domElement.style.cursor = 'default'
     return
   }
 
@@ -100,8 +102,11 @@ const handlePointerMove = (event) => {
 
   if (hoveredObject.userData.type !== 'floor') {
     clearHoveredFloor()
+    renderer.domElement.style.cursor = 'default'
     return
   }
+
+  renderer.domElement.style.cursor = 'pointer'
 
   if (hoveredFloor === hoveredObject) {
     return
@@ -112,6 +117,16 @@ const handlePointerMove = (event) => {
   hoveredFloor = hoveredObject
 
   hoveredFloor.material.emissive.set(0x435047)
+}
+
+const handleFloorClick = () => {
+  if (!hoveredFloor) {
+    return
+  }
+
+  selectedFloor = hoveredFloor
+
+  console.log('Selected floor:', selectedFloor.userData.floorNumber)
 }
 
 const createBuilding = () => {
@@ -204,6 +219,8 @@ onMounted(() => {
 
   renderer.domElement.addEventListener('pointermove', handlePointerMove)
 
+  renderer.domElement.addEventListener('click', handleFloorClick)
+
   window.addEventListener('resize', handleResize)
 })
 
@@ -230,6 +247,8 @@ onBeforeUnmount(() => {
 
   if (renderer) {
     renderer?.domElement.removeEventListener('pointermove', handlePointerMove)
+
+    renderer?.domElement.removeEventListener('click', handleFloorClick)
 
     renderer.dispose()
     renderer.domElement.remove()
