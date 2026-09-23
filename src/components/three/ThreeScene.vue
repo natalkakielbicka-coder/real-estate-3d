@@ -103,6 +103,22 @@ const clearHoveredFloor = () => {
   updateFloorAppearance(previousHoveredFloor)
 }
 
+const clearSelectedFloor = () => {
+  if (!selectedFloor) {
+    return
+  }
+
+  const previousSelectedFloor = selectedFloor
+
+  selectedFloor = null
+
+  updateFloorAppearance(previousSelectedFloor)
+}
+
+defineExpose({
+  clearSelectedFloor,
+})
+
 const handlePointerMove = (event) => {
   const container = sceneContainer.value
   const rect = container.getBoundingClientRect()

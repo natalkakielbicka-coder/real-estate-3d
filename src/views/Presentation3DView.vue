@@ -6,6 +6,7 @@ import { getRoomsLabel } from '../utils/apartmentFormatters'
 
 const selectedFloor = ref(null)
 const selectedApartment = ref(null)
+const threeScene = ref(null)
 
 const handleFloorSelected = (floorData) => {
   selectedFloor.value = floorData
@@ -14,6 +15,13 @@ const handleFloorSelected = (floorData) => {
 
 const handleApartmentSelected = (apartment) => {
   selectedApartment.value = apartment
+}
+
+const handlePanelClose = () => {
+  selectedFloor.value = null
+  selectedApartment.value = null
+
+  threeScene.value?.clearSelectedFloor()
 }
 </script>
 
@@ -31,7 +39,7 @@ const handleApartmentSelected = (apartment) => {
         'presentation__scene--panel-open': selectedFloor,
       }"
     >
-      <ThreeScene @floor-selected="handleFloorSelected" />
+      <ThreeScene ref="threeScene" @floor-selected="handleFloorSelected" />
     </div>
 
     <Transition name="panel">
@@ -40,7 +48,7 @@ const handleApartmentSelected = (apartment) => {
           type="button"
           class="floor-panel__close"
           aria-label="Zamknij panel"
-          @click="selectedFloor = null"
+          @click="handlePanelClose"
         >
           ×
         </button>
@@ -150,17 +158,6 @@ const handleApartmentSelected = (apartment) => {
 
 .presentation__scene--panel-open {
   transform: translateX(-210px);
-}
-
-.presentation__panel {
-  flex: 0 0 0;
-  width: 0;
-  min-width: 0;
-  overflow: hidden;
-
-  transition:
-    flex-basis 0.4s ease,
-    width 0.4s ease;
 }
 
 .presentation__header {
