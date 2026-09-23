@@ -165,6 +165,9 @@ const createBuilding = () => {
   const buildingWidth = 3.6
   const buildingDepth = 2.4
 
+  const apartmentsPerFloor = [4, 6, 6, 6, 4]
+  const availableApartmentsPerFloor = [2, 4, 3, 5, 1]
+
   for (let i = 0; i < floorCount; i += 1) {
     const geometry = new THREE.BoxGeometry(buildingWidth, floorHeight, buildingDepth)
 
@@ -179,7 +182,11 @@ const createBuilding = () => {
 
     floor.userData = {
       type: 'floor',
+      buildingId: 'building-a',
+      buildingName: 'Budynek A',
       floorNumber: i,
+      apartmentCount: apartmentsPerFloor[i],
+      availableApartments: availableApartmentsPerFloor[i],
     }
 
     floor.position.y = floorHeight / 2 + i * (floorHeight + floorGap)

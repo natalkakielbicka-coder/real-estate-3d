@@ -42,7 +42,31 @@ const handleFloorSelected = (floorData) => {
         }}
       </p>
 
-      <span v-if="selectedFloor" class="floor-panel__meta"> Budynek A </span>
+      <div v-if="selectedFloor" class="floor-panel__details">
+        <div class="floor-panel__detail">
+          <span>Budynek</span>
+
+          <strong>
+            {{ selectedFloor.buildingName }}
+          </strong>
+        </div>
+
+        <div class="floor-panel__detail">
+          <span>Mieszkania</span>
+
+          <strong>
+            {{ selectedFloor.apartmentCount }}
+          </strong>
+        </div>
+
+        <div class="floor-panel__detail">
+          <span>Dostępne</span>
+
+          <strong>
+            {{ selectedFloor.availableApartments }}
+          </strong>
+        </div>
+      </div>
     </aside>
   </main>
 </template>
@@ -141,18 +165,33 @@ const handleFloorSelected = (floorData) => {
   color: #abb2ad;
 }
 
-.floor-panel__meta {
-  display: inline-block;
-  margin-top: 18px;
-  padding: 7px 10px;
+.floor-panel__details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
 
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.floor-panel__detail {
+  min-width: 0;
+}
 
-  font-size: 11px;
-  letter-spacing: 0.08em;
+.floor-panel__detail span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: #79827c;
+}
 
-  color: #d1d5d2;
+.floor-panel__detail strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f5f5f2;
 }
 
 @media (max-width: 767px) {
