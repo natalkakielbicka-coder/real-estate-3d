@@ -167,16 +167,24 @@ const clearApartmentPreview = () => {
   selectedApartmentMesh = null
 }
 
+const restoreCameraBeforeApartment = () => {
+  if (!cameraPositionBeforeApartment || !controlsTargetBeforeApartment) {
+    return
+  }
+
+  cameraTargetPosition = cameraPositionBeforeApartment.clone()
+  controlsTargetPosition = controlsTargetBeforeApartment.clone()
+
+  cameraPositionBeforeApartment = null
+  controlsTargetBeforeApartment = null
+}
+
 const clearSelectedApartment = () => {
   if (!selectedApartmentMesh) {
     return
   }
 
-  if (cameraPositionBeforeApartment && controlsTargetBeforeApartment) {
-    cameraTargetPosition = cameraPositionBeforeApartment.clone()
-
-    controlsTargetPosition = controlsTargetBeforeApartment.clone()
-  }
+  restoreCameraBeforeApartment()
 
   selectedApartmentMesh = null
 
@@ -258,6 +266,9 @@ const clearSelectedFloor = () => {
   const previousSelectedFloor = selectedFloor
 
   clearApartmentPreview()
+
+  cameraPositionBeforeApartment = null
+  controlsTargetBeforeApartment = null
 
   selectedFloor = null
 
@@ -393,16 +404,6 @@ const handlePointerUp = () => {
   isPointerDown = false
 }
 
-const focusCameraOnPosition = (position, distance = 6) => {
-  const target = new THREE.Vector3(position.x, position.y, position.z)
-
-  const direction = camera.position.clone().sub(controls.target).normalize()
-
-  cameraTargetPosition = target.clone().add(direction.multiplyScalar(distance))
-
-  controlsTargetPosition = target
-}
-
 const handleSceneClick = (event) => {
   if (pointerDragged) {
     pointerDragged = false
@@ -468,6 +469,10 @@ const handleSceneClick = (event) => {
 
   // Kliknięcie piętra
   if (clickedObject.userData.type === 'floor') {
+    if (selectedApartmentMesh) {
+      restoreCameraBeforeApartment()
+    }
+
     const previousSelectedFloor = selectedFloor
 
     selectedFloor = clickedObject
