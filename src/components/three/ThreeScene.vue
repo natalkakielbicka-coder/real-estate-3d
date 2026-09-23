@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
 const sceneContainer = ref(null)
+const emit = defineEmits(['floor-selected'])
 
 let scene
 let camera
@@ -152,7 +153,7 @@ const handleFloorClick = () => {
   updateFloorAppearance(previousSelectedFloor)
   updateFloorAppearance(selectedFloor)
 
-  console.log('Selected floor:', selectedFloor.userData.floorNumber)
+  emit('floor-selected', selectedFloor.userData)
 }
 
 const createBuilding = () => {
