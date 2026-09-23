@@ -342,6 +342,7 @@ const handlePointerMove = (event) => {
 
     if (distance > dragThreshold) {
       pointerDragged = true
+      hideTooltip()
     }
   }
 
@@ -359,6 +360,7 @@ const handlePointerMove = (event) => {
   if (intersections.length === 0) {
     clearHoveredFloor()
     clearHoveredApartment()
+    hideTooltip()
 
     renderer.domElement.style.cursor = 'default'
 
@@ -375,6 +377,7 @@ const handlePointerMove = (event) => {
   if (!interactiveIntersection) {
     clearHoveredFloor()
     clearHoveredApartment()
+    hideTooltip()
 
     renderer.domElement.style.cursor = 'default'
 
@@ -394,6 +397,8 @@ const handlePointerMove = (event) => {
       hoveredApartment.material.emissive.set(0x303630)
     }
 
+    showTooltip(hoveredObject, event, rect)
+
     renderer.domElement.style.cursor = 'pointer'
 
     return
@@ -411,6 +416,8 @@ const handlePointerMove = (event) => {
 
   renderer.domElement.style.cursor = 'pointer'
 
+  showTooltip(hoveredObject, event, rect)
+
   if (hoveredFloor === hoveredObject) {
     return
   }
@@ -424,6 +431,30 @@ const handlePointerMove = (event) => {
 
 const hideTooltip = () => {
   tooltip.value.visible = false
+}
+
+const showTooltip = (object, event, rect) => {
+  tooltip.value.x = event.clientX - rect.left + 16
+  tooltip.value.y = event.clientY - rect.top + 16
+
+  if (object.userData.type === 'apartment') {
+    tooltip.value.title = `Mieszkanie ${object.userData.number}`
+
+    tooltip.value.description = [
+      `${object.userData.area} m²`,
+      getRoomsLabel(object.userData.rooms),
+      apartmentStatusLabels[object.userData.status],
+    ].join(' · ')
+  }
+
+  if (object.userData.type === 'floor') {
+    tooltip.value.title =
+      object.userData.floorNumber === 0 ? 'Parter' : `Piętro ${object.userData.floorNumber}`
+
+    tooltip.value.description = `${object.userData.availableApartments} z ${object.userData.apartmentCount} dostępnych`
+  }
+
+  tooltip.value.visible = true
 }
 
 const handlePointerDown = (event) => {
