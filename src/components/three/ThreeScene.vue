@@ -186,6 +186,10 @@ const createBuilding = () => {
       buildingId: buildingData.id,
       buildingName: buildingData.name,
       ...floorData,
+      apartmentCount: floorData.apartments.length,
+      availableApartments: floorData.apartments.filter(
+        (apartment) => apartment.status === 'available',
+      ).length,
     }
 
     floor.position.y = floorHeight / 2 + i * (floorHeight + floorGap)
