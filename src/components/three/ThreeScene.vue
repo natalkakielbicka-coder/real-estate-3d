@@ -70,6 +70,15 @@ const createGround = () => {
   scene.add(ground)
 }
 
+const clearHoveredFloor = () => {
+  if (!hoveredFloor) {
+    return
+  }
+
+  hoveredFloor.material.emissive.set(0x000000)
+  hoveredFloor = null
+}
+
 const handlePointerMove = (event) => {
   const container = sceneContainer.value
   const rect = container.getBoundingClientRect()
@@ -83,14 +92,14 @@ const handlePointerMove = (event) => {
   const intersections = raycaster.intersectObjects(building.children, false)
 
   if (intersections.length === 0) {
-    hoveredFloor = null
+    clearHoveredFloor()
     return
   }
 
   const hoveredObject = intersections[0].object
 
   if (hoveredObject.userData.type !== 'floor') {
-    hoveredFloor = null
+    clearHoveredFloor()
     return
   }
 
@@ -98,9 +107,11 @@ const handlePointerMove = (event) => {
     return
   }
 
+  clearHoveredFloor()
+
   hoveredFloor = hoveredObject
 
-  console.log('Hovered floor:', hoveredFloor.userData.floorNumber)
+  hoveredFloor.material.emissive.set(0x435047)
 }
 
 const createBuilding = () => {
