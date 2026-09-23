@@ -9,7 +9,8 @@ let scene
 let camera
 let renderer
 let controls
-let cube
+let building
+let ground
 let animationFrameId
 
 const initScene = () => {
@@ -21,10 +22,10 @@ const initScene = () => {
 
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100)
 
-  camera.position.set(4, 3, 6)
+  camera.position.set(6, 5, 8)
 
-  // Kamera ma patrzeć dokładnie na środek sceny.
-  camera.lookAt(0, 0, 0)
+  // Kamera patrzy na punkt w pobliżu środka wysokości budynku.
+  camera.lookAt(0, 1.8, 0)
 
   renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -42,25 +43,68 @@ const initScene = () => {
 
   controls.dampingFactor = 0.05
 
-  controls.minDistance = 3
-  controls.maxDistance = 12
+  controls.minDistance = 5
+  controls.maxDistance = 14
 
   controls.target.set(0, 0, 0)
 
   controls.update()
 }
 
-const createCube = () => {
-  const geometry = new THREE.BoxGeometry(2, 2, 2)
+const createGround = () => {
+  const geometry = new THREE.PlaneGeometry(20, 20)
 
   const material = new THREE.MeshStandardMaterial({
-    color: 0x8f9a91,
-    roughness: 0.6,
+    color: 0x1a1d1a,
+    roughness: 1,
   })
 
-  cube = new THREE.Mesh(geometry, material)
+  ground = new THREE.Mesh(geometry, material)
 
-  scene.add(cube)
+  ground.rotation.x = -Math.PI / 2
+  ground.position.y = -0.01
+
+  scene.add(ground)
+}
+
+const createBuilding = () => {
+  building = new THREE.Group()
+
+  const floorCount = 5
+  const floorHeight = 0.7
+  const floorGap = 0.06
+  const buildingWidth = 3.6
+  const buildingDepth = 2.4
+
+  for (let i = 0; i < floorCount; i += 1) {
+    const geometry = new THREE.BoxGeometry(buildingWidth, floorHeight, buildingDepth)
+
+    const material = new THREE.MeshStandardMaterial({
+      color: i % 2 === 0 ? 0xb8beb9 : 0xaeb5b0,
+      roughness: 0.75,
+    })
+
+    const floor = new THREE.Mesh(geometry, material)
+
+    floor.position.y = floorHeight / 2 + i * (floorHeight + floorGap)
+
+    building.add(floor)
+  }
+
+  const roofGeometry = new THREE.BoxGeometry(buildingWidth + 0.12, 0.16, buildingDepth + 0.12)
+
+  const roofMaterial = new THREE.MeshStandardMaterial({
+    color: 0x555d57,
+    roughness: 0.9,
+  })
+
+  const roof = new THREE.Mesh(roofGeometry, roofMaterial)
+
+  roof.position.y = floorCount * (floorHeight + floorGap) + 0.02
+
+  building.add(roof)
+
+  scene.add(building)
 }
 
 const createLights = () => {
@@ -99,7 +143,8 @@ const handleResize = () => {
 
 onMounted(() => {
   initScene()
-  createCube()
+  createGround()
+  createBuilding()
   createLights()
   animate()
 
@@ -113,9 +158,18 @@ onBeforeUnmount(() => {
 
   controls?.dispose()
 
-  if (cube) {
-    cube.geometry.dispose()
-    cube.material.dispose()
+  building?.traverse((object) => {
+    if (!object.isMesh) {
+      return
+    }
+
+    object.geometry.dispose()
+    object.material.dispose()
+  })
+
+  if (ground) {
+    ground.geometry.dispose()
+    ground.material.dispose()
   }
 
   if (renderer) {
