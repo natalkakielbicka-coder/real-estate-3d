@@ -12,6 +12,8 @@ let controls
 let building
 let ground
 let animationFrameId
+const raycaster = new THREE.Raycaster()
+const pointer = new THREE.Vector2()
 
 const initScene = () => {
   const container = sceneContainer.value
@@ -67,6 +69,27 @@ const createGround = () => {
   scene.add(ground)
 }
 
+const handlePointerMove = (event) => {
+  const container = sceneContainer.value
+  const rect = container.getBoundingClientRect()
+
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+  raycaster.setFromCamera(pointer, camera)
+
+  const intersections = raycaster.intersectObjects(building.children, false)
+
+  if (intersections.length === 0) {
+    return
+  }
+
+  const hoveredObject = intersections[0].object
+
+  console.log(hoveredObject.name, hoveredObject.userData)
+}
+
 const createBuilding = () => {
   building = new THREE.Group()
 
@@ -85,6 +108,13 @@ const createBuilding = () => {
     })
 
     const floor = new THREE.Mesh(geometry, material)
+
+    floor.name = `floor-${i}`
+
+    floor.userData = {
+      type: 'floor',
+      floorNumber: i,
+    }
 
     floor.position.y = floorHeight / 2 + i * (floorHeight + floorGap)
 
@@ -148,6 +178,8 @@ onMounted(() => {
   createLights()
   animate()
 
+  renderer.domElement.addEventListener('pointermove', handlePointerMove)
+
   window.addEventListener('resize', handleResize)
 })
 
@@ -173,6 +205,8 @@ onBeforeUnmount(() => {
   }
 
   if (renderer) {
+    renderer?.domElement.removeEventListener('pointermove', handlePointerMove)
+
     renderer.dispose()
     renderer.domElement.remove()
   }
