@@ -17,6 +17,7 @@ let animationFrameId
 let hoveredFloor = null
 let hoveredApartment = null
 let selectedFloor = null
+let selectedApartmentMesh = null
 let apartmentPreview = null
 let apartmentPreviewFloor = null
 const raycaster = new THREE.Raycaster()
@@ -121,7 +122,11 @@ const clearHoveredApartment = () => {
     return
   }
 
-  hoveredApartment.material.emissive.set(0x000000)
+  if (hoveredApartment === selectedApartmentMesh) {
+    hoveredApartment.material.emissive.set(0x40382f)
+  } else {
+    hoveredApartment.material.emissive.set(0x000000)
+  }
 
   hoveredApartment = null
 }
@@ -148,9 +153,12 @@ const clearApartmentPreview = () => {
 
   apartmentPreview = null
   apartmentPreviewFloor = null
+  selectedApartmentMesh = null
 }
 
 const showApartmentsForFloor = (floor) => {
+  selectedApartmentMesh = null
+
   clearApartmentPreview()
 
   const apartments = floor.userData.apartments
@@ -184,6 +192,9 @@ const showApartmentsForFloor = (floor) => {
     const material = new THREE.MeshStandardMaterial({
       color: apartmentStatusColors[apartment.status] ?? 0x777777,
       roughness: 0.7,
+      transparent: true,
+      opacity: 1,
+      emissiveIntensity: 0,
     })
 
     const apartmentMesh = new THREE.Mesh(geometry, material)
@@ -201,6 +212,7 @@ const showApartmentsForFloor = (floor) => {
       ...apartment,
       targetX,
       targetZ,
+      baseY: floor.position.y,
       animationProgress: 0,
       animationDelay: index * 0.06,
     }
@@ -228,6 +240,29 @@ const clearSelectedFloor = () => {
 defineExpose({
   clearSelectedFloor,
 })
+
+const updateApartmentsSelection = () => {
+  if (!apartmentPreview) {
+    return
+  }
+
+  apartmentPreview.children.forEach((apartmentMesh) => {
+    const isSelected = apartmentMesh === selectedApartmentMesh
+
+    apartmentMesh.material.opacity = selectedApartmentMesh ? (isSelected ? 1 : 0.4) : 1
+
+    if (isSelected) {
+      apartmentMesh.material.emissive.set(0x5a4936)
+      apartmentMesh.material.emissiveIntensity = 0.8
+    } else {
+      apartmentMesh.material.emissiveIntensity = 0
+
+      if (apartmentMesh !== hoveredApartment) {
+        apartmentMesh.material.emissive.set(0x000000)
+      }
+    }
+  })
+}
 
 const handlePointerMove = (event) => {
   const container = sceneContainer.value
@@ -333,6 +368,10 @@ const handleSceneClick = (event) => {
 
   // Kliknięcie mieszkania
   if (clickedObject.userData.type === 'apartment') {
+    selectedApartmentMesh = clickedObject
+
+    updateApartmentsSelection()
+
     emit('apartment-selected', clickedObject.userData)
 
     return
@@ -424,11 +463,9 @@ const animate = () => {
 
   if (apartmentPreview) {
     apartmentPreview.children.forEach((apartmentMesh) => {
-      if (apartmentMesh.userData.animationProgress >= 1) {
-        return
+      if (apartmentMesh.userData.animationProgress < 1) {
+        apartmentMesh.userData.animationProgress += 0.045
       }
-
-      apartmentMesh.userData.animationProgress += 0.045
 
       const rawProgress =
         apartmentMesh.userData.animationProgress - apartmentMesh.userData.animationDelay
@@ -449,9 +486,13 @@ const animate = () => {
         easedProgress,
       )
 
-      const scale = THREE.MathUtils.lerp(0.82, 1, easedProgress)
+      const revealScale = THREE.MathUtils.lerp(0.82, 1, easedProgress)
 
-      apartmentMesh.scale.set(scale, scale, scale)
+      const selectionScale = apartmentMesh === selectedApartmentMesh ? 1.08 : 1
+
+      const finalScale = revealScale * selectionScale
+
+      apartmentMesh.scale.set(finalScale, finalScale, finalScale)
     })
   }
 
