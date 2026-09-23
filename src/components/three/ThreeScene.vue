@@ -48,7 +48,7 @@ const initScene = () => {
   controls.minDistance = 5
   controls.maxDistance = 14
 
-  controls.target.set(0, 0, 0)
+  controls.target.set(0, 1.5, 0)
 
   controls.update()
 }
