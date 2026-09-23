@@ -87,6 +87,10 @@ const handlePointerMove = (event) => {
 
   const hoveredObject = intersections[0].object
 
+  if (hoveredObject.userData.type !== 'floor') {
+    return
+  }
+
   console.log(hoveredObject.name, hoveredObject.userData)
 }
 
