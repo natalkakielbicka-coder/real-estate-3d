@@ -448,9 +448,7 @@ const showTooltip = (object, event, rect) => {
     tooltip.value.status = object.userData.status
     tooltip.value.area = `${object.userData.area} m²`
     tooltip.value.floor =
-      selectedFloor?.userData.floorNumber === 0
-        ? 'Parter'
-        : `Piętro ${selectedFloor?.userData.floorNumber}`
+      selectedFloor?.userData.floorNumber === 0 ? 'Parter' : selectedFloor?.userData.floorNumber
 
     tooltip.value.rooms = getRoomsLabel(object.userData.rooms)
   }
@@ -776,15 +774,15 @@ onBeforeUnmount(() => {
         </div>
 
         <span>
-          area <strong>{{ tooltip.area }}</strong>
+          Powierzchnia <strong>{{ tooltip.area }}</strong>
         </span>
 
         <span>
-          floor <strong>{{ tooltip.floor }}</strong>
+          Piętro <strong>{{ tooltip.floor }}</strong>
         </span>
 
         <span>
-          rooms <strong>{{ tooltip.rooms }}</strong>
+          Pokoje <strong>{{ tooltip.rooms }}</strong>
         </span>
       </template>
 
@@ -851,7 +849,7 @@ onBeforeUnmount(() => {
   height: 10px;
   border: 2px solid rgba(255, 255, 255, 0.95);
   border-radius: 50%;
-  background: #42a84b;
+  background: #ffffff;
   transform: translate(-50%, -50%);
 }
 
