@@ -244,7 +244,7 @@ const handleResize = () => {
 
   camera.updateProjectionMatrix()
 
-  renderer.setSize(container.clientWidth, container.clientHeight)
+  renderer.setSize(container.clientWidth, container.clientHeight, false)
 }
 
 onMounted(() => {

@@ -25,93 +25,110 @@ const handleApartmentSelected = (apartment) => {
       <h1>Prezentacja 3D</h1>
     </header>
 
-    <ThreeScene @floor-selected="handleFloorSelected" />
+    <div
+      class="presentation__scene"
+      :class="{
+        'presentation__scene--panel-open': selectedFloor,
+      }"
+    >
+      <ThreeScene @floor-selected="handleFloorSelected" />
+    </div>
 
-    <aside class="floor-panel">
-      <span class="floor-panel__label">
-        {{ selectedFloor ? 'Wybrana kondygnacja' : 'Wybierz kondygnację' }}
-      </span>
+    <Transition name="panel">
+      <aside v-if="selectedFloor" class="floor-panel">
+        <button
+          type="button"
+          class="floor-panel__close"
+          aria-label="Zamknij panel"
+          @click="selectedFloor = null"
+        >
+          ×
+        </button>
+        <span class="floor-panel__label">
+          {{ selectedFloor ? 'Wybrana kondygnacja' : 'Wybierz kondygnację' }}
+        </span>
 
-      <strong class="floor-panel__title">
-        {{
-          selectedFloor
-            ? selectedFloor.floorNumber === 0
-              ? 'Parter'
-              : `Piętro ${selectedFloor.floorNumber}`
-            : 'Kliknij piętro na budynku'
-        }}
-      </strong>
+        <strong class="floor-panel__title">
+          {{
+            selectedFloor
+              ? selectedFloor.floorNumber === 0
+                ? 'Parter'
+                : `Piętro ${selectedFloor.floorNumber}`
+              : 'Kliknij piętro na budynku'
+          }}
+        </strong>
 
-      <p class="floor-panel__description">
-        {{
-          selectedFloor
-            ? 'Kondygnacja została wybrana. W kolejnych krokach pokażemy tutaj dostępne mieszkania.'
-            : 'Najedź kursorem na budynek i kliknij wybraną kondygnację, aby zobaczyć jej szczegóły.'
-        }}
-      </p>
+        <p class="floor-panel__description">
+          {{
+            selectedFloor
+              ? 'Kondygnacja została wybrana. W kolejnych krokach pokażemy tutaj dostępne mieszkania.'
+              : 'Najedź kursorem na budynek i kliknij wybraną kondygnację, aby zobaczyć jej szczegóły.'
+          }}
+        </p>
 
-      <div v-if="selectedFloor" class="floor-panel__details">
-        <div class="floor-panel__detail">
-          <span>Budynek</span>
+        <div v-if="selectedFloor" class="floor-panel__details">
+          <div class="floor-panel__detail">
+            <span>Budynek</span>
 
-          <strong>
-            {{ selectedFloor.buildingName }}
-          </strong>
+            <strong>
+              {{ selectedFloor.buildingName }}
+            </strong>
+          </div>
+
+          <div class="floor-panel__detail">
+            <span>Mieszkania</span>
+
+            <strong>
+              {{ selectedFloor.apartmentCount }}
+            </strong>
+          </div>
+
+          <div class="floor-panel__detail">
+            <span>Dostępne</span>
+
+            <strong>
+              {{ selectedFloor.availableApartments }}
+            </strong>
+          </div>
         </div>
 
-        <div class="floor-panel__detail">
-          <span>Mieszkania</span>
+        <div v-if="selectedFloor" class="floor-panel__apartments">
+          <span class="floor-panel__apartments-title"> Mieszkania na kondygnacji </span>
 
-          <strong>
-            {{ selectedFloor.apartmentCount }}
-          </strong>
-        </div>
-
-        <div class="floor-panel__detail">
-          <span>Dostępne</span>
-
-          <strong>
-            {{ selectedFloor.availableApartments }}
-          </strong>
-        </div>
-      </div>
-
-      <div v-if="selectedFloor" class="floor-panel__apartments">
-        <span class="floor-panel__apartments-title"> Mieszkania na kondygnacji </span>
-
-        <div class="floor-panel__apartments-list">
-          <button
-            v-for="apartment in selectedFloor.apartments"
-            :key="apartment.id"
-            type="button"
-            class="apartment-row"
-            :class="{
-              'apartment-row--selected': selectedApartment?.id === apartment.id,
-            }"
-            @click="handleApartmentSelected(apartment)"
-          >
-            <div class="apartment-row__main">
-              <strong>
-                {{ apartment.number }}
-              </strong>
-
-              <span>
-                {{ getRoomsLabel(apartment.rooms) }}
-                ·
-                {{ apartment.area }} m²
-              </span>
-            </div>
-
-            <span
-              class="apartment-row__status"
-              :class="`apartment-row__status--${apartment.status}`"
+          <div class="floor-panel__apartments-list">
+            <button
+              v-for="apartment in selectedFloor.apartments"
+              :key="apartment.id"
+              type="button"
+              class="apartment-row"
+              :class="{
+                'apartment-row--selected': selectedApartment?.id === apartment.id,
+              }"
+              @click="handleApartmentSelected(apartment)"
             >
-              {{ apartmentStatusLabels[apartment.status] }}
-            </span>
-          </button>
+              <div class="apartment-row__main">
+                <strong>
+                  {{ apartment.number }}
+                </strong>
+
+                <span>
+                  {{ getRoomsLabel(apartment.rooms) }}
+                  ·
+                  {{ apartment.area }} m²
+                </span>
+              </div>
+
+              <span
+                class="apartment-row__status"
+                :class="`apartment-row__status--${apartment.status}`"
+              >
+                {{ apartmentStatusLabels[apartment.status] }}
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </Transition>
   </main>
 </template>
 
@@ -119,9 +136,31 @@ const handleApartmentSelected = (apartment) => {
 .presentation {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   overflow: hidden;
   background: #101210;
+}
+
+.presentation__scene {
+  width: 100%;
+  height: 100%;
+
+  transition: transform 0.45s ease;
+}
+
+.presentation__scene--panel-open {
+  transform: translateX(-210px);
+}
+
+.presentation__panel {
+  flex: 0 0 0;
+  width: 0;
+  min-width: 0;
+  overflow: hidden;
+
+  transition:
+    flex-basis 0.4s ease,
+    width 0.4s ease;
 }
 
 .presentation__header {
@@ -149,21 +188,57 @@ const handleApartmentSelected = (apartment) => {
 
 .floor-panel {
   position: absolute;
-  right: 40px;
-  bottom: 40px;
-  z-index: 10;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
 
-  width: min(420px, calc(100% - 80px));
-  padding: 24px;
+  width: 420px;
+  padding: 32px 24px;
 
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  background: rgba(26, 30, 27, 0.96);
+  overflow-y: auto;
 
-  box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(24, 27, 24, 0.98);
 
-  backdrop-filter: blur(14px);
+  box-shadow: -24px 0 70px rgba(0, 0, 0, 0.35);
+}
+
+.floor-panel__close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+
+  width: 40px;
+  height: 40px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+
+  color: #f5f5f2;
+  font-size: 24px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.panel-enter-active,
+.panel-leave-active {
+  transition:
+    transform 0.45s ease,
+    opacity 0.3s ease;
+}
+
+.panel-enter-from,
+.panel-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.panel-enter-to,
+.panel-leave-from {
+  transform: translateX(0);
+  opacity: 1;
 }
 
 .floor-panel::before {
