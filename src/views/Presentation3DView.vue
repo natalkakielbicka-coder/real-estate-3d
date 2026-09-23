@@ -7,16 +7,21 @@ const selectedFloor = ref(null)
 const selectedApartment = ref(null)
 const threeScene = ref(null)
 
+const panelTransitionDirection = ref('forward')
+
 const handleFloorSelected = (floorData) => {
   selectedFloor.value = floorData
   selectedApartment.value = null
+  panelTransitionDirection.value = 'forward'
 }
 
 const handleApartmentSelected = (apartment) => {
+  panelTransitionDirection.value = 'forward'
   selectedApartment.value = apartment
 }
 
 const handleApartmentBack = () => {
+  panelTransitionDirection.value = 'backward'
   selectedApartment.value = null
 }
 
@@ -54,6 +59,7 @@ const handlePanelClose = () => {
         v-if="selectedFloor"
         :selected-floor="selectedFloor"
         :selected-apartment="selectedApartment"
+        :transition-direction="panelTransitionDirection"
         @close="handlePanelClose"
         @apartment-selected="handleApartmentSelected"
         @apartment-back="handleApartmentBack"

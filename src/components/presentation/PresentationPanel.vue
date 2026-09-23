@@ -11,6 +11,10 @@ defineProps({
     type: Object,
     default: null,
   },
+  transitionDirection: {
+    type: String,
+    default: 'forward',
+  },
 })
 
 const emit = defineEmits(['close', 'apartment-selected', 'apartment-back'])
@@ -27,129 +31,118 @@ const emit = defineEmits(['close', 'apartment-selected', 'apartment-back'])
       ×
     </button>
 
-    <!-- MIESZKANIE -->
-    <template v-if="selectedApartment">
-      <button type="button" class="floor-panel__back" @click="emit('apartment-back')">
-        ← Wróć do piętra
-      </button>
+    <Transition
+      :name="transitionDirection === 'backward' ? 'panel-content-back' : 'panel-content-forward'"
+    >
+      <!-- MIESZKANIE -->
+      <div v-if="selectedApartment" :key="selectedApartment.id" class="floor-panel__content">
+        <button type="button" class="floor-panel__back" @click="emit('apartment-back')">
+          ← Wróć do piętra
+        </button>
 
-      <span class="floor-panel__label"> Mieszkanie </span>
+        <span class="floor-panel__label"> Mieszkanie </span>
 
-      <strong class="floor-panel__title">
-        {{ selectedApartment.number }}
-      </strong>
+        <strong class="floor-panel__title">
+          {{ selectedApartment.number }}
+        </strong>
 
-      <span
-        class="apartment-details__status"
-        :class="`apartment-row__status--${selectedApartment.status}`"
-      >
-        {{ apartmentStatusLabels[selectedApartment.status] }}
-      </span>
+        <span
+          class="apartment-details__status"
+          :class="`apartment-row__status--${selectedApartment.status}`"
+        >
+          {{ apartmentStatusLabels[selectedApartment.status] }}
+        </span>
 
-      <div class="apartment-details">
-        <div class="apartment-details__item">
-          <span>Powierzchnia</span>
+        <div class="apartment-details">
+          <div class="apartment-details__item">
+            <span>Powierzchnia</span>
+            <strong>{{ selectedApartment.area }} m²</strong>
+          </div>
 
-          <strong> {{ selectedApartment.area }} m² </strong>
-        </div>
+          <div class="apartment-details__item">
+            <span>Pokoje</span>
+            <strong>
+              {{ getRoomsLabel(selectedApartment.rooms) }}
+            </strong>
+          </div>
 
-        <div class="apartment-details__item">
-          <span>Pokoje</span>
+          <div class="apartment-details__item">
+            <span>Piętro</span>
+            <strong>
+              {{
+                selectedFloor.floorNumber === 0 ? 'Parter' : `Piętro ${selectedFloor.floorNumber}`
+              }}
+            </strong>
+          </div>
 
-          <strong>
-            {{ getRoomsLabel(selectedApartment.rooms) }}
-          </strong>
-        </div>
-
-        <div class="apartment-details__item">
-          <span>Piętro</span>
-
-          <strong>
-            {{ selectedFloor.floorNumber === 0 ? 'Parter' : `Piętro ${selectedFloor.floorNumber}` }}
-          </strong>
-        </div>
-
-        <div class="apartment-details__item">
-          <span>Budynek</span>
-
-          <strong>
-            {{ selectedFloor.buildingName }}
-          </strong>
-        </div>
-      </div>
-    </template>
-
-    <!-- PIĘTRO -->
-    <template v-else>
-      <span class="floor-panel__label"> Wybrana kondygnacja </span>
-
-      <strong class="floor-panel__title">
-        {{ selectedFloor.floorNumber === 0 ? 'Parter' : `Piętro ${selectedFloor.floorNumber}` }}
-      </strong>
-
-      <p class="floor-panel__description">
-        Wybierz mieszkanie z listy, aby zobaczyć jego szczegóły.
-      </p>
-
-      <div class="floor-panel__details">
-        <div class="floor-panel__detail">
-          <span>Budynek</span>
-
-          <strong>
-            {{ selectedFloor.buildingName }}
-          </strong>
-        </div>
-
-        <div class="floor-panel__detail">
-          <span>Mieszkania</span>
-
-          <strong>
-            {{ selectedFloor.apartmentCount }}
-          </strong>
-        </div>
-
-        <div class="floor-panel__detail">
-          <span>Dostępne</span>
-
-          <strong>
-            {{ selectedFloor.availableApartments }}
-          </strong>
+          <div class="apartment-details__item">
+            <span>Budynek</span>
+            <strong>{{ selectedFloor.buildingName }}</strong>
+          </div>
         </div>
       </div>
 
-      <div class="floor-panel__apartments">
-        <span class="floor-panel__apartments-title"> Mieszkania na kondygnacji </span>
+      <!-- PIĘTRO -->
+      <div v-else key="floor" class="floor-panel__content">
+        <span class="floor-panel__label"> Wybrana kondygnacja </span>
 
-        <div class="floor-panel__apartments-list">
-          <button
-            v-for="apartment in selectedFloor.apartments"
-            :key="apartment.id"
-            type="button"
-            class="apartment-row"
-            @click="emit('apartment-selected', apartment)"
-          >
-            <div class="apartment-row__main">
-              <strong>
-                {{ apartment.number }}
-              </strong>
+        <strong class="floor-panel__title">
+          {{ selectedFloor.floorNumber === 0 ? 'Parter' : `Piętro ${selectedFloor.floorNumber}` }}
+        </strong>
 
-              <span>
-                {{ getRoomsLabel(apartment.rooms) }}
-                ·
-                {{ apartment.area }} m²
-              </span>
-            </div>
+        <p class="floor-panel__description">
+          Wybierz mieszkanie z listy, aby zobaczyć jego szczegóły.
+        </p>
 
-            <span
-              class="apartment-row__status"
-              :class="`apartment-row__status--${apartment.status}`"
+        <div class="floor-panel__details">
+          <div class="floor-panel__detail">
+            <span>Budynek</span>
+            <strong>{{ selectedFloor.buildingName }}</strong>
+          </div>
+
+          <div class="floor-panel__detail">
+            <span>Mieszkania</span>
+            <strong>{{ selectedFloor.apartmentCount }}</strong>
+          </div>
+
+          <div class="floor-panel__detail">
+            <span>Dostępne</span>
+            <strong>{{ selectedFloor.availableApartments }}</strong>
+          </div>
+        </div>
+
+        <div class="floor-panel__apartments">
+          <span class="floor-panel__apartments-title"> Mieszkania na kondygnacji </span>
+
+          <div class="floor-panel__apartments-list">
+            <button
+              v-for="apartment in selectedFloor.apartments"
+              :key="apartment.id"
+              type="button"
+              class="apartment-row"
+              @click="emit('apartment-selected', apartment)"
             >
-              {{ apartmentStatusLabels[apartment.status] }}
-            </span>
-          </button>
+              <div class="apartment-row__main">
+                <strong>{{ apartment.number }}</strong>
+
+                <span>
+                  {{ getRoomsLabel(apartment.rooms) }}
+                  ·
+                  {{ apartment.area }} m²
+                </span>
+              </div>
+
+              <span
+                class="apartment-row__status"
+                :class="`apartment-row__status--${apartment.status}`"
+              >
+                {{ apartmentStatusLabels[apartment.status] }}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
-    </template>
+    </Transition>
   </aside>
 </template>
 
@@ -164,6 +157,7 @@ const emit = defineEmits(['close', 'apartment-selected', 'apartment-back'])
   width: 420px;
   padding: 32px 24px;
 
+  overflow-x: hidden;
   overflow-y: auto;
 
   border-left: 1px solid rgba(255, 255, 255, 0.16);
@@ -447,6 +441,48 @@ const emit = defineEmits(['close', 'apartment-selected', 'apartment-back'])
   font-weight: 400;
 
   color: #f5f5f2;
+}
+
+.floor-panel__content {
+  min-height: 100%;
+}
+
+.panel-content-forward-enter-active,
+.panel-content-forward-leave-active,
+.panel-content-back-enter-active,
+.panel-content-back-leave-active {
+  transition:
+    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.16s ease;
+}
+
+.panel-content-forward-enter-from {
+  transform: translateX(32px);
+  opacity: 0;
+}
+
+.panel-content-forward-leave-to {
+  transform: translateX(-16px);
+  opacity: 0;
+}
+
+.panel-content-back-enter-from {
+  transform: translateX(-32px);
+  opacity: 0;
+}
+
+.panel-content-back-leave-to {
+  transform: translateX(16px);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-content-forward-enter-active,
+  .panel-content-forward-leave-active,
+  .panel-content-back-enter-active,
+  .panel-content-back-leave-active {
+    transition: none;
+  }
 }
 
 @media (max-width: 767px) {
