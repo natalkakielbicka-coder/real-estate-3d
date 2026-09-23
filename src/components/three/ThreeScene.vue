@@ -24,6 +24,10 @@ let isPointerDown = false
 let pointerDragged = false
 let pointerDownX = 0
 let pointerDownY = 0
+let cameraTargetPosition = null
+let controlsTargetPosition = null
+let cameraPositionBeforeApartment = null
+let controlsTargetBeforeApartment = null
 const dragThreshold = 6
 const raycaster = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
@@ -31,6 +35,8 @@ const floorHeight = 0.7
 const floorGap = 0.06
 const buildingWidth = 3.6
 const buildingDepth = 2.4
+const defaultCameraPosition = new THREE.Vector3(6, 5, 8)
+const defaultControlsTarget = new THREE.Vector3(0, 1.5, 0)
 
 const apartmentStatusColors = {
   available: 0x6f8f75,
@@ -47,7 +53,7 @@ const initScene = () => {
 
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100)
 
-  camera.position.set(6, 5, 8)
+  camera.position.copy(defaultCameraPosition)
 
   // Kamera patrzy na punkt w pobliżu środka wysokości budynku.
   camera.lookAt(0, 1.8, 0)
@@ -71,7 +77,7 @@ const initScene = () => {
   controls.minDistance = 5
   controls.maxDistance = 14
 
-  controls.target.set(0, 1.5, 0)
+  controls.target.copy(defaultControlsTarget)
 
   controls.update()
 }
@@ -166,6 +172,12 @@ const clearSelectedApartment = () => {
     return
   }
 
+  if (cameraPositionBeforeApartment && controlsTargetBeforeApartment) {
+    cameraTargetPosition = cameraPositionBeforeApartment.clone()
+
+    controlsTargetPosition = controlsTargetBeforeApartment.clone()
+  }
+
   selectedApartmentMesh = null
 
   updateApartmentsSelection()
@@ -250,6 +262,9 @@ const clearSelectedFloor = () => {
   selectedFloor = null
 
   updateFloorAppearance(previousSelectedFloor)
+
+  cameraTargetPosition = defaultCameraPosition.clone()
+  controlsTargetPosition = defaultControlsTarget.clone()
 }
 
 defineExpose({
@@ -378,6 +393,16 @@ const handlePointerUp = () => {
   isPointerDown = false
 }
 
+const focusCameraOnPosition = (position, distance = 6) => {
+  const target = new THREE.Vector3(position.x, position.y, position.z)
+
+  const direction = camera.position.clone().sub(controls.target).normalize()
+
+  cameraTargetPosition = target.clone().add(direction.multiplyScalar(distance))
+
+  controlsTargetPosition = target
+}
+
 const handleSceneClick = (event) => {
   if (pointerDragged) {
     pointerDragged = false
@@ -410,7 +435,29 @@ const handleSceneClick = (event) => {
 
   // Kliknięcie mieszkania
   if (clickedObject.userData.type === 'apartment') {
+    // Zapamiętujemy widok bazowy tylko przy wejściu
+    // z widoku piętra do widoku mieszkania.
+    if (!selectedApartmentMesh) {
+      cameraPositionBeforeApartment = camera.position.clone()
+      controlsTargetBeforeApartment = controls.target.clone()
+    }
+
     selectedApartmentMesh = clickedObject
+
+    const apartmentTarget = new THREE.Vector3(
+      clickedObject.position.x,
+      clickedObject.position.y,
+      clickedObject.position.z,
+    )
+
+    const direction = cameraPositionBeforeApartment
+      .clone()
+      .sub(controlsTargetBeforeApartment)
+      .normalize()
+
+    cameraTargetPosition = apartmentTarget.clone().add(direction.multiplyScalar(9.5))
+
+    controlsTargetPosition = apartmentTarget
 
     updateApartmentsSelection()
 
@@ -503,6 +550,24 @@ const animate = () => {
 
   controls.update()
 
+  if (cameraTargetPosition && controlsTargetPosition) {
+    camera.position.lerp(cameraTargetPosition, 0.055)
+
+    controls.target.lerp(controlsTargetPosition, 0.055)
+
+    const cameraFinished = camera.position.distanceTo(cameraTargetPosition) < 0.02
+
+    const targetFinished = controls.target.distanceTo(controlsTargetPosition) < 0.02
+
+    if (cameraFinished && targetFinished) {
+      camera.position.copy(cameraTargetPosition)
+      controls.target.copy(controlsTargetPosition)
+
+      cameraTargetPosition = null
+      controlsTargetPosition = null
+    }
+  }
+
   if (apartmentPreview) {
     apartmentPreview.children.forEach((apartmentMesh) => {
       if (apartmentMesh.userData.animationProgress < 1) {
@@ -530,7 +595,7 @@ const animate = () => {
 
       const revealScale = THREE.MathUtils.lerp(0.82, 1, easedProgress)
 
-      const selectionScale = apartmentMesh === selectedApartmentMesh ? 1.08 : 1
+      const selectionScale = apartmentMesh === selectedApartmentMesh ? 1.03 : 1
 
       const finalScale = revealScale * selectionScale
 
