@@ -33,6 +33,13 @@ const handlePanelClose = () => {
 
   threeScene.value?.clearSelectedFloor?.()
 }
+
+const handleResetView = () => {
+  selectedFloor.value = null
+  selectedApartment.value = null
+
+  threeScene.value?.resetView?.()
+}
 </script>
 
 <template>
@@ -41,6 +48,10 @@ const handlePanelClose = () => {
       <span class="presentation__label"> Interactive model </span>
 
       <h1>Prezentacja 3D</h1>
+
+      <button type="button" class="presentation__reset" @click="handleResetView">
+        Resetuj widok
+      </button>
     </header>
 
     <div
@@ -129,6 +140,24 @@ const handlePanelClose = () => {
 .panel-leave-from {
   transform: translateX(0);
   opacity: 1;
+}
+
+.presentation__reset {
+  margin-top: 16px;
+  padding: 8px 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+
+  color: #a4ada6;
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.presentation__reset:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.32);
 }
 
 @media (max-width: 767px) {

@@ -278,9 +278,30 @@ const clearSelectedFloor = () => {
   controlsTargetPosition = defaultControlsTarget.clone()
 }
 
+const resetView = () => {
+  clearApartmentPreview()
+
+  if (selectedFloor) {
+    const previousSelectedFloor = selectedFloor
+
+    selectedFloor = null
+
+    updateFloorAppearance(previousSelectedFloor)
+  }
+
+  selectedApartmentMesh = null
+
+  cameraPositionBeforeApartment = null
+  controlsTargetBeforeApartment = null
+
+  cameraTargetPosition = defaultCameraPosition.clone()
+  controlsTargetPosition = defaultControlsTarget.clone()
+}
+
 defineExpose({
   clearSelectedFloor,
   clearSelectedApartment,
+  resetView,
 })
 
 const updateApartmentsSelection = () => {
