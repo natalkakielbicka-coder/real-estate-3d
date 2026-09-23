@@ -83,7 +83,11 @@ const emit = defineEmits(['close', 'apartment-selected', 'apartment-back'])
       </div>
 
       <!-- PIĘTRO -->
-      <div v-else key="floor" class="floor-panel__content">
+      <div
+        v-else
+        :key="`floor-${selectedFloor.buildingId}-${selectedFloor.floorNumber}`"
+        class="floor-panel__content"
+      >
         <span class="floor-panel__label"> Wybrana kondygnacja </span>
 
         <strong class="floor-panel__title">

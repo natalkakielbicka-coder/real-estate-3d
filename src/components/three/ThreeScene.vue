@@ -246,7 +246,23 @@ const handlePointerMove = (event) => {
     return
   }
 
-  const hoveredObject = intersections[0].object
+  const interactiveIntersection = intersections.find((intersection) => {
+    const object = intersection.object
+    const type = object.userData.type
+
+    return object.visible && (type === 'apartment' || type === 'floor')
+  })
+
+  if (!interactiveIntersection) {
+    clearHoveredFloor()
+    clearHoveredApartment()
+
+    renderer.domElement.style.cursor = 'default'
+
+    return
+  }
+
+  const hoveredObject = interactiveIntersection.object
 
   if (hoveredObject.userData.type === 'apartment') {
     clearHoveredFloor()
@@ -292,42 +308,45 @@ const handleSceneClick = (event) => {
   const rect = container.getBoundingClientRect()
 
   pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-
   pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
 
   raycaster.setFromCamera(pointer, camera)
 
   const intersections = raycaster.intersectObjects(building.children, true)
 
-  const apartmentIntersection = intersections.find(
-    (intersection) => intersection.object.userData.type === 'apartment',
-  )
+  const interactiveIntersection = intersections.find((intersection) => {
+    const object = intersection.object
+    const type = object.userData.type
 
-  if (apartmentIntersection) {
-    emit('apartment-selected', apartmentIntersection.object.userData)
+    return object.visible && (type === 'apartment' || type === 'floor')
+  })
+
+  if (!interactiveIntersection) {
+    return
+  }
+
+  const clickedObject = interactiveIntersection.object
+
+  // Kliknięcie mieszkania
+  if (clickedObject.userData.type === 'apartment') {
+    emit('apartment-selected', clickedObject.userData)
 
     return
   }
 
-  const floorIntersection = intersections.find(
-    (intersection) => intersection.object.userData.type === 'floor',
-  )
+  // Kliknięcie piętra
+  if (clickedObject.userData.type === 'floor') {
+    const previousSelectedFloor = selectedFloor
 
-  if (!floorIntersection) {
-    return
+    selectedFloor = clickedObject
+
+    showApartmentsForFloor(selectedFloor)
+
+    updateFloorAppearance(previousSelectedFloor)
+    updateFloorAppearance(selectedFloor)
+
+    emit('floor-selected', selectedFloor.userData)
   }
-
-  const clickedFloor = floorIntersection.object
-  const previousSelectedFloor = selectedFloor
-
-  selectedFloor = clickedFloor
-
-  showApartmentsForFloor(selectedFloor)
-
-  updateFloorAppearance(previousSelectedFloor)
-  updateFloorAppearance(selectedFloor)
-
-  emit('floor-selected', selectedFloor.userData)
 }
 
 const createBuilding = () => {
