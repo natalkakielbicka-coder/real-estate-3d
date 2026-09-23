@@ -5,9 +5,15 @@ import { apartmentStatusLabels } from '../constants/apartmentStatuses'
 import { getRoomsLabel } from '../utils/apartmentFormatters'
 
 const selectedFloor = ref(null)
+const selectedApartment = ref(null)
 
 const handleFloorSelected = (floorData) => {
   selectedFloor.value = floorData
+  selectedApartment.value = null
+}
+
+const handleApartmentSelected = (apartment) => {
+  selectedApartment.value = apartment
 }
 </script>
 
@@ -74,10 +80,15 @@ const handleFloorSelected = (floorData) => {
         <span class="floor-panel__apartments-title"> Mieszkania na kondygnacji </span>
 
         <div class="floor-panel__apartments-list">
-          <div
+          <button
             v-for="apartment in selectedFloor.apartments"
             :key="apartment.id"
+            type="button"
             class="apartment-row"
+            :class="{
+              'apartment-row--selected': selectedApartment?.id === apartment.id,
+            }"
+            @click="handleApartmentSelected(apartment)"
           >
             <div class="apartment-row__main">
               <strong>
@@ -97,7 +108,7 @@ const handleFloorSelected = (floorData) => {
             >
               {{ apartmentStatusLabels[apartment.status] }}
             </span>
-          </div>
+          </button>
         </div>
       </div>
     </aside>
@@ -251,6 +262,7 @@ const handleFloorSelected = (floorData) => {
 }
 
 .apartment-row {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -260,6 +272,30 @@ const handleFloorSelected = (floorData) => {
 
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.035);
+
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.apartment-row:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.apartment-row--selected {
+  border-color: #8d7658;
+  background: rgba(141, 118, 88, 0.16);
+}
+
+.apartment-row:focus-visible {
+  outline: 2px solid #8d7658;
+  outline-offset: 2px;
 }
 
 .apartment-row__main {
