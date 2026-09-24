@@ -61,6 +61,23 @@ const handleResetView = () => {
       </button>
     </header>
 
+    <div class="presentation__legend">
+      <div class="presentation__legend-item">
+        <span class="presentation__legend-dot presentation__legend-dot--available"></span>
+        Dostępne
+      </div>
+
+      <div class="presentation__legend-item">
+        <span class="presentation__legend-dot presentation__legend-dot--reserved"></span>
+        Zarezerwowane
+      </div>
+
+      <div class="presentation__legend-item">
+        <span class="presentation__legend-dot presentation__legend-dot--sold"></span>
+        Sprzedane
+      </div>
+    </div>
+
     <div
       class="presentation__scene"
       :class="{
@@ -167,6 +184,54 @@ const handleResetView = () => {
   border-color: rgba(255, 255, 255, 0.32);
 }
 
+.presentation__legend {
+  position: absolute;
+  bottom: 32px;
+  left: 48px;
+  z-index: 10;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+
+  padding: 12px 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(16, 18, 16, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.presentation__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #a4ada6;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.presentation__legend-dot {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+}
+
+.presentation__legend-dot--available {
+  background: #6f8f75;
+}
+
+.presentation__legend-dot--reserved {
+  background: #9b8050;
+}
+
+.presentation__legend-dot--sold {
+  background: #666b67;
+}
+
 @media (max-width: 767px) {
   .presentation__header {
     top: 24px;
@@ -175,6 +240,17 @@ const handleResetView = () => {
 
   .presentation__scene--panel-open {
     transform: none;
+  }
+
+  .presentation__legend {
+    bottom: 20px;
+    left: 24px;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .presentation__legend-item {
+    font-size: 9px;
   }
 }
 </style>
