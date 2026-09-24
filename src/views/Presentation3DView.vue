@@ -47,6 +47,14 @@ const handleResetView = () => {
 
   threeScene.value?.resetView?.()
 }
+
+const handleApartmentHover = (apartment) => {
+  threeScene.value?.hoverApartmentById?.(apartment.id)
+}
+
+const handleApartmentHoverEnd = () => {
+  threeScene.value?.clearApartmentHover?.()
+}
 </script>
 
 <template>
@@ -100,6 +108,8 @@ const handleResetView = () => {
         @close="handlePanelClose"
         @apartment-selected="handlePanelApartmentSelected"
         @apartment-back="handleApartmentBack"
+        @apartment-hover="handleApartmentHover"
+        @apartment-hover-end="handleApartmentHoverEnd"
       />
     </Transition>
   </main>

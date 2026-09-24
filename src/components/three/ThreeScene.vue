@@ -147,9 +147,11 @@ const clearHoveredApartment = () => {
   }
 
   if (hoveredApartment === selectedApartmentMesh) {
-    hoveredApartment.material.emissive.set(0x40382f)
+    hoveredApartment.material.emissive.set(0x5a4936)
+    hoveredApartment.material.emissiveIntensity = 0.8
   } else {
     hoveredApartment.material.emissive.set(0x000000)
+    hoveredApartment.material.emissiveIntensity = 0
   }
 
   hoveredApartment = null
@@ -369,11 +371,36 @@ const selectApartmentById = (apartmentId) => {
   selectApartmentMesh(apartmentMesh)
 }
 
+const hoverApartmentById = (apartmentId) => {
+  if (!apartmentPreview) {
+    return
+  }
+
+  const apartmentMesh = apartmentPreview.children.find((mesh) => mesh.userData.id === apartmentId)
+
+  if (!apartmentMesh || apartmentMesh.userData.status === 'sold') {
+    return
+  }
+
+  clearHoveredApartment()
+
+  hoveredApartment = apartmentMesh
+
+  hoveredApartment.material.emissive.set(0x303630)
+  hoveredApartment.material.emissiveIntensity = 0.8
+}
+
+const clearApartmentHover = () => {
+  clearHoveredApartment()
+}
+
 defineExpose({
   clearSelectedFloor,
   clearSelectedApartment,
   resetView,
   selectApartmentById,
+  hoverApartmentById,
+  clearApartmentHover,
 })
 
 const handlePointerMove = (event) => {
@@ -445,6 +472,8 @@ const handlePointerMove = (event) => {
       hoveredApartment = hoveredObject
 
       hoveredApartment.material.emissive.set(0x303630)
+
+      hoveredApartment.material.emissiveIntensity = 0.8
     }
 
     showTooltip(hoveredObject, event, rect)

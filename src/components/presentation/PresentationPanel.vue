@@ -17,7 +17,13 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['close', 'apartment-selected', 'apartment-back'])
+const emit = defineEmits([
+  'close',
+  'apartment-selected',
+  'apartment-back',
+  'apartment-hover',
+  'apartment-hover-end',
+])
 </script>
 
 <template>
@@ -126,6 +132,8 @@ const emit = defineEmits(['close', 'apartment-selected', 'apartment-back'])
               class="apartment-row"
               :disabled="apartment.status === 'sold'"
               @click="emit('apartment-selected', apartment)"
+              @mouseenter="emit('apartment-hover', apartment)"
+              @mouseleave="emit('apartment-hover-end')"
             >
               <div class="apartment-row__main">
                 <strong>{{ apartment.number }}</strong>
