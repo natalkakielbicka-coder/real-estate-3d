@@ -45,7 +45,7 @@ const handleResetView = () => {
 <template>
   <main class="presentation">
     <header class="presentation__header">
-      <span class="presentation__label"> Interactive model </span>
+      <span class="presentation__label"> Interaktywny model </span>
 
       <h1>Prezentacja 3D</h1>
 

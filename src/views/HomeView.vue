@@ -7,11 +7,9 @@ import { RouterLink } from 'vue-router'
     <div class="home__grid"></div>
 
     <section class="home__content">
-      <span class="home__label"> Interactive 3D Experience </span>
-
       <h1>
-        Explore architecture
-        <span>in three dimensions.</span>
+        Poznaj inwestycję
+        <span>w trzech wymiarach.</span>
       </h1>
 
       <p>Interaktywna prezentacja inwestycji mieszkaniowej oparta na Vue i Three.js.</p>

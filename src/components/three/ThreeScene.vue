@@ -3,7 +3,6 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { buildings } from '../../data/buildings'
-import { apartmentStatusLabels } from '../../constants/apartmentStatuses'
 import { getRoomsLabel } from '../../utils/apartmentFormatters'
 
 const sceneContainer = ref(null)
