@@ -311,12 +311,6 @@ const resetView = () => {
   controlsTargetPosition = defaultControlsTarget.clone()
 }
 
-defineExpose({
-  clearSelectedFloor,
-  clearSelectedApartment,
-  resetView,
-})
-
 const updateApartmentsSelection = () => {
   if (!apartmentPreview) {
     return
@@ -339,6 +333,48 @@ const updateApartmentsSelection = () => {
     }
   })
 }
+
+const selectApartmentMesh = (apartmentMesh) => {
+  if (!apartmentMesh) {
+    return
+  }
+
+  if (!selectedApartmentMesh) {
+    cameraPositionBeforeApartment = camera.position.clone()
+    controlsTargetBeforeApartment = controls.target.clone()
+  }
+
+  selectedApartmentMesh = apartmentMesh
+
+  const apartmentTarget = apartmentMesh.position.clone()
+
+  const direction = cameraPositionBeforeApartment
+    .clone()
+    .sub(controlsTargetBeforeApartment)
+    .normalize()
+
+  cameraTargetPosition = apartmentTarget.clone().add(direction.multiplyScalar(9.5))
+  controlsTargetPosition = apartmentTarget
+
+  updateApartmentsSelection()
+}
+
+const selectApartmentById = (apartmentId) => {
+  if (!apartmentPreview) {
+    return
+  }
+
+  const apartmentMesh = apartmentPreview.children.find((mesh) => mesh.userData.id === apartmentId)
+
+  selectApartmentMesh(apartmentMesh)
+}
+
+defineExpose({
+  clearSelectedFloor,
+  clearSelectedApartment,
+  resetView,
+  selectApartmentById,
+})
 
 const handlePointerMove = (event) => {
   if (isPointerDown) {
@@ -507,31 +543,7 @@ const handleSceneClick = (event) => {
 
   // Kliknięcie mieszkania
   if (clickedObject.userData.type === 'apartment') {
-    // Zapamiętujemy widok bazowy tylko przy wejściu
-    // z widoku piętra do widoku mieszkania.
-    if (!selectedApartmentMesh) {
-      cameraPositionBeforeApartment = camera.position.clone()
-      controlsTargetBeforeApartment = controls.target.clone()
-    }
-
-    selectedApartmentMesh = clickedObject
-
-    const apartmentTarget = new THREE.Vector3(
-      clickedObject.position.x,
-      clickedObject.position.y,
-      clickedObject.position.z,
-    )
-
-    const direction = cameraPositionBeforeApartment
-      .clone()
-      .sub(controlsTargetBeforeApartment)
-      .normalize()
-
-    cameraTargetPosition = apartmentTarget.clone().add(direction.multiplyScalar(9.5))
-
-    controlsTargetPosition = apartmentTarget
-
-    updateApartmentsSelection()
+    selectApartmentMesh(clickedObject)
 
     emit('apartment-selected', clickedObject.userData)
 

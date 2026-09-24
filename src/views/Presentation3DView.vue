@@ -15,9 +15,16 @@ const handleFloorSelected = (floorData) => {
   panelTransitionDirection.value = 'forward'
 }
 
-const handleApartmentSelected = (apartment) => {
+const handleSceneApartmentSelected = (apartment) => {
   panelTransitionDirection.value = 'forward'
   selectedApartment.value = apartment
+}
+
+const handlePanelApartmentSelected = (apartment) => {
+  panelTransitionDirection.value = 'forward'
+  selectedApartment.value = apartment
+
+  threeScene.value?.selectApartmentById?.(apartment.id)
 }
 
 const handleApartmentBack = () => {
@@ -63,7 +70,7 @@ const handleResetView = () => {
       <ThreeScene
         ref="threeScene"
         @floor-selected="handleFloorSelected"
-        @apartment-selected="handleApartmentSelected"
+        @apartment-selected="handleSceneApartmentSelected"
       />
     </div>
 
@@ -74,7 +81,7 @@ const handleResetView = () => {
         :selected-apartment="selectedApartment"
         :transition-direction="panelTransitionDirection"
         @close="handlePanelClose"
-        @apartment-selected="handleApartmentSelected"
+        @apartment-selected="handlePanelApartmentSelected"
         @apartment-back="handleApartmentBack"
       />
     </Transition>
