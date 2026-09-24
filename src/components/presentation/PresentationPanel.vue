@@ -1,6 +1,6 @@
 <script setup>
 import { apartmentStatusLabels } from '../../constants/apartmentStatuses'
-import { getRoomsLabel } from '../../utils/apartmentFormatters'
+import { getRoomsLabel, formatPrice } from '../../utils/apartmentFormatters'
 
 defineProps({
   selectedFloor: {
@@ -84,6 +84,18 @@ const emit = defineEmits([
           <div class="apartment-details__item">
             <span>Budynek</span>
             <strong>{{ selectedFloor.buildingName }}</strong>
+          </div>
+
+          <div class="apartment-details__item">
+            <span>Cena</span>
+            <strong>{{ formatPrice(selectedApartment.price) }}</strong>
+          </div>
+
+          <div class="apartment-details__item">
+            <span>Cena za m²</span>
+            <strong>
+              {{ formatPrice(selectedApartment.price / selectedApartment.area) }}
+            </strong>
           </div>
         </div>
       </div>

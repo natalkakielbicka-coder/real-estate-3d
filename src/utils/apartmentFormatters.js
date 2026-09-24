@@ -9,3 +9,11 @@ export const getRoomsLabel = (rooms) => {
 
   return `${rooms} pokoi`
 }
+
+export const formatPrice = (price) => {
+  return new Intl.NumberFormat('pl-PL', {
+    style: 'currency',
+    currency: 'PLN',
+    maximumFractionDigits: 0,
+  }).format(price)
+}
