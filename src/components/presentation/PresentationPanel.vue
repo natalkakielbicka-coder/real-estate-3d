@@ -66,6 +66,12 @@ const nextApartment = computed(() => {
 
   return selectableApartments.value[currentApartmentIndex.value + 1]
 })
+
+const floorLabel = computed(() => {
+  return props.selectedFloor.floorNumber === 0
+    ? 'Parter'
+    : `Piętro ${props.selectedFloor.floorNumber}`
+})
 </script>
 
 <template>
@@ -88,18 +94,29 @@ const nextApartment = computed(() => {
           ← Wróć do piętra
         </button>
 
-        <span class="floor-panel__label"> Mieszkanie </span>
+        <div class="floor-panel__breadcrumb">
+          <span>{{ selectedFloor.buildingName }}</span>
+          <i>/</i>
+          <span>{{ floorLabel }}</span>
+        </div>
 
-        <strong class="floor-panel__title">
-          {{ selectedApartment.number }}
-        </strong>
+        <div class="floor-panel__heading">
+          <div>
+            <span class="floor-panel__label">Mieszkanie</span>
 
-        <span
-          class="apartment-details__status"
-          :class="`apartment-row__status--${selectedApartment.status}`"
-        >
-          {{ apartmentStatusLabels[selectedApartment.status] }}
-        </span>
+            <strong class="floor-panel__title">
+              {{ selectedApartment.number }}
+            </strong>
+          </div>
+
+          <span
+            class="apartment-details__status"
+            :class="`apartment-row__status--${selectedApartment.status}`"
+          >
+            <i></i>
+            {{ apartmentStatusLabels[selectedApartment.status] }}
+          </span>
+        </div>
 
         <div class="apartment-details">
           <div class="apartment-details__item">
@@ -168,11 +185,21 @@ const nextApartment = computed(() => {
         :key="`floor-${selectedFloor.buildingId}-${selectedFloor.floorNumber}`"
         class="floor-panel__content"
       >
-        <span class="floor-panel__label"> Wybrana kondygnacja </span>
+        <div class="floor-panel__breadcrumb">
+          <span>{{ selectedFloor.buildingName }}</span>
+          <i>/</i>
+          <span>Prezentacja 3D</span>
+        </div>
 
-        <strong class="floor-panel__title">
-          {{ selectedFloor.floorNumber === 0 ? 'Parter' : `Piętro ${selectedFloor.floorNumber}` }}
-        </strong>
+        <div class="floor-panel__heading">
+          <div>
+            <span class="floor-panel__label">Wybrana kondygnacja</span>
+
+            <strong class="floor-panel__title">
+              {{ floorLabel }}
+            </strong>
+          </div>
+        </div>
 
         <p class="floor-panel__description">
           Wybierz mieszkanie z listy, aby zobaczyć jego szczegóły.
@@ -633,6 +660,61 @@ const nextApartment = computed(() => {
 .panel-content-back-leave-to {
   transform: translateX(16px);
   opacity: 0;
+}
+
+.floor-panel__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 22px;
+  padding-right: 48px;
+  color: #92958d;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.floor-panel__breadcrumb i {
+  color: #c4bba9;
+  font-style: normal;
+}
+
+.floor-panel__heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.floor-panel__heading > div {
+  min-width: 0;
+}
+
+.floor-panel__label {
+  display: block;
+  margin-bottom: 7px;
+  color: #a18b67;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.floor-panel__title {
+  display: block;
+  color: #272a24;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.apartment-details__status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 @media (prefers-reduced-motion: reduce) {
