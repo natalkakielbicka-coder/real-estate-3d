@@ -4,6 +4,7 @@ import ThreeScene from '../components/three/ThreeScene.vue'
 import PresentationPanel from '../components/presentation/PresentationPanel.vue'
 import PresentationHeader from '../components/presentation/PresentationHeader.vue'
 import PresentationIntro from '@/components/presentation/PresentationIntro.vue'
+import PresentationSceneToolbar from '../components/presentation/PresentationSceneToolbar.vue'
 
 const selectedFloor = ref(null)
 const selectedApartment = ref(null)
@@ -65,35 +66,22 @@ const handleApartmentHoverEnd = () => {
 
     <PresentationIntro @reset="handleResetView" />
 
-    <div class="presentation__legend">
-      <div class="presentation__legend-item">
-        <span class="presentation__legend-dot presentation__legend-dot--available"></span>
-        Dostępne
-      </div>
+    <section class="presentation__stage">
+      <PresentationSceneToolbar @reset="handleResetView" />
 
-      <div class="presentation__legend-item">
-        <span class="presentation__legend-dot presentation__legend-dot--reserved"></span>
-        Zarezerwowane
+      <div
+        class="presentation__scene"
+        :class="{
+          'presentation__scene--panel-open': selectedFloor,
+        }"
+      >
+        <ThreeScene
+          ref="threeScene"
+          @floor-selected="handleFloorSelected"
+          @apartment-selected="handleSceneApartmentSelected"
+        />
       </div>
-
-      <div class="presentation__legend-item">
-        <span class="presentation__legend-dot presentation__legend-dot--sold"></span>
-        Sprzedane
-      </div>
-    </div>
-
-    <div
-      class="presentation__scene"
-      :class="{
-        'presentation__scene--panel-open': selectedFloor,
-      }"
-    >
-      <ThreeScene
-        ref="threeScene"
-        @floor-selected="handleFloorSelected"
-        @apartment-selected="handleSceneApartmentSelected"
-      />
-    </div>
+    </section>
 
     <Transition name="panel">
       <PresentationPanel
@@ -117,13 +105,28 @@ const handleApartmentHoverEnd = () => {
   width: 100%;
   height: 100vh;
   overflow: hidden;
-  background: #101210;
+  background: #f7f4ee;
 }
 
 .presentation__scene {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 64px);
+  overflow: hidden;
   transition: transform 0.45s ease;
+}
+
+.presentation__stage {
+  position: absolute;
+  top: 292px;
+  right: 28px;
+  bottom: 24px;
+  left: 28px;
+  z-index: 10;
+  overflow: hidden;
+  border: 1px solid #e4e0d7;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 18px 50px rgba(68, 59, 44, 0.08);
 }
 
 .presentation__scene--panel-open {
@@ -149,63 +152,21 @@ const handleApartmentHoverEnd = () => {
   opacity: 1;
 }
 
-.presentation__legend {
-  position: absolute;
-  bottom: 32px;
-  left: 48px;
-  z-index: 10;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(16, 18, 16, 0.72);
-  backdrop-filter: blur(10px);
-}
-
-.presentation__legend-item {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #a4ada6;
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.presentation__legend-dot {
-  width: 9px;
-  height: 9px;
-  flex-shrink: 0;
-  border-radius: 50%;
-}
-
-.presentation__legend-dot--available {
-  background: #6f8f75;
-}
-
-.presentation__legend-dot--reserved {
-  background: #9b8050;
-}
-
-.presentation__legend-dot--sold {
-  background: #666b67;
-}
-
 @media (max-width: 767px) {
   .presentation__scene--panel-open {
     transform: none;
   }
 
-  .presentation__legend {
-    bottom: 20px;
-    left: 24px;
-    gap: 10px;
-    padding: 10px 12px;
+  .presentation__stage {
+    top: 294px;
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    border-radius: 14px;
   }
 
-  .presentation__legend-item {
-    font-size: 9px;
+  .presentation__scene--panel-open {
+    transform: none;
   }
 }
 </style>

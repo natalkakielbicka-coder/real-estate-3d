@@ -863,7 +863,7 @@ onBeforeUnmount(() => {
 .three-scene {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100%;
 }
 
 .three-scene :deep(canvas) {

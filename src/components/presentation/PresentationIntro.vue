@@ -44,9 +44,11 @@ defineEmits(['reset'])
   border-bottom: 1px solid #ebe7de;
   background: #f7f4ee;
 }
+
 .presentation-intro__content {
   max-width: 680px;
 }
+
 .presentation-intro__eyebrow {
   display: block;
   margin-bottom: 12px;
@@ -56,6 +58,7 @@ defineEmits(['reset'])
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
+
 .presentation-intro h1 {
   margin: 0;
   color: #24251f;
@@ -65,6 +68,7 @@ defineEmits(['reset'])
   line-height: 0.96;
   letter-spacing: -0.035em;
 }
+
 .presentation-intro p {
   max-width: 560px;
   margin: 20px 0 0;
@@ -72,11 +76,13 @@ defineEmits(['reset'])
   font-size: 14px;
   line-height: 1.7;
 }
+
 .presentation-intro__aside {
   display: flex;
   align-items: flex-end;
   gap: 36px;
 }
+
 .presentation-intro__accent {
   color: #b59a70;
   font-family: Georgia, 'Times New Roman', serif;
@@ -86,6 +92,7 @@ defineEmits(['reset'])
   text-align: right;
   transform: rotate(-5deg);
 }
+
 .presentation-intro__reset {
   display: inline-flex;
   align-items: center;
@@ -100,13 +107,16 @@ defineEmits(['reset'])
   font-size: 11px;
   cursor: pointer;
 }
+
 .presentation-intro__reset span {
   font-size: 16px;
 }
+
 .presentation-intro__reset:hover {
   border-color: #c9c2b5;
   color: #24251f;
 }
+
 @media (max-width: 767px) {
   .presentation-intro {
     top: 64px;
@@ -115,10 +125,12 @@ defineEmits(['reset'])
     min-height: 230px;
     padding: 28px 24px;
   }
+
   .presentation-intro__aside {
     align-items: center;
     justify-content: space-between;
   }
+
   .presentation-intro__accent {
     font-size: 19px;
   }
