@@ -130,7 +130,7 @@ const handleApartmentHoverEnd = () => {
 }
 
 .presentation__scene--panel-open {
-  transform: translateX(-210px);
+  transform: none;
 }
 
 .panel-enter-active,
@@ -153,10 +153,6 @@ const handleApartmentHoverEnd = () => {
 }
 
 @media (max-width: 767px) {
-  .presentation__scene--panel-open {
-    transform: none;
-  }
-
   .presentation__stage {
     top: 294px;
     right: 12px;

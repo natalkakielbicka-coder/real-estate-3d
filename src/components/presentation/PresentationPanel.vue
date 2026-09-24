@@ -261,139 +261,177 @@ const nextApartment = computed(() => {
 <style scoped>
 .floor-panel {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 20;
-  width: 420px;
-  padding: 32px 24px;
+  top: 304px;
+  right: 40px;
+  bottom: 36px;
+  z-index: 30;
+  width: 400px;
+  padding: 28px 24px;
   overflow-x: hidden;
   overflow-y: auto;
-  border-left: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(24, 27, 24, 0.98);
-  box-shadow: -24px 0 70px rgba(0, 0, 0, 0.35);
-}
-
-.floor-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: #8d7658;
+  border: 1px solid #e2ded5;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 24px 70px rgba(72, 62, 47, 0.14);
 }
 
 .floor-panel__close {
   position: absolute;
   top: 18px;
   right: 18px;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: transparent;
-  color: #f5f5f2;
-  font-size: 24px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e1ddd4;
+  border-radius: 50%;
+  background: #f8f6f1;
+  color: #60645b;
+  font-size: 20px;
   line-height: 1;
   cursor: pointer;
 }
 
 .floor-panel__close:hover {
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: #c9c3b7;
+  background: #f2efe8;
+  color: #22251f;
 }
 
 .floor-panel__close:focus-visible,
 .floor-panel__back:focus-visible {
-  outline: 2px solid #8d7658;
+  outline: 2px solid #9caa88;
   outline-offset: 3px;
 }
 
 .floor-panel__back {
   display: inline-flex;
   align-items: center;
-  margin: 0 0 32px;
+  margin: 0 0 28px;
   padding: 0;
   border: 0;
   background: transparent;
-  color: #a4ada6;
+  color: #7c8177;
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
 }
 
 .floor-panel__back:hover {
-  color: #ffffff;
+  color: #2f342c;
 }
 
 .floor-panel__label {
   display: block;
-  margin-bottom: 12px;
-  font-size: 10px;
+  margin-bottom: 10px;
+  color: #9c8a6b;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #a4ada6;
 }
 
 .floor-panel__title {
   display: block;
-  font-size: 26px;
+  color: #272a24;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 30px;
   font-weight: 400;
-  line-height: 1.15;
-  color: #ffffff;
+  line-height: 1.1;
 }
 
 .floor-panel__description {
-  margin: 14px 0 0;
-  font-size: 14px;
+  margin: 12px 0 0;
+  color: #7b7f76;
+  font-size: 13px;
   line-height: 1.6;
-  color: #abb2ad;
+}
+
+.floor-panel__availability {
+  margin-top: 22px;
+  padding: 16px;
+  border: 1px solid #ebe7df;
+  border-radius: 12px;
+  background: #faf8f4;
+}
+
+.floor-panel__availability-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+  color: #8b8f86;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.floor-panel__availability-header strong {
+  color: #657d62;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.floor-panel__availability-track {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7e4dc;
+}
+
+.floor-panel__availability-progress {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #799274;
 }
 
 .floor-panel__details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 20px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 0;
+  border-top: 0;
 }
 
 .floor-panel__detail {
   min-width: 0;
+  padding: 12px;
+  border: 1px solid #ebe7df;
+  border-radius: 10px;
+  background: #faf9f6;
 }
 
 .floor-panel__detail span {
   display: block;
   margin-bottom: 6px;
-  font-size: 9px;
-  letter-spacing: 0.1em;
+  color: #989b93;
+  font-size: 8px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #79827c;
 }
 
 .floor-panel__detail strong {
   display: block;
-
-  font-size: 14px;
+  color: #353932;
+  font-size: 13px;
   font-weight: 500;
-  color: #f5f5f2;
 }
 
 .floor-panel__apartments {
   margin-top: 22px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 20px;
+  border-top: 1px solid #ebe7df;
 }
 
 .floor-panel__apartments-title {
   display: block;
   margin-bottom: 12px;
-  font-size: 10px;
+  color: #747970;
+  font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #a4ada6;
 }
 
 .floor-panel__apartments-list {
@@ -407,25 +445,28 @@ const nextApartment = computed(() => {
   justify-content: space-between;
   gap: 16px;
   width: 100%;
-  padding: 11px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.035);
+  padding: 12px;
+  border: 1px solid #ebe7df;
+  border-radius: 11px;
+  background: #ffffff;
   color: inherit;
   font: inherit;
   text-align: left;
   cursor: pointer;
   transition:
     border-color 0.2s ease,
-    background-color 0.2s ease;
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .apartment-row:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.07);
+  border-color: #cacfc4;
+  background: #fbfcfa;
+  box-shadow: 0 8px 20px rgba(63, 70, 57, 0.06);
 }
 
 .apartment-row:focus-visible {
-  outline: 2px solid #8d7658;
+  outline: 2px solid #9caa88;
   outline-offset: 2px;
 }
 
@@ -435,8 +476,9 @@ const nextApartment = computed(() => {
 }
 
 .apartment-row:disabled:hover {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.035);
+  border-color: #ebe7df;
+  background: #ffffff;
+  box-shadow: none;
 }
 
 .apartment-row__main {
@@ -446,85 +488,118 @@ const nextApartment = computed(() => {
 .apartment-row__main strong {
   display: block;
   margin-bottom: 3px;
+  color: #30342d;
   font-size: 14px;
-  font-weight: 500;
-  color: #f5f5f2;
+  font-weight: 600;
 }
 
 .apartment-row__main span {
   display: block;
-  font-size: 11px;
-  color: #89918b;
+  color: #8b9087;
+  font-size: 10px;
+}
+
+.apartment-row__price {
+  margin-top: 5px;
+  color: #4f554c !important;
+  font-size: 12px !important;
+  font-weight: 600;
 }
 
 .apartment-row__status {
   flex-shrink: 0;
   padding: 5px 7px;
-  font-size: 9px;
+  border-radius: 999px;
+  font-size: 8px;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .apartment-row__status--available {
-  color: #b9d2bf;
-  background: rgba(91, 138, 103, 0.18);
+  color: #557052;
+  background: #edf4eb;
 }
 
 .apartment-row__status--reserved {
-  color: #d8c79e;
-  background: rgba(159, 128, 67, 0.18);
+  color: #927541;
+  background: #f6f0e3;
 }
 
 .apartment-row__status--sold {
-  color: #a7aaa8;
-  background: rgba(255, 255, 255, 0.07);
-}
-
-.apartment-row__price {
-  margin-top: 5px;
-  font-size: 12px !important;
-  font-weight: 500;
-  color: #d8ddd9 !important;
+  color: #9b6464;
+  background: #f7eaea;
 }
 
 .apartment-details__status {
   display: inline-block;
   margin-top: 14px;
   padding: 6px 9px;
-  font-size: 10px;
+  border-radius: 999px;
+  font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .apartment-details {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  margin-top: 28px;
-  background: rgba(255, 255, 255, 0.1);
+  gap: 8px;
+  margin-top: 24px;
+  background: transparent;
 }
 
 .apartment-details__item {
-  padding: 18px;
-  background: #181b18;
+  padding: 16px;
+  border: 1px solid #ebe7df;
+  border-radius: 11px;
+  background: #faf9f6;
 }
 
 .apartment-details__item span {
   display: block;
-  margin-bottom: 8px;
-  font-size: 9px;
-  letter-spacing: 0.1em;
+  margin-bottom: 7px;
+  color: #969a91;
+  font-size: 8px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #79827c;
 }
 
 .apartment-details__item strong {
   display: block;
-  font-size: 17px;
-  font-weight: 400;
-  color: #f5f5f2;
+  color: #33372f;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.apartment-details__navigation {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.apartment-details__navigation-button {
+  padding: 11px 12px;
+  border: 1px solid #dedad1;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #60655b;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.apartment-details__navigation-button:hover:not(:disabled) {
+  border-color: #aeb7a5;
+  background: #f7f9f5;
+  color: #2e342b;
+}
+
+.apartment-details__navigation-button:disabled {
+  cursor: default;
+  opacity: 0.35;
 }
 
 .floor-panel__content {
@@ -560,67 +635,6 @@ const nextApartment = computed(() => {
   opacity: 0;
 }
 
-.floor-panel__availability {
-  margin-top: 20px;
-}
-
-.floor-panel__availability-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 8px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #79827c;
-}
-
-.floor-panel__availability-header strong {
-  font-size: 11px;
-  font-weight: 500;
-  color: #b9d2bf;
-}
-
-.floor-panel__availability-track {
-  height: 3px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.floor-panel__availability-progress {
-  display: block;
-  height: 100%;
-  background: #6f8f75;
-}
-
-.apartment-details__navigation {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin-top: 20px;
-}
-
-.apartment-details__navigation-button {
-  padding: 11px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.035);
-  color: #b8c0ba;
-  font: inherit;
-  font-size: 11px;
-  cursor: pointer;
-}
-
-.apartment-details__navigation-button:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.28);
-  color: #ffffff;
-}
-
-.apartment-details__navigation-button:disabled {
-  cursor: default;
-  opacity: 0.3;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .panel-content-forward-enter-active,
   .panel-content-forward-leave-active,
@@ -633,12 +647,20 @@ const nextApartment = computed(() => {
 @media (max-width: 767px) {
   .floor-panel {
     top: auto;
-    right: 16px;
-    bottom: 16px;
-    left: 16px;
+    right: 20px;
+    bottom: 24px;
+    left: 20px;
     width: auto;
-    max-height: 70vh;
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    max-height: 66vh;
+    border-radius: 14px;
+  }
+
+  .floor-panel__details {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .apartment-details {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>
