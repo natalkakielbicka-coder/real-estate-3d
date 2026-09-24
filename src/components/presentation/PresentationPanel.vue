@@ -155,6 +155,10 @@ const emit = defineEmits([
                   ·
                   {{ apartment.area }} m²
                 </span>
+
+                <span class="apartment-row__price">
+                  {{ formatPrice(apartment.price) }}
+                </span>
               </div>
 
               <span
@@ -430,6 +434,14 @@ const emit = defineEmits([
 .apartment-row__status--sold {
   color: #a7aaa8;
   background: rgba(255, 255, 255, 0.07);
+}
+
+.apartment-row__price {
+  margin-top: 5px;
+
+  font-size: 12px !important;
+  font-weight: 500;
+  color: #d8ddd9 !important;
 }
 
 .apartment-details__status {
