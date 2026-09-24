@@ -1,8 +1,9 @@
 <script setup>
+import { computed } from 'vue'
 import { apartmentStatusLabels } from '../../constants/apartmentStatuses'
 import { getRoomsLabel, formatPrice } from '../../utils/apartmentFormatters'
 
-defineProps({
+const props = defineProps({
   selectedFloor: {
     type: Object,
     required: true,
@@ -24,6 +25,18 @@ const emit = defineEmits([
   'apartment-hover',
   'apartment-hover-end',
 ])
+
+const apartmentStatusOrder = {
+  available: 0,
+  reserved: 1,
+  sold: 2,
+}
+
+const sortedApartments = computed(() => {
+  return [...props.selectedFloor.apartments].sort((a, b) => {
+    return apartmentStatusOrder[a.status] - apartmentStatusOrder[b.status]
+  })
+})
 </script>
 
 <template>
@@ -138,7 +151,7 @@ const emit = defineEmits([
 
           <div class="floor-panel__apartments-list">
             <button
-              v-for="apartment in selectedFloor.apartments"
+              v-for="apartment in sortedApartments"
               :key="apartment.id"
               type="button"
               class="apartment-row"
