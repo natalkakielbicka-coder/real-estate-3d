@@ -37,6 +37,35 @@ const sortedApartments = computed(() => {
     return apartmentStatusOrder[a.status] - apartmentStatusOrder[b.status]
   })
 })
+
+const selectableApartments = computed(() => {
+  return props.selectedFloor.apartments.filter((apartment) => apartment.status !== 'sold')
+})
+
+const currentApartmentIndex = computed(() => {
+  return selectableApartments.value.findIndex(
+    (apartment) => apartment.id === props.selectedApartment?.id,
+  )
+})
+
+const previousApartment = computed(() => {
+  if (currentApartmentIndex.value <= 0) {
+    return null
+  }
+
+  return selectableApartments.value[currentApartmentIndex.value - 1]
+})
+
+const nextApartment = computed(() => {
+  if (
+    currentApartmentIndex.value === -1 ||
+    currentApartmentIndex.value >= selectableApartments.value.length - 1
+  ) {
+    return null
+  }
+
+  return selectableApartments.value[currentApartmentIndex.value + 1]
+})
 </script>
 
 <template>
@@ -110,6 +139,26 @@ const sortedApartments = computed(() => {
               {{ formatPrice(selectedApartment.price / selectedApartment.area) }}
             </strong>
           </div>
+        </div>
+
+        <div class="apartment-details__navigation">
+          <button
+            type="button"
+            class="apartment-details__navigation-button"
+            :disabled="!previousApartment"
+            @click="emit('apartment-selected', previousApartment)"
+          >
+            ← Poprzednie
+          </button>
+
+          <button
+            type="button"
+            class="apartment-details__navigation-button"
+            :disabled="!nextApartment"
+            @click="emit('apartment-selected', nextApartment)"
+          >
+            Następne →
+          </button>
         </div>
       </div>
 
@@ -545,6 +594,33 @@ const sortedApartments = computed(() => {
   background: #6f8f75;
 }
 
+.apartment-details__navigation {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.apartment-details__navigation-button {
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.035);
+  color: #b8c0ba;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.apartment-details__navigation-button:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+}
+
+.apartment-details__navigation-button:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .panel-content-forward-enter-active,
   .panel-content-forward-leave-active,
@@ -560,10 +636,8 @@ const sortedApartments = computed(() => {
     right: 16px;
     bottom: 16px;
     left: 16px;
-
     width: auto;
     max-height: 70vh;
-
     border: 1px solid rgba(255, 255, 255, 0.16);
   }
 }
