@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { buildings } from '../../data/buildings'
-import { getRoomsLabel } from '../../utils/apartmentFormatters'
+import { getRoomsLabel, formatPrice } from '../../utils/apartmentFormatters'
 
 const sceneContainer = ref(null)
 const tooltip = ref({
@@ -17,6 +17,7 @@ const tooltip = ref({
   floor: '',
   rooms: '',
   description: '',
+  price: '',
 })
 const emit = defineEmits(['floor-selected', 'apartment-selected'])
 
@@ -525,6 +526,7 @@ const showTooltip = (object, event, rect) => {
       selectedFloor?.userData.floorNumber === 0 ? 'Parter' : selectedFloor?.userData.floorNumber
 
     tooltip.value.rooms = getRoomsLabel(object.userData.rooms)
+    tooltip.value.price = formatPrice(object.userData.price)
   }
 
   if (object.userData.type === 'floor') {
@@ -837,6 +839,10 @@ onBeforeUnmount(() => {
 
         <span>
           Pokoje <strong>{{ tooltip.rooms }}</strong>
+        </span>
+
+        <span>
+          Cena <strong>{{ tooltip.price }}</strong>
         </span>
       </template>
 
