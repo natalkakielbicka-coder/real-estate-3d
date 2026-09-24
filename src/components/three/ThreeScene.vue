@@ -335,7 +335,7 @@ const updateApartmentsSelection = () => {
 }
 
 const selectApartmentMesh = (apartmentMesh) => {
-  if (!apartmentMesh) {
+  if (!apartmentMesh || apartmentMesh.userData.status === 'sold') {
     return
   }
 
@@ -428,6 +428,16 @@ const handlePointerMove = (event) => {
 
   if (hoveredObject.userData.type === 'apartment') {
     clearHoveredFloor()
+
+    if (hoveredObject.userData.status === 'sold') {
+      clearHoveredApartment()
+
+      showTooltip(hoveredObject, event, rect)
+
+      renderer.domElement.style.cursor = 'not-allowed'
+
+      return
+    }
 
     if (hoveredApartment !== hoveredObject) {
       clearHoveredApartment()
@@ -543,6 +553,10 @@ const handleSceneClick = (event) => {
 
   // Kliknięcie mieszkania
   if (clickedObject.userData.type === 'apartment') {
+    if (clickedObject.userData.status === 'sold') {
+      return
+    }
+
     selectApartmentMesh(clickedObject)
 
     emit('apartment-selected', clickedObject.userData)

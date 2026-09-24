@@ -124,6 +124,7 @@ const emit = defineEmits(['close', 'apartment-selected', 'apartment-back'])
               :key="apartment.id"
               type="button"
               class="apartment-row"
+              :disabled="apartment.status === 'sold'"
               @click="emit('apartment-selected', apartment)"
             >
               <div class="apartment-row__main">
@@ -352,6 +353,16 @@ const emit = defineEmits(['close', 'apartment-selected', 'apartment-back'])
 .apartment-row:focus-visible {
   outline: 2px solid #8d7658;
   outline-offset: 2px;
+}
+
+.apartment-row:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.apartment-row:disabled:hover {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.035);
 }
 
 .apartment-row__main {
