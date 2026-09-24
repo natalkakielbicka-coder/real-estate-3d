@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import ThreeScene from '../components/three/ThreeScene.vue'
 import PresentationPanel from '../components/presentation/PresentationPanel.vue'
+import PresentationHeader from '../components/presentation/PresentationHeader.vue'
 
 const selectedFloor = ref(null)
 const selectedApartment = ref(null)
@@ -59,6 +60,8 @@ const handleApartmentHoverEnd = () => {
 
 <template>
   <main class="presentation">
+    <PresentationHeader />
+
     <header class="presentation__header">
       <span class="presentation__label"> Interaktywny model </span>
 
@@ -136,7 +139,7 @@ const handleApartmentHoverEnd = () => {
 
 .presentation__header {
   position: absolute;
-  top: 40px;
+  top: 112px;
   left: 48px;
   z-index: 10;
 }
@@ -179,13 +182,10 @@ const handleApartmentHoverEnd = () => {
 .presentation__reset {
   margin-top: 16px;
   padding: 8px 12px;
-
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.04);
-
   color: #a4ada6;
   font-size: 11px;
-
   cursor: pointer;
 }
 
@@ -199,13 +199,10 @@ const handleApartmentHoverEnd = () => {
   bottom: 32px;
   left: 48px;
   z-index: 10;
-
   display: flex;
   flex-wrap: wrap;
   gap: 18px;
-
   padding: 12px 16px;
-
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(16, 18, 16, 0.72);
   backdrop-filter: blur(10px);
@@ -215,7 +212,6 @@ const handleApartmentHoverEnd = () => {
   display: flex;
   align-items: center;
   gap: 7px;
-
   color: #a4ada6;
   font-size: 10px;
   letter-spacing: 0.04em;
@@ -226,7 +222,6 @@ const handleApartmentHoverEnd = () => {
   width: 9px;
   height: 9px;
   flex-shrink: 0;
-
   border-radius: 50%;
 }
 
@@ -244,7 +239,7 @@ const handleApartmentHoverEnd = () => {
 
 @media (max-width: 767px) {
   .presentation__header {
-    top: 24px;
+    top: 92px;
     left: 24px;
   }
 
