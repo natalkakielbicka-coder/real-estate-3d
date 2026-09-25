@@ -116,9 +116,12 @@ const handleFloorSelectorSelect = (floorNumber) => {
 }
 
 .presentation__scene {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  height: calc(100% - 64px);
+  height: calc(100% - 56px);
   overflow: hidden;
+  border-radius: 0 0 18px 18px;
   transition: transform 0.45s ease;
 }
 

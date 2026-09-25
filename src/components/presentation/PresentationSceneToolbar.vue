@@ -54,17 +54,6 @@ defineEmits(['select-floor'])
 </template>
 
 <style scoped>
-.scene-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  min-height: 64px;
-  padding: 10px 18px;
-  border-bottom: 1px solid #ebe7de;
-  background: #ffffff;
-}
-
 .scene-toolbar__left {
   display: flex;
   align-items: center;

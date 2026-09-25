@@ -1,7 +1,69 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { buildings } from '../../data/buildings'
 
 const isOpen = ref(false)
+
+const selectedRooms = ref([])
+const selectedStatuses = ref([])
+
+const roomOptions = [1, 2, 3, 4]
+const statusOptions = [
+  {
+    value: 'available',
+    label: 'Dostępne',
+  },
+  {
+    value: 'reserved',
+    label: 'Zarezerwowane',
+  },
+]
+
+const apartments = computed(() => {
+  return buildings.flatMap((building) =>
+    building.floors.flatMap((floor) =>
+      floor.apartments.map((apartment) => ({
+        ...apartment,
+        floorNumber: floor.floorNumber,
+        buildingId: building.id,
+        buildingName: building.name,
+      })),
+    ),
+  )
+})
+
+const filteredApartments = computed(() => {
+  return apartments.value.filter((apartment) => {
+    const matchesRooms =
+      selectedRooms.value.length === 0 ||
+      selectedRooms.value.includes(apartment.rooms >= 4 ? 4 : apartment.rooms)
+
+    const matchesStatus =
+      selectedStatuses.value.length === 0 || selectedStatuses.value.includes(apartment.status)
+
+    return matchesRooms && matchesStatus
+  })
+})
+
+const toggleRoom = (rooms) => {
+  if (selectedRooms.value.includes(rooms)) {
+    selectedRooms.value = selectedRooms.value.filter((item) => item !== rooms)
+
+    return
+  }
+
+  selectedRooms.value.push(rooms)
+}
+
+const toggleStatus = (status) => {
+  if (selectedStatuses.value.includes(status)) {
+    selectedStatuses.value = selectedStatuses.value.filter((item) => item !== status)
+
+    return
+  }
+
+  selectedStatuses.value.push(status)
+}
 </script>
 
 <template>
@@ -41,10 +103,17 @@ const isOpen = ref(false)
           <span class="apartment-search__label"> Liczba pokoi </span>
 
           <div class="apartment-search__options">
-            <button type="button">1</button>
-            <button type="button">2</button>
-            <button type="button">3</button>
-            <button type="button">4+</button>
+            <button
+              v-for="rooms in roomOptions"
+              :key="rooms"
+              type="button"
+              :class="{
+                'apartment-search__option--active': selectedRooms.includes(rooms),
+              }"
+              @click="toggleRoom(rooms)"
+            >
+              {{ rooms === 4 ? '4+' : rooms }}
+            </button>
           </div>
         </div>
 
@@ -52,10 +121,27 @@ const isOpen = ref(false)
           <span class="apartment-search__label"> Status </span>
 
           <div class="apartment-search__options apartment-search__options--wide">
-            <button type="button">Dostępne</button>
-
-            <button type="button">Zarezerwowane</button>
+            <button
+              v-for="status in statusOptions"
+              :key="status.value"
+              type="button"
+              :class="{
+                'apartment-search__option--active': selectedStatuses.includes(status.value),
+              }"
+              @click="toggleStatus(status.value)"
+            >
+              {{ status.label }}
+            </button>
           </div>
+        </div>
+
+        <div class="apartment-search__results">
+          <span>Znaleziono</span>
+
+          <strong>
+            {{ filteredApartments.length }}
+            mieszkań
+          </strong>
         </div>
 
         <button type="button" class="apartment-search__submit">
@@ -245,5 +331,32 @@ const isOpen = ref(false)
 .search-panel-leave-to {
   transform: translateY(-8px);
   opacity: 0;
+}
+
+.apartment-search__option--active {
+  border-color: #899c80 !important;
+  background: #eef2eb !important;
+  color: #34452f !important;
+  font-weight: 600;
+}
+
+.apartment-search__results {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #ebe7df;
+}
+
+.apartment-search__results span {
+  color: #8b8f86;
+  font-size: 9px;
+}
+
+.apartment-search__results strong {
+  color: #34452f;
+  font-size: 11px;
+  font-weight: 600;
 }
 </style>
