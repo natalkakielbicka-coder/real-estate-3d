@@ -67,7 +67,7 @@ const handleApartmentHoverEnd = () => {
     <PresentationIntro @reset="handleResetView" />
 
     <section class="presentation__stage">
-      <PresentationSceneToolbar @reset="handleResetView" />
+      <PresentationSceneToolbar />
 
       <div
         class="presentation__scene"
