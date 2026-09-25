@@ -97,19 +97,32 @@ const initScene = () => {
 }
 
 const createGround = () => {
-  const geometry = new THREE.PlaneGeometry(20, 20)
+  const groundGeometry = new THREE.PlaneGeometry(20, 20)
 
-  const material = new THREE.MeshStandardMaterial({
-    color: 0xe8e4da,
+  const groundMaterial = new THREE.MeshStandardMaterial({
+    color: 0xcfd8c4,
     roughness: 1,
   })
 
-  ground = new THREE.Mesh(geometry, material)
+  ground = new THREE.Mesh(groundGeometry, groundMaterial)
 
   ground.rotation.x = -Math.PI / 2
-  ground.position.y = -0.01
+  ground.position.y = -0.03
 
   scene.add(ground)
+
+  const platformGeometry = new THREE.BoxGeometry(buildingWidth + 1.4, 0.08, buildingDepth + 1.4)
+
+  const platformMaterial = new THREE.MeshStandardMaterial({
+    color: 0xcfd8c4,
+    roughness: 0.95,
+  })
+
+  const platform = new THREE.Mesh(platformGeometry, platformMaterial)
+
+  platform.position.y = 0
+
+  scene.add(platform)
 }
 
 const updateFloorAppearance = (floor) => {
