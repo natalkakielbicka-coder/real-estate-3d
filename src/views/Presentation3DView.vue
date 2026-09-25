@@ -5,8 +5,6 @@ import PresentationPanel from '../components/presentation/PresentationPanel.vue'
 import PresentationHeader from '../components/presentation/PresentationHeader.vue'
 import PresentationIntro from '@/components/presentation/PresentationIntro.vue'
 import PresentationSceneToolbar from '../components/presentation/PresentationSceneToolbar.vue'
-import PresentationFloorSelector from '../components/presentation/PresentationFloorSelector.vue'
-import PresentationApartmentSearch from '../components/presentation/PresentationApartmentSearch.vue'
 
 const selectedFloor = ref(null)
 const selectedApartment = ref(null)
@@ -131,7 +129,7 @@ const handleFloorSelectorSelect = (floorNumber) => {
   bottom: 24px;
   left: 28px;
   z-index: 10;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid #e4e0d7;
   border-radius: 18px;
   background: #ffffff;

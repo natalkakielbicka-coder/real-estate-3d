@@ -70,6 +70,7 @@ const isOpen = ref(false)
 <style scoped>
 .apartment-search {
   position: relative;
+  z-index: 50;
 }
 
 .apartment-search__trigger {
@@ -91,10 +92,21 @@ const isOpen = ref(false)
 
 .apartment-search__trigger:hover {
   border-color: #bec6b7;
+  background: #f7f8f5;
   color: #2f352c;
 }
 
-.apartment-search__trigger--active {
+.apartment-search__trigger:focus,
+.apartment-search__trigger:focus-visible {
+  outline: none;
+  border-color: #899c80;
+  background: #ffffff;
+  color: #34452f;
+}
+
+.apartment-search__trigger--active,
+.apartment-search__trigger--active:hover,
+.apartment-search__trigger--active:focus {
   border-color: #899c80;
   background: #34452f;
   color: #ffffff;
@@ -115,6 +127,7 @@ const isOpen = ref(false)
   background: rgba(255, 255, 255, 0.98);
   box-shadow: 0 20px 50px rgba(62, 54, 43, 0.14);
   backdrop-filter: blur(14px);
+  z-index: 100;
 }
 
 .apartment-search__heading {
