@@ -63,7 +63,7 @@ const initScene = () => {
 
   scene = new THREE.Scene()
 
-  scene.background = new THREE.Color(0x101210)
+  scene.background = new THREE.Color(0xf4f1e9)
 
   camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100)
 
@@ -100,7 +100,7 @@ const createGround = () => {
   const geometry = new THREE.PlaneGeometry(20, 20)
 
   const material = new THREE.MeshStandardMaterial({
-    color: 0x1a1d1a,
+    color: 0xe8e4da,
     roughness: 1,
   })
 
@@ -626,8 +626,8 @@ const createBuilding = () => {
     const geometry = new THREE.BoxGeometry(buildingWidth, floorHeight, buildingDepth)
 
     const material = new THREE.MeshStandardMaterial({
-      color: i % 2 === 0 ? 0xb8beb9 : 0xaeb5b0,
-      roughness: 0.75,
+      color: i % 2 === 0 ? 0xd8dcd5 : 0xcbd1c8,
+      roughness: 0.72,
     })
 
     const floor = new THREE.Mesh(geometry, material)
@@ -653,8 +653,8 @@ const createBuilding = () => {
   const roofGeometry = new THREE.BoxGeometry(buildingWidth + 0.12, 0.16, buildingDepth + 0.12)
 
   const roofMaterial = new THREE.MeshStandardMaterial({
-    color: 0x555d57,
-    roughness: 0.9,
+    color: 0x9da69a,
+    roughness: 0.85,
   })
 
   const roof = new THREE.Mesh(roofGeometry, roofMaterial)
@@ -667,15 +667,21 @@ const createBuilding = () => {
 }
 
 const createLights = () => {
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 2)
 
   scene.add(ambientLight)
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
+  const directionalLight = new THREE.DirectionalLight(0xfff9ed, 2.2)
 
-  directionalLight.position.set(5, 8, 5)
+  directionalLight.position.set(6, 9, 7)
 
   scene.add(directionalLight)
+
+  const fillLight = new THREE.DirectionalLight(0xdde5dc, 0.9)
+
+  fillLight.position.set(-5, 4, -4)
+
+  scene.add(fillLight)
 }
 
 const animate = () => {
