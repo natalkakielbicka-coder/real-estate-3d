@@ -52,155 +52,94 @@ defineEmits(['select-floor', 'select-apartment'])
     </div>
   </div>
 </template>
-
 <style scoped>
-.scene-toolbar__left {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  min-width: 0;
-}
-
-.scene-toolbar__right {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-shrink: 0;
-}
-.scene-toolbar__info {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-
-.scene-toolbar__icon {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: #f3f1eb;
-  color: #708066;
-}
-
-.scene-toolbar__icon svg {
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.4;
-}
-
-.scene-toolbar__info > div {
-  display: grid;
-  gap: 2px;
-}
-
-.scene-toolbar__info strong {
-  color: #30342d;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.scene-toolbar__info > div > span {
-  color: #969990;
-  font-size: 9px;
-}
-
-.scene-toolbar__legend {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.scene-toolbar__legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: #777b72;
-  font-size: 9px;
-}
-
-.scene-toolbar__dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-}
-
-.scene-toolbar__dot--available {
-  background: #6f9a70;
-}
-
-.scene-toolbar__dot--reserved {
-  background: #c4a66d;
-}
-
-.scene-toolbar__dot--sold {
-  background: #d17979;
-}
-
 .scene-toolbar {
+  position: relative;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  min-height: 68px;
-  padding: 10px 18px;
+  min-height: 56px;
+  padding: 8px 16px;
   border-bottom: 1px solid #ebe7de;
   background: #ffffff;
+}
+
+.scene-toolbar__left,
+.scene-toolbar__right {
+  display: flex;
+  align-items: center;
+}
+
+.scene-toolbar__left {
+  gap: 20px;
+  min-width: 0;
+}
+
+.scene-toolbar__right {
+  gap: 16px;
+  flex-shrink: 0;
 }
 
 .scene-toolbar__mode {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
+  flex-shrink: 0;
 }
 
 .scene-toolbar__mode > div {
   display: grid;
-  gap: 2px;
+  gap: 1px;
 }
 
 .scene-toolbar__mode strong {
   color: #30342d;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .scene-toolbar__mode span:last-child {
   color: #969990;
-  font-size: 9px;
+  font-size: 8px;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .scene-toolbar__icon {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 7px;
   background: #f3f1eb;
   color: #708066;
+  font-size: 13px;
 }
 
 .scene-toolbar__legend {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .scene-toolbar__legend-item {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   color: #777b72;
-  font-size: 9px;
+  font-size: 8px;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .scene-toolbar__dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
   border-radius: 50%;
 }
 
@@ -216,14 +155,54 @@ defineEmits(['select-floor', 'select-apartment'])
   background: #d17979;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1199px) {
   .scene-toolbar {
-    min-height: 58px;
-    padding: 9px 12px;
+    gap: 16px;
   }
 
-  .scene-toolbar__info > div > span {
+  .scene-toolbar__left {
+    gap: 14px;
+  }
+
+  .scene-toolbar__right {
+    gap: 12px;
+  }
+
+  .scene-toolbar__mode span:last-child {
     display: none;
+  }
+}
+
+@media (max-width: 991px) {
+  .scene-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .scene-toolbar__left,
+  .scene-toolbar__right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .scene-toolbar__right {
+    padding-top: 8px;
+    border-top: 1px solid #f0ede6;
+  }
+}
+
+@media (max-width: 767px) {
+  .scene-toolbar {
+    gap: 10px;
+    min-height: auto;
+    padding: 10px 12px;
+  }
+
+  .scene-toolbar__mode {
+    display: none;
+  }
+
+  .scene-toolbar__left {
+    overflow-x: auto;
   }
 
   .scene-toolbar__legend {
@@ -232,6 +211,11 @@ defineEmits(['select-floor', 'select-apartment'])
 
   .scene-toolbar__legend-item {
     font-size: 0;
+  }
+
+  .scene-toolbar__dot {
+    width: 8px;
+    height: 8px;
   }
 }
 </style>

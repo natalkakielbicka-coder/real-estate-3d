@@ -222,6 +222,7 @@ const handleApartmentSelect = (apartment) => {
   font-size: 10px;
   font-weight: 500;
   cursor: pointer;
+  margin-top: 7px;
 }
 
 .apartment-search__trigger:hover {
