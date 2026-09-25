@@ -1,35 +1,54 @@
+<script setup>
+import PresentationFloorSelector from './PresentationFloorSelector.vue'
+import PresentationApartmentSearch from './PresentationApartmentSearch.vue'
+
+defineProps({
+  selectedFloor: {
+    type: Object,
+    default: null,
+  },
+})
+
+defineEmits(['select-floor'])
+</script>
+
 <template>
   <div class="scene-toolbar">
-    <div class="scene-toolbar__info">
-      <span class="scene-toolbar__icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 3 4.5 7.2v9.6L12 21l7.5-4.2V7.2L12 3Z" />
-          <path d="M4.5 7.2 12 11.5l7.5-4.3" />
-          <path d="M12 11.5V21" />
-        </svg>
-      </span>
+    <div class="scene-toolbar__left">
+      <div class="scene-toolbar__mode">
+        <span class="scene-toolbar__icon">◇</span>
 
-      <div>
-        <strong>Interaktywny model</strong>
-        <span>Obróć model i wybierz kondygnację</span>
+        <div>
+          <strong>Interaktywny model</strong>
+          <span>Wybierz kondygnację lub kliknij budynek</span>
+        </div>
       </div>
+
+      <PresentationFloorSelector
+        :selected-floor="selectedFloor"
+        @select-floor="$emit('select-floor', $event)"
+      />
     </div>
 
-    <div class="scene-toolbar__legend">
-      <span class="scene-toolbar__legend-item">
-        <i class="scene-toolbar__dot scene-toolbar__dot--available"></i>
-        Dostępne
-      </span>
+    <div class="scene-toolbar__right">
+      <PresentationApartmentSearch />
 
-      <span class="scene-toolbar__legend-item">
-        <i class="scene-toolbar__dot scene-toolbar__dot--reserved"></i>
-        Zarezerwowane
-      </span>
+      <div class="scene-toolbar__legend">
+        <span class="scene-toolbar__legend-item">
+          <i class="scene-toolbar__dot scene-toolbar__dot--available"></i>
+          Dostępne
+        </span>
 
-      <span class="scene-toolbar__legend-item">
-        <i class="scene-toolbar__dot scene-toolbar__dot--sold"></i>
-        Sprzedane
-      </span>
+        <span class="scene-toolbar__legend-item">
+          <i class="scene-toolbar__dot scene-toolbar__dot--reserved"></i>
+          Zarezerwowane
+        </span>
+
+        <span class="scene-toolbar__legend-item">
+          <i class="scene-toolbar__dot scene-toolbar__dot--sold"></i>
+          Sprzedane
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -41,11 +60,24 @@
   justify-content: space-between;
   gap: 24px;
   min-height: 64px;
-  padding: 10px 20px;
+  padding: 10px 18px;
   border-bottom: 1px solid #ebe7de;
   background: #ffffff;
 }
 
+.scene-toolbar__left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-width: 0;
+}
+
+.scene-toolbar__right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+}
 .scene-toolbar__info {
   display: flex;
   align-items: center;
@@ -98,6 +130,81 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
+  color: #777b72;
+  font-size: 9px;
+}
+
+.scene-toolbar__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.scene-toolbar__dot--available {
+  background: #6f9a70;
+}
+
+.scene-toolbar__dot--reserved {
+  background: #c4a66d;
+}
+
+.scene-toolbar__dot--sold {
+  background: #d17979;
+}
+
+.scene-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 68px;
+  padding: 10px 18px;
+  border-bottom: 1px solid #ebe7de;
+  background: #ffffff;
+}
+
+.scene-toolbar__mode {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.scene-toolbar__mode > div {
+  display: grid;
+  gap: 2px;
+}
+
+.scene-toolbar__mode strong {
+  color: #30342d;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.scene-toolbar__mode span:last-child {
+  color: #969990;
+  font-size: 9px;
+}
+
+.scene-toolbar__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f3f1eb;
+  color: #708066;
+}
+
+.scene-toolbar__legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.scene-toolbar__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: #777b72;
   font-size: 9px;
 }

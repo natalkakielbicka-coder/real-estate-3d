@@ -6,6 +6,7 @@ import PresentationHeader from '../components/presentation/PresentationHeader.vu
 import PresentationIntro from '@/components/presentation/PresentationIntro.vue'
 import PresentationSceneToolbar from '../components/presentation/PresentationSceneToolbar.vue'
 import PresentationFloorSelector from '../components/presentation/PresentationFloorSelector.vue'
+import PresentationApartmentSearch from '../components/presentation/PresentationApartmentSearch.vue'
 
 const selectedFloor = ref(null)
 const selectedApartment = ref(null)
@@ -72,9 +73,7 @@ const handleFloorSelectorSelect = (floorNumber) => {
     <PresentationIntro @reset="handleResetView" />
 
     <section class="presentation__stage">
-      <PresentationSceneToolbar />
-
-      <PresentationFloorSelector
+      <PresentationSceneToolbar
         :selected-floor="selectedFloor"
         @select-floor="handleFloorSelectorSelect"
       />
