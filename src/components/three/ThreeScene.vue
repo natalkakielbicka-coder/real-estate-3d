@@ -43,6 +43,7 @@ let controlsTargetPosition = null
 let cameraPositionBeforeApartment = null
 let controlsTargetBeforeApartment = null
 let resizeObserver
+let searchMatchedApartmentIds = null
 const dragThreshold = 6
 const raycaster = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
@@ -269,6 +270,18 @@ const restoreCameraBeforeApartment = () => {
   controlsTargetBeforeApartment = null
 }
 
+const setSearchMatches = (apartmentIds) => {
+  searchMatchedApartmentIds = new Set(apartmentIds)
+
+  updateApartmentsSelection()
+}
+
+const clearSearchMatches = () => {
+  searchMatchedApartmentIds = null
+
+  updateApartmentsSelection()
+}
+
 const clearSelectedApartment = () => {
   if (!selectedApartmentMesh) {
     return
@@ -349,6 +362,8 @@ const showApartmentsForFloor = (floor) => {
   })
 
   building.add(apartmentPreview)
+
+  updateApartmentsSelection()
 }
 
 const clearSelectedFloor = () => {
@@ -399,7 +414,16 @@ const updateApartmentsSelection = () => {
   apartmentPreview.children.forEach((apartmentMesh) => {
     const isSelected = apartmentMesh === selectedApartmentMesh
 
-    apartmentMesh.material.opacity = selectedApartmentMesh ? (isSelected ? 1 : 0.4) : 1
+    const matchesSearch =
+      !searchMatchedApartmentIds || searchMatchedApartmentIds.has(apartmentMesh.userData.id)
+
+    let opacity = matchesSearch ? 1 : 0.18
+
+    if (selectedApartmentMesh) {
+      opacity = isSelected ? 1 : Math.min(opacity, 0.4)
+    }
+
+    apartmentMesh.material.opacity = opacity
 
     if (isSelected) {
       apartmentMesh.material.emissive.set(0x5a4936)
@@ -509,6 +533,8 @@ defineExpose({
   hoverApartmentById,
   clearApartmentHover,
   selectFloorByNumber,
+  setSearchMatches,
+  clearSearchMatches,
 })
 
 const handlePointerMove = (event) => {

@@ -70,6 +70,14 @@ const handleSearchApartmentSelect = (apartment) => {
 
   threeScene.value?.selectApartmentById?.(apartment.id)
 }
+
+const handleSearchResults = (apartmentIds) => {
+  threeScene.value?.setSearchMatches?.(apartmentIds)
+}
+
+const handleSearchClear = () => {
+  threeScene.value?.clearSearchMatches?.()
+}
 </script>
 
 <template>
@@ -83,6 +91,8 @@ const handleSearchApartmentSelect = (apartment) => {
         :selected-floor="selectedFloor"
         @select-floor="handleFloorSelectorSelect"
         @select-apartment="handleSearchApartmentSelect"
+        @filter-results="handleSearchResults"
+        @clear-filter-results="handleSearchClear"
       />
 
       <div

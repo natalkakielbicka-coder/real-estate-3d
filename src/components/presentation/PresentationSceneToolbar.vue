@@ -9,7 +9,7 @@ defineProps({
   },
 })
 
-defineEmits(['select-floor', 'select-apartment'])
+defineEmits(['select-floor', 'select-apartment', 'filter-results', 'clear-filter-results'])
 </script>
 
 <template>
@@ -31,7 +31,11 @@ defineEmits(['select-floor', 'select-apartment'])
     </div>
 
     <div class="scene-toolbar__right">
-      <PresentationApartmentSearch @select-apartment="$emit('select-apartment', $event)" />
+      <PresentationApartmentSearch
+        @select-apartment="$emit('select-apartment', $event)"
+        @filter-results="$emit('filter-results', $event)"
+        @clear-filter-results="$emit('clear-filter-results')"
+      />
 
       <div class="scene-toolbar__legend">
         <span class="scene-toolbar__legend-item">

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { buildings } from '../../data/buildings'
 
-const emit = defineEmits(['select-apartment'])
+const emit = defineEmits(['select-apartment', 'filter-results', 'clear-filter-results'])
 
 const isOpen = ref(false)
 const showResults = ref(false)
@@ -91,6 +91,11 @@ const toggleStatus = (status) => {
 
 const handleSubmit = () => {
   showResults.value = true
+
+  emit(
+    'filter-results',
+    filteredApartments.value.map((apartment) => apartment.id),
+  )
 }
 
 const handleApartmentSelect = (apartment) => {
@@ -111,6 +116,8 @@ const resetFilters = () => {
   maxPrice.value = ''
 
   showResults.value = false
+
+  emit('clear-filter-results')
 }
 </script>
 
