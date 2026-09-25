@@ -251,11 +251,11 @@ const handleApartmentSelect = (apartment) => {
               <div>
                 <strong>{{ apartment.number }}</strong>
 
-                <span>
+                <span class="apartment-search__meta">
                   {{ apartment.rooms }}
                   {{ apartment.rooms === 1 ? 'pokój' : 'pokoje' }}
                   ·
-                  {{ apartment.area }} m²
+                  {{ apartment.area }} m² · {{ apartment.price.toLocaleString('pl-PL') }} zł
                 </span>
               </div>
 
@@ -598,5 +598,12 @@ const handleApartmentSelect = (apartment) => {
   flex-shrink: 0;
   color: #989c93;
   font-size: 8px;
+}
+
+.apartment-search__meta {
+  display: block;
+  color: #8a8e85;
+  font-size: 9px;
+  line-height: 1.3;
 }
 </style>
