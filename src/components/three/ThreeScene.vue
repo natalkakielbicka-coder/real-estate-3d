@@ -76,6 +76,9 @@ const initScene = () => {
     antialias: true,
   })
 
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
   renderer.setSize(container.clientWidth, container.clientHeight)
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -106,6 +109,8 @@ const createGround = () => {
 
   ground = new THREE.Mesh(groundGeometry, groundMaterial)
 
+  ground.receiveShadow = true
+
   ground.rotation.x = -Math.PI / 2
   ground.position.y = -0.03
 
@@ -119,6 +124,9 @@ const createGround = () => {
   })
 
   const platform = new THREE.Mesh(platformGeometry, platformMaterial)
+
+  platform.receiveShadow = true
+  platform.castShadow = false
 
   platform.position.y = 0
 
@@ -262,6 +270,9 @@ const showApartmentsForFloor = (floor) => {
     })
 
     const apartmentMesh = new THREE.Mesh(geometry, material)
+
+    apartmentMesh.castShadow = true
+    apartmentMesh.receiveShadow = true
 
     const targetX = -buildingWidth / 2 + gap + apartmentWidth / 2 + column * (apartmentWidth + gap)
 
@@ -645,6 +656,9 @@ const createBuilding = () => {
 
     const floor = new THREE.Mesh(geometry, material)
 
+    floor.castShadow = true
+    floor.receiveShadow = true
+
     floor.name = `floor-${i}`
 
     floor.userData = {
@@ -672,6 +686,9 @@ const createBuilding = () => {
 
   const roof = new THREE.Mesh(roofGeometry, roofMaterial)
 
+  roof.castShadow = true
+  roof.receiveShadow = true
+
   roof.position.y = floorCount * (floorHeight + floorGap) + 0.02
 
   building.add(roof)
@@ -680,7 +697,7 @@ const createBuilding = () => {
 }
 
 const createLights = () => {
-  const ambientLight = new THREE.AmbientLight(0xffffff, 2)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.8)
 
   scene.add(ambientLight)
 
@@ -688,9 +705,23 @@ const createLights = () => {
 
   directionalLight.position.set(6, 9, 7)
 
+  directionalLight.castShadow = true
+
+  directionalLight.shadow.mapSize.width = 2048
+  directionalLight.shadow.mapSize.height = 2048
+
+  directionalLight.shadow.camera.near = 1
+  directionalLight.shadow.camera.far = 25
+  directionalLight.shadow.camera.left = -8
+  directionalLight.shadow.camera.right = 8
+  directionalLight.shadow.camera.top = 8
+  directionalLight.shadow.camera.bottom = -8
+
+  directionalLight.shadow.bias = -0.0005
+
   scene.add(directionalLight)
 
-  const fillLight = new THREE.DirectionalLight(0xdde5dc, 0.9)
+  const fillLight = new THREE.DirectionalLight(0xdde5dc, 0.8)
 
   fillLight.position.set(-5, 4, -4)
 
