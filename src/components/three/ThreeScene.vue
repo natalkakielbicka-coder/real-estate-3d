@@ -42,6 +42,7 @@ let cameraTargetPosition = null
 let controlsTargetPosition = null
 let cameraPositionBeforeApartment = null
 let controlsTargetBeforeApartment = null
+let resizeObserver
 const dragThreshold = 6
 const raycaster = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
@@ -871,6 +872,36 @@ const animate = () => {
   renderer.render(scene, camera)
 }
 
+const updateCameraForViewport = () => {
+  const container = sceneContainer.value
+
+  if (!container || !camera || !controls) {
+    return
+  }
+
+  const width = container.clientWidth
+
+  let distance = 9.5
+
+  if (width < 1200) {
+    distance = 10.5
+  }
+
+  if (width < 900) {
+    distance = 11.5
+  }
+
+  if (width < 700) {
+    distance = 12.5
+  }
+
+  const direction = camera.position.clone().sub(controls.target).normalize()
+
+  camera.position.copy(controls.target.clone().add(direction.multiplyScalar(distance)))
+
+  controls.update()
+}
+
 const handleResize = () => {
   const container = sceneContainer.value
 
@@ -878,11 +909,15 @@ const handleResize = () => {
     return
   }
 
-  camera.aspect = container.clientWidth / container.clientHeight
+  const width = container.clientWidth
+  const height = container.clientHeight
 
+  camera.aspect = width / height
   camera.updateProjectionMatrix()
 
-  renderer.setSize(container.clientWidth, container.clientHeight, false)
+  renderer.setSize(width, height, false)
+
+  updateCameraForViewport()
 }
 
 onMounted(() => {
@@ -891,6 +926,12 @@ onMounted(() => {
   createBuilding()
   createLights()
   animate()
+
+  resizeObserver = new ResizeObserver(() => {
+    handleResize()
+  })
+
+  resizeObserver.observe(sceneContainer.value)
 
   renderer.domElement.addEventListener('pointermove', handlePointerMove)
 
@@ -905,6 +946,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(animationFrameId)
+
+  resizeObserver?.disconnect()
 
   window.removeEventListener('resize', handleResize)
 
