@@ -131,6 +131,58 @@ const createGround = () => {
   platform.position.y = 0
 
   scene.add(platform)
+
+  const pathMaterial = new THREE.MeshStandardMaterial({
+    color: 0xd8d4ca,
+    roughness: 0.95,
+  })
+
+  const pathWidth = 0.45
+  const pathOffset = 0.7
+
+  const frontPath = new THREE.Mesh(
+    new THREE.BoxGeometry(buildingWidth + pathOffset * 2, 0.03, pathWidth),
+    pathMaterial,
+  )
+
+  frontPath.position.set(0, 0.015, buildingDepth / 2 + pathOffset)
+
+  frontPath.receiveShadow = true
+
+  scene.add(frontPath)
+
+  const backPath = new THREE.Mesh(
+    new THREE.BoxGeometry(buildingWidth + pathOffset * 2, 0.03, pathWidth),
+    pathMaterial,
+  )
+
+  backPath.position.set(0, 0.015, -(buildingDepth / 2 + pathOffset))
+
+  backPath.receiveShadow = true
+
+  scene.add(backPath)
+
+  const leftPath = new THREE.Mesh(
+    new THREE.BoxGeometry(pathWidth, 0.03, buildingDepth + pathOffset * 2),
+    pathMaterial,
+  )
+
+  leftPath.position.set(-(buildingWidth / 2 + pathOffset), 0.015, 0)
+
+  leftPath.receiveShadow = true
+
+  scene.add(leftPath)
+
+  const rightPath = new THREE.Mesh(
+    new THREE.BoxGeometry(pathWidth, 0.03, buildingDepth + pathOffset * 2),
+    pathMaterial,
+  )
+
+  rightPath.position.set(buildingWidth / 2 + pathOffset, 0.015, 0)
+
+  rightPath.receiveShadow = true
+
+  scene.add(rightPath)
 }
 
 const updateFloorAppearance = (floor) => {
