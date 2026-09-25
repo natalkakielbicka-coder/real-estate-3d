@@ -99,6 +99,19 @@ const handleApartmentSelect = (apartment) => {
   isOpen.value = false
   showResults.value = false
 }
+
+const resetFilters = () => {
+  selectedRooms.value = []
+  selectedStatuses.value = []
+
+  minArea.value = ''
+  maxArea.value = ''
+
+  minPrice.value = ''
+  maxPrice.value = ''
+
+  showResults.value = false
+}
 </script>
 
 <template>
@@ -230,6 +243,10 @@ const handleApartmentSelect = (apartment) => {
             mieszkań
           </strong>
         </div>
+
+        <button type="button" class="apartment-search__reset" @click="resetFilters">
+          Wyczyść filtry
+        </button>
 
         <button type="button" class="apartment-search__submit" @click="handleSubmit">
           Pokaż mieszkania
@@ -605,5 +622,24 @@ const handleApartmentSelect = (apartment) => {
   color: #8a8e85;
   font-size: 9px;
   line-height: 1.3;
+}
+
+.apartment-search__reset {
+  display: block;
+  margin-top: 10px;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #7f847b;
+  font: inherit;
+  font-size: 9px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.apartment-search__reset:hover {
+  color: #34452f;
 }
 </style>

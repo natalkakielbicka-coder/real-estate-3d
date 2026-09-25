@@ -77,7 +77,7 @@ const initScene = () => {
   })
 
   renderer.shadowMap.enabled = true
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+  renderer.shadowMap.type = THREE.PCFShadowMap
 
   renderer.setSize(container.clientWidth, container.clientHeight)
 
