@@ -471,6 +471,35 @@ const clearApartmentHover = () => {
   clearHoveredApartment()
 }
 
+const selectFloorByNumber = (floorNumber) => {
+  if (!building) {
+    return
+  }
+
+  const floor = building.children.find(
+    (child) => child.userData.type === 'floor' && child.userData.floorNumber === floorNumber,
+  )
+
+  if (!floor) {
+    return
+  }
+
+  if (selectedApartmentMesh) {
+    restoreCameraBeforeApartment()
+  }
+
+  const previousSelectedFloor = selectedFloor
+
+  selectedFloor = floor
+
+  showApartmentsForFloor(selectedFloor)
+
+  updateFloorAppearance(previousSelectedFloor)
+  updateFloorAppearance(selectedFloor)
+
+  emit('floor-selected', selectedFloor.userData)
+}
+
 defineExpose({
   clearSelectedFloor,
   clearSelectedApartment,
@@ -478,6 +507,7 @@ defineExpose({
   selectApartmentById,
   hoverApartmentById,
   clearApartmentHover,
+  selectFloorByNumber,
 })
 
 const handlePointerMove = (event) => {

@@ -5,6 +5,7 @@ import PresentationPanel from '../components/presentation/PresentationPanel.vue'
 import PresentationHeader from '../components/presentation/PresentationHeader.vue'
 import PresentationIntro from '@/components/presentation/PresentationIntro.vue'
 import PresentationSceneToolbar from '../components/presentation/PresentationSceneToolbar.vue'
+import PresentationFloorSelector from '../components/presentation/PresentationFloorSelector.vue'
 
 const selectedFloor = ref(null)
 const selectedApartment = ref(null)
@@ -58,6 +59,10 @@ const handleApartmentHover = (apartment) => {
 const handleApartmentHoverEnd = () => {
   threeScene.value?.clearApartmentHover?.()
 }
+
+const handleFloorSelectorSelect = (floorNumber) => {
+  threeScene.value?.selectFloorByNumber?.(floorNumber)
+}
 </script>
 
 <template>
@@ -68,6 +73,11 @@ const handleApartmentHoverEnd = () => {
 
     <section class="presentation__stage">
       <PresentationSceneToolbar />
+
+      <PresentationFloorSelector
+        :selected-floor="selectedFloor"
+        @select-floor="handleFloorSelectorSelect"
+      />
 
       <div
         class="presentation__scene"
