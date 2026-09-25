@@ -10,6 +10,9 @@ const showResults = ref(false)
 const selectedRooms = ref([])
 const selectedStatuses = ref([])
 
+const minArea = ref('')
+const maxArea = ref('')
+
 const roomOptions = [1, 2, 3, 4]
 const statusOptions = [
   {
@@ -44,7 +47,11 @@ const filteredApartments = computed(() => {
     const matchesStatus =
       selectedStatuses.value.length === 0 || selectedStatuses.value.includes(apartment.status)
 
-    return matchesRooms && matchesStatus
+    const matchesMinArea = !minArea.value || apartment.area >= Number(minArea.value)
+
+    const matchesMaxArea = !maxArea.value || apartment.area <= Number(maxArea.value)
+
+    return matchesRooms && matchesStatus && matchesMinArea && matchesMaxArea
   })
 })
 
@@ -128,6 +135,32 @@ const handleApartmentSelect = (apartment) => {
             >
               {{ rooms === 4 ? '4+' : rooms }}
             </button>
+          </div>
+        </div>
+
+        <div class="apartment-search__section">
+          <span class="apartment-search__label"> Powierzchnia </span>
+
+          <div class="apartment-search__range">
+            <label>
+              <span>Od</span>
+
+              <div>
+                <input v-model="minArea" type="number" min="0" placeholder="30" />
+
+                <span>m²</span>
+              </div>
+            </label>
+
+            <label>
+              <span>Do</span>
+
+              <div>
+                <input v-model="maxArea" type="number" min="0" placeholder="80" />
+
+                <span>m²</span>
+              </div>
+            </label>
           </div>
         </div>
 
@@ -481,5 +514,49 @@ const handleApartmentSelect = (apartment) => {
   color: #8a8e85;
   font-size: 10px;
   line-height: 1.5;
+}
+
+.apartment-search__range {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.apartment-search__range label {
+  display: grid;
+  gap: 5px;
+}
+
+.apartment-search__range label > span {
+  color: #9a9d95;
+  font-size: 8px;
+}
+
+.apartment-search__range label > div {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #e4e1d9;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.apartment-search__range input {
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #41463d;
+  font: inherit;
+  font-size: 10px;
+}
+
+.apartment-search__range label > div > span {
+  flex-shrink: 0;
+  color: #989c93;
+  font-size: 8px;
 }
 </style>
