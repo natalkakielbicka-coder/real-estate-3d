@@ -13,6 +13,9 @@ const selectedStatuses = ref([])
 const minArea = ref('')
 const maxArea = ref('')
 
+const minPrice = ref('')
+const maxPrice = ref('')
+
 const roomOptions = [1, 2, 3, 4]
 const statusOptions = [
   {
@@ -51,7 +54,18 @@ const filteredApartments = computed(() => {
 
     const matchesMaxArea = !maxArea.value || apartment.area <= Number(maxArea.value)
 
-    return matchesRooms && matchesStatus && matchesMinArea && matchesMaxArea
+    const matchesMinPrice = !minPrice.value || apartment.price >= Number(minPrice.value)
+
+    const matchesMaxPrice = !maxPrice.value || apartment.price <= Number(maxPrice.value)
+
+    return (
+      matchesRooms &&
+      matchesStatus &&
+      matchesMinArea &&
+      matchesMaxArea &&
+      matchesMinPrice &&
+      matchesMaxPrice
+    )
   })
 })
 
@@ -159,6 +173,32 @@ const handleApartmentSelect = (apartment) => {
                 <input v-model="maxArea" type="number" min="0" placeholder="80" />
 
                 <span>m²</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="apartment-search__section">
+          <span class="apartment-search__label"> Cena </span>
+
+          <div class="apartment-search__range">
+            <label>
+              <span>Od</span>
+
+              <div>
+                <input v-model="minPrice" type="number" min="0" step="10000" placeholder="400000" />
+
+                <span>zł</span>
+              </div>
+            </label>
+
+            <label>
+              <span>Do</span>
+
+              <div>
+                <input v-model="maxPrice" type="number" min="0" step="10000" placeholder="800000" />
+
+                <span>zł</span>
               </div>
             </label>
           </div>
