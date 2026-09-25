@@ -9,7 +9,7 @@ defineProps({
   },
 })
 
-defineEmits(['select-floor'])
+defineEmits(['select-floor', 'select-apartment'])
 </script>
 
 <template>
@@ -31,7 +31,7 @@ defineEmits(['select-floor'])
     </div>
 
     <div class="scene-toolbar__right">
-      <PresentationApartmentSearch />
+      <PresentationApartmentSearch @select-apartment="$emit('select-apartment', $event)" />
 
       <div class="scene-toolbar__legend">
         <span class="scene-toolbar__legend-item">

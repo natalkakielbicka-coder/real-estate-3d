@@ -2,7 +2,10 @@
 import { computed, ref } from 'vue'
 import { buildings } from '../../data/buildings'
 
+const emit = defineEmits(['select-apartment'])
+
 const isOpen = ref(false)
+const showResults = ref(false)
 
 const selectedRooms = ref([])
 const selectedStatuses = ref([])
@@ -63,6 +66,17 @@ const toggleStatus = (status) => {
   }
 
   selectedStatuses.value.push(status)
+}
+
+const handleSubmit = () => {
+  showResults.value = true
+}
+
+const handleApartmentSelect = (apartment) => {
+  emit('select-apartment', apartment)
+
+  isOpen.value = false
+  showResults.value = false
 }
 </script>
 
@@ -144,10 +158,44 @@ const toggleStatus = (status) => {
           </strong>
         </div>
 
-        <button type="button" class="apartment-search__submit">
+        <button type="button" class="apartment-search__submit" @click="handleSubmit">
           Pokaż mieszkania
           <span>→</span>
         </button>
+
+        <div v-if="showResults" class="apartment-search__apartments">
+          <span class="apartment-search__apartments-title"> Pasujące mieszkania </span>
+
+          <div v-if="filteredApartments.length" class="apartment-search__apartments-list">
+            <button
+              v-for="apartment in filteredApartments"
+              :key="apartment.id"
+              type="button"
+              class="apartment-search__apartment"
+              :disabled="apartment.status === 'sold'"
+              @click="handleApartmentSelect(apartment)"
+            >
+              <div>
+                <strong>{{ apartment.number }}</strong>
+
+                <span>
+                  {{ apartment.rooms }}
+                  {{ apartment.rooms === 1 ? 'pokój' : 'pokoje' }}
+                  ·
+                  {{ apartment.area }} m²
+                </span>
+              </div>
+
+              <span class="apartment-search__floor">
+                {{ apartment.floorNumber === 0 ? 'Parter' : `Piętro ${apartment.floorNumber}` }}
+              </span>
+            </button>
+          </div>
+
+          <p v-else class="apartment-search__empty">
+            Brak mieszkań spełniających wybrane kryteria.
+          </p>
+        </div>
       </div>
     </Transition>
   </div>
@@ -358,5 +406,79 @@ const toggleStatus = (status) => {
   color: #34452f;
   font-size: 11px;
   font-weight: 600;
+}
+
+.apartment-search__apartments {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #ebe7df;
+}
+
+.apartment-search__apartments-title {
+  display: block;
+  margin-bottom: 10px;
+  color: #83877e;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.apartment-search__apartments-list {
+  display: grid;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.apartment-search__apartment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid #e7e3da;
+  border-radius: 8px;
+  background: #ffffff;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.apartment-search__apartment:hover:not(:disabled) {
+  border-color: #aeb9a6;
+  background: #f7f9f5;
+}
+
+.apartment-search__apartment:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.apartment-search__apartment strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #343931;
+  font-size: 11px;
+}
+
+.apartment-search__apartment div span {
+  color: #8a8e85;
+  font-size: 9px;
+}
+
+.apartment-search__floor {
+  flex-shrink: 0;
+  color: #697263;
+  font-size: 8px;
+}
+
+.apartment-search__empty {
+  margin: 0;
+  color: #8a8e85;
+  font-size: 10px;
+  line-height: 1.5;
 }
 </style>

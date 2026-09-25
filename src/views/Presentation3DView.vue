@@ -62,6 +62,14 @@ const handleApartmentHoverEnd = () => {
 const handleFloorSelectorSelect = (floorNumber) => {
   threeScene.value?.selectFloorByNumber?.(floorNumber)
 }
+
+const handleSearchApartmentSelect = (apartment) => {
+  threeScene.value?.selectFloorByNumber?.(apartment.floorNumber)
+
+  selectedApartment.value = apartment
+
+  threeScene.value?.selectApartmentById?.(apartment.id)
+}
 </script>
 
 <template>
@@ -74,6 +82,7 @@ const handleFloorSelectorSelect = (floorNumber) => {
       <PresentationSceneToolbar
         :selected-floor="selectedFloor"
         @select-floor="handleFloorSelectorSelect"
+        @select-apartment="handleSearchApartmentSelect"
       />
 
       <div
