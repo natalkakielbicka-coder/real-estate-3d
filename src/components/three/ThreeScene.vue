@@ -45,6 +45,13 @@ let controlsTargetBeforeApartment = null
 let resizeObserver
 let searchMatchedApartmentIds = null
 const dragThreshold = 6
+const cameraFocusDistance = 9.5
+const cameraAnimationSpeed = 0.055
+const cameraAnimationThreshold = 0.02
+const unmatchedApartmentOpacity = 0.18
+const unselectedApartmentOpacity = 0.4
+const apartmentRevealSpeed = 0.045
+
 const raycaster = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
 const floorHeight = 0.7
@@ -417,10 +424,10 @@ const updateApartmentsSelection = () => {
     const matchesSearch =
       !searchMatchedApartmentIds || searchMatchedApartmentIds.has(apartmentMesh.userData.id)
 
-    let opacity = matchesSearch ? 1 : 0.18
+    let opacity = matchesSearch ? 1 : unmatchedApartmentOpacity
 
     if (selectedApartmentMesh) {
-      opacity = isSelected ? 1 : Math.min(opacity, 0.4)
+      opacity = isSelected ? 1 : Math.min(opacity, unselectedApartmentOpacity)
     }
 
     apartmentMesh.material.opacity = opacity
@@ -457,7 +464,7 @@ const selectApartmentMesh = (apartmentMesh) => {
     .sub(controlsTargetBeforeApartment)
     .normalize()
 
-  cameraTargetPosition = apartmentTarget.clone().add(direction.multiplyScalar(9.5))
+  cameraTargetPosition = apartmentTarget.clone().add(direction.multiplyScalar(cameraFocusDistance))
   controlsTargetPosition = apartmentTarget
 
   updateApartmentsSelection()
@@ -826,13 +833,15 @@ const animate = () => {
   controls.update()
 
   if (cameraTargetPosition && controlsTargetPosition) {
-    camera.position.lerp(cameraTargetPosition, 0.055)
+    camera.position.lerp(cameraTargetPosition, cameraAnimationSpeed)
 
-    controls.target.lerp(controlsTargetPosition, 0.055)
+    controls.target.lerp(controlsTargetPosition, cameraAnimationSpeed)
 
-    const cameraFinished = camera.position.distanceTo(cameraTargetPosition) < 0.02
+    const cameraFinished =
+      camera.position.distanceTo(cameraTargetPosition) < cameraAnimationThreshold
 
-    const targetFinished = controls.target.distanceTo(controlsTargetPosition) < 0.02
+    const targetFinished =
+      controls.target.distanceTo(controlsTargetPosition) < cameraAnimationThreshold
 
     if (cameraFinished && targetFinished) {
       camera.position.copy(cameraTargetPosition)
@@ -846,7 +855,7 @@ const animate = () => {
   if (apartmentPreview) {
     apartmentPreview.children.forEach((apartmentMesh) => {
       if (apartmentMesh.userData.animationProgress < 1) {
-        apartmentMesh.userData.animationProgress += 0.045
+        apartmentMesh.userData.animationProgress += apartmentRevealSpeed
       }
 
       const rawProgress =
