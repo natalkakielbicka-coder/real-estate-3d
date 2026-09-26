@@ -537,6 +537,30 @@ defineExpose({
   clearSearchMatches,
 })
 
+const getInteractiveIntersection = (event) => {
+  const container = sceneContainer.value
+  const rect = container.getBoundingClientRect()
+
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+  raycaster.setFromCamera(pointer, camera)
+
+  const intersections = raycaster.intersectObjects(building.children, true)
+
+  const intersection = intersections.find((item) => {
+    const object = item.object
+    const type = object.userData.type
+
+    return object.visible && (type === 'apartment' || type === 'floor')
+  })
+
+  return {
+    intersection,
+    rect,
+  }
+}
+
 const handlePointerMove = (event) => {
   if (isPointerDown) {
     const distance = Math.hypot(event.clientX - pointerDownX, event.clientY - pointerDownY)
@@ -547,33 +571,7 @@ const handlePointerMove = (event) => {
     }
   }
 
-  const container = sceneContainer.value
-  const rect = container.getBoundingClientRect()
-
-  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-
-  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
-  raycaster.setFromCamera(pointer, camera)
-
-  const intersections = raycaster.intersectObjects(building.children, true)
-
-  if (intersections.length === 0) {
-    clearHoveredFloor()
-    clearHoveredApartment()
-    hideTooltip()
-
-    renderer.domElement.style.cursor = 'default'
-
-    return
-  }
-
-  const interactiveIntersection = intersections.find((intersection) => {
-    const object = intersection.object
-    const type = object.userData.type
-
-    return object.visible && (type === 'apartment' || type === 'floor')
-  })
+  const { intersection: interactiveIntersection, rect } = getInteractiveIntersection(event)
 
   if (!interactiveIntersection) {
     clearHoveredFloor()
@@ -692,22 +690,7 @@ const handleSceneClick = (event) => {
     return
   }
 
-  const container = sceneContainer.value
-  const rect = container.getBoundingClientRect()
-
-  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
-  raycaster.setFromCamera(pointer, camera)
-
-  const intersections = raycaster.intersectObjects(building.children, true)
-
-  const interactiveIntersection = intersections.find((intersection) => {
-    const object = intersection.object
-    const type = object.userData.type
-
-    return object.visible && (type === 'apartment' || type === 'floor')
-  })
+  const { intersection: interactiveIntersection } = getInteractiveIntersection(event)
 
   if (!interactiveIntersection) {
     return
