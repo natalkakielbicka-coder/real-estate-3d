@@ -159,7 +159,7 @@ const handleSearchClear = () => {
 }
 
 .presentation__scene--panel-open {
-  transform: none;
+  transform: translateX(-180px);
 }
 
 .panel-enter-active,
