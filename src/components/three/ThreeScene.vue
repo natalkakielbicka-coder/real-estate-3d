@@ -283,22 +283,22 @@ const selectApartmentMesh = (apartmentMesh) => {
   updateApartmentsSelection()
 }
 
-const selectApartmentById = (apartmentId) => {
+const findApartmentMeshById = (apartmentId) => {
   if (!apartmentPreview) {
-    return
+    return null
   }
 
-  const apartmentMesh = apartmentPreview.children.find((mesh) => mesh.userData.id === apartmentId)
+  return apartmentPreview.children.find((mesh) => mesh.userData.id === apartmentId)
+}
+
+const selectApartmentById = (apartmentId) => {
+  const apartmentMesh = findApartmentMeshById(apartmentId)
 
   selectApartmentMesh(apartmentMesh)
 }
 
 const hoverApartmentById = (apartmentId) => {
-  if (!apartmentPreview) {
-    return
-  }
-
-  const apartmentMesh = apartmentPreview.children.find((mesh) => mesh.userData.id === apartmentId)
+  const apartmentMesh = findApartmentMeshById(apartmentId)
 
   if (!apartmentMesh || apartmentMesh.userData.status === 'sold') {
     return

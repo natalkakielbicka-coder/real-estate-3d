@@ -32,7 +32,7 @@ export const useSceneTooltip = () => {
       tooltip.value.floor =
         selectedFloor?.userData.floorNumber === 0 ? 'Parter' : selectedFloor?.userData.floorNumber
 
-      tooltip.value.rooms = getRoomsLabel(object.userData.rooms)
+      tooltip.value.rooms = object.userData.rooms
       tooltip.value.price = formatPrice(object.userData.price)
     }
 
