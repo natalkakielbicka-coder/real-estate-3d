@@ -6,6 +6,7 @@ import { buildings } from '../../data/buildings'
 import { useCameraAnimation } from '../../composables/useCameraAnimation'
 import { useRaycastInteraction } from '../../composables/useRaycastInteraction'
 import { useSceneTooltip } from '../../composables/useSceneTooltip'
+import { useSceneHover } from '../../composables/useSceneHover'
 
 const sceneContainer = ref(null)
 
@@ -20,10 +21,19 @@ let controls
 let building
 let ground
 let animationFrameId
-let hoveredFloor = null
-let hoveredApartment = null
 let selectedFloor = null
 let selectedApartmentMesh = null
+const {
+  updateFloorAppearance,
+  clearHoveredFloor,
+  setHoveredFloor,
+  clearHoveredApartment,
+  setHoveredApartment,
+  isApartmentHovered,
+} = useSceneHover({
+  getSelectedFloor: () => selectedFloor,
+  getSelectedApartment: () => selectedApartmentMesh,
+})
 let apartmentPreview = null
 let apartmentPreviewFloor = null
 let isPointerDown = false
@@ -200,52 +210,6 @@ const createGround = () => {
   rightPath.receiveShadow = true
 
   scene.add(rightPath)
-}
-
-const updateFloorAppearance = (floor) => {
-  if (!floor) {
-    return
-  }
-
-  if (floor === selectedFloor) {
-    floor.material.emissive.set(0x75624a)
-    return
-  }
-
-  if (floor === hoveredFloor) {
-    floor.material.emissive.set(0x435047)
-    return
-  }
-
-  floor.material.emissive.set(0x000000)
-}
-
-const clearHoveredFloor = () => {
-  if (!hoveredFloor) {
-    return
-  }
-
-  const previousHoveredFloor = hoveredFloor
-
-  hoveredFloor = null
-
-  updateFloorAppearance(previousHoveredFloor)
-}
-
-const clearHoveredApartment = () => {
-  if (!hoveredApartment) {
-    return
-  }
-
-  if (hoveredApartment === selectedApartmentMesh) {
-    hoveredApartment.material.emissive.set(0x5a4936)
-    hoveredApartment.material.emissiveIntensity = 0.8
-  } else {
-    hoveredApartment.material.emissive.set(0x000000)
-    hoveredApartment.material.emissiveIntensity = 0
-  }
-
-  hoveredApartment = null
 }
 
 const clearApartmentPreview = () => {
@@ -430,7 +394,7 @@ const updateApartmentsSelection = () => {
     } else {
       apartmentMesh.material.emissiveIntensity = 0
 
-      if (apartmentMesh !== hoveredApartment) {
+      if (!isApartmentHovered(apartmentMesh)) {
         apartmentMesh.material.emissive.set(0x000000)
       }
     }
@@ -482,12 +446,7 @@ const hoverApartmentById = (apartmentId) => {
     return
   }
 
-  clearHoveredApartment()
-
-  hoveredApartment = apartmentMesh
-
-  hoveredApartment.material.emissive.set(0x303630)
-  hoveredApartment.material.emissiveIntensity = 0.8
+  setHoveredApartment(apartmentMesh)
 }
 
 const clearApartmentHover = () => {
@@ -572,15 +531,7 @@ const handlePointerMove = (event) => {
       return
     }
 
-    if (hoveredApartment !== hoveredObject) {
-      clearHoveredApartment()
-
-      hoveredApartment = hoveredObject
-
-      hoveredApartment.material.emissive.set(0x303630)
-
-      hoveredApartment.material.emissiveIntensity = 0.8
-    }
+    setHoveredApartment(hoveredObject)
 
     showTooltip(hoveredObject, event, rect, selectedFloor)
 
@@ -603,15 +554,7 @@ const handlePointerMove = (event) => {
 
   showTooltip(hoveredObject, event, rect, selectedFloor)
 
-  if (hoveredFloor === hoveredObject) {
-    return
-  }
-
-  clearHoveredFloor()
-
-  hoveredFloor = hoveredObject
-
-  updateFloorAppearance(hoveredFloor)
+  setHoveredFloor(hoveredObject)
 }
 
 const handlePointerDown = (event) => {
