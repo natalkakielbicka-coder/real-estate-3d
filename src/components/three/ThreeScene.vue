@@ -311,15 +311,7 @@ const clearApartmentHover = () => {
   clearHoveredApartment()
 }
 
-const selectFloorByNumber = (floorNumber) => {
-  if (!building) {
-    return
-  }
-
-  const floor = building.children.find(
-    (child) => child.userData.type === 'floor' && child.userData.floorNumber === floorNumber,
-  )
-
+const selectFloorMesh = (floor) => {
   if (!floor) {
     return
   }
@@ -338,6 +330,18 @@ const selectFloorByNumber = (floorNumber) => {
   updateFloorAppearance(selectedFloor)
 
   emit('floor-selected', selectedFloor.userData)
+}
+
+const selectFloorByNumber = (floorNumber) => {
+  if (!building) {
+    return
+  }
+
+  const floor = building.children.find(
+    (child) => child.userData.type === 'floor' && child.userData.floorNumber === floorNumber,
+  )
+
+  selectFloorMesh(floor)
 }
 
 defineExpose({
@@ -457,20 +461,7 @@ const handleSceneClick = (event) => {
 
   // Kliknięcie piętra
   if (clickedObject.userData.type === 'floor') {
-    if (selectedApartmentMesh) {
-      restorePreviousCameraPosition()
-    }
-
-    const previousSelectedFloor = selectedFloor
-
-    selectedFloor = clickedObject
-
-    showApartmentsForFloor(selectedFloor)
-
-    updateFloorAppearance(previousSelectedFloor)
-    updateFloorAppearance(selectedFloor)
-
-    emit('floor-selected', selectedFloor.userData)
+    selectFloorMesh(clickedObject)
   }
 }
 
