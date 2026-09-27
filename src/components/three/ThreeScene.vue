@@ -39,12 +39,13 @@ let isPointerDown = false
 let pointerDragged = false
 let pointerDownX = 0
 let pointerDownY = 0
-let cameraPositionBeforeApartment = null
-let controlsTargetBeforeApartment = null
 let resizeObserver
 let searchMatchedApartmentIds = null
 let setCameraTarget
 let updateCameraAnimation
+let saveCurrentCameraPosition
+let restorePreviousCameraPosition
+let clearSavedCameraPosition
 const dragThreshold = 6
 const cameraFocusDistance = 9.5
 const cameraAnimationSpeed = 0.055
@@ -114,6 +115,12 @@ const initScene = () => {
     animationSpeed: cameraAnimationSpeed,
     animationThreshold: cameraAnimationThreshold,
   })
+
+  setCameraTarget = cameraAnimation.setCameraTarget
+  updateCameraAnimation = cameraAnimation.updateCameraAnimation
+  saveCurrentCameraPosition = cameraAnimation.saveCurrentCameraPosition
+  restorePreviousCameraPosition = cameraAnimation.restorePreviousCameraPosition
+  clearSavedCameraPosition = cameraAnimation.clearSavedCameraPosition
 
   setCameraTarget = cameraAnimation.setCameraTarget
   updateCameraAnimation = cameraAnimation.updateCameraAnimation
@@ -276,17 +283,6 @@ const clearApartmentPreview = () => {
   selectedApartmentMesh = null
 }
 
-const restoreCameraBeforeApartment = () => {
-  if (!cameraPositionBeforeApartment || !controlsTargetBeforeApartment) {
-    return
-  }
-
-  setCameraTarget(cameraPositionBeforeApartment, controlsTargetBeforeApartment)
-
-  cameraPositionBeforeApartment = null
-  controlsTargetBeforeApartment = null
-}
-
 const setSearchMatches = (apartmentIds) => {
   searchMatchedApartmentIds = new Set(apartmentIds)
 
@@ -304,7 +300,7 @@ const clearSelectedApartment = () => {
     return
   }
 
-  restoreCameraBeforeApartment()
+  restorePreviousCameraPosition()
 
   selectedApartmentMesh = null
 
@@ -392,8 +388,7 @@ const clearSelectedFloor = () => {
 
   clearApartmentPreview()
 
-  cameraPositionBeforeApartment = null
-  controlsTargetBeforeApartment = null
+  clearSavedCameraPosition()
 
   selectedFloor = null
 
@@ -415,8 +410,7 @@ const resetView = () => {
 
   selectedApartmentMesh = null
 
-  cameraPositionBeforeApartment = null
-  controlsTargetBeforeApartment = null
+  clearSavedCameraPosition()
 
   setCameraTarget(defaultCameraPosition, defaultControlsTarget)
 }
@@ -459,18 +453,14 @@ const selectApartmentMesh = (apartmentMesh) => {
   }
 
   if (!selectedApartmentMesh) {
-    cameraPositionBeforeApartment = camera.position.clone()
-    controlsTargetBeforeApartment = controls.target.clone()
+    saveCurrentCameraPosition()
   }
 
   selectedApartmentMesh = apartmentMesh
 
   const apartmentTarget = apartmentMesh.position.clone()
 
-  const direction = cameraPositionBeforeApartment
-    .clone()
-    .sub(controlsTargetBeforeApartment)
-    .normalize()
+  const direction = camera.position.clone().sub(controls.target).normalize()
 
   const targetCameraPosition = apartmentTarget
     .clone()
@@ -528,7 +518,7 @@ const selectFloorByNumber = (floorNumber) => {
   }
 
   if (selectedApartmentMesh) {
-    restoreCameraBeforeApartment()
+    restorePreviousCameraPosition()
   }
 
   const previousSelectedFloor = selectedFloor
@@ -732,7 +722,7 @@ const handleSceneClick = (event) => {
   // Kliknięcie piętra
   if (clickedObject.userData.type === 'floor') {
     if (selectedApartmentMesh) {
-      restoreCameraBeforeApartment()
+      restorePreviousCameraPosition()
     }
 
     const previousSelectedFloor = selectedFloor
