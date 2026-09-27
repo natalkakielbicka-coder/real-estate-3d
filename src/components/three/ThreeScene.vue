@@ -15,6 +15,7 @@ import { useSceneResize } from '../../composables/useSceneResize'
 import { updateApartmentPreviewAnimation } from '../../utils/updateApartmentPreviewAnimation'
 import { disposeThreeScene } from '../../utils/disposeThreeScene'
 import { removeApartmentPreview } from '../../utils/removeApartmentPreview'
+import { getApartmentOpacity } from '../../utils/getApartmentOpacity'
 
 const sceneContainer = ref(null)
 
@@ -231,11 +232,13 @@ const updateApartmentsSelection = () => {
     const matchesSearch =
       !searchMatchedApartmentIds || searchMatchedApartmentIds.has(apartmentMesh.userData.id)
 
-    let opacity = matchesSearch ? 1 : unmatchedApartmentOpacity
-
-    if (selectedApartmentMesh) {
-      opacity = isSelected ? 1 : Math.min(opacity, unselectedApartmentOpacity)
-    }
+    const opacity = getApartmentOpacity({
+      isSelected,
+      hasSelectedApartment: Boolean(selectedApartmentMesh),
+      matchesSearch,
+      unmatchedOpacity: unmatchedApartmentOpacity,
+      unselectedOpacity: unselectedApartmentOpacity,
+    })
 
     apartmentMesh.material.opacity = opacity
 
