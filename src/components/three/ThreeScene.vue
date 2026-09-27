@@ -5,6 +5,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { buildings } from '../../data/buildings'
 import { getRoomsLabel, formatPrice } from '../../utils/apartmentFormatters'
 import { useCameraAnimation } from '../../composables/useCameraAnimation'
+import { useRaycastInteraction } from '../../composables/useRaycastInteraction'
 
 const sceneContainer = ref(null)
 const tooltip = ref({
@@ -46,6 +47,7 @@ let updateCameraAnimation
 let saveCurrentCameraPosition
 let restorePreviousCameraPosition
 let clearSavedCameraPosition
+let getInteractiveIntersection
 const dragThreshold = 6
 const cameraFocusDistance = 9.5
 const cameraAnimationSpeed = 0.055
@@ -54,8 +56,6 @@ const unmatchedApartmentOpacity = 0.18
 const unselectedApartmentOpacity = 0.4
 const apartmentRevealSpeed = 0.045
 
-const raycaster = new THREE.Raycaster()
-const pointer = new THREE.Vector2()
 const floorHeight = 0.7
 const floorGap = 0.06
 const buildingWidth = 3.6
@@ -545,30 +545,6 @@ defineExpose({
   clearSearchMatches,
 })
 
-const getInteractiveIntersection = (event) => {
-  const container = sceneContainer.value
-  const rect = container.getBoundingClientRect()
-
-  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
-  raycaster.setFromCamera(pointer, camera)
-
-  const intersections = raycaster.intersectObjects(building.children, true)
-
-  const intersection = intersections.find((item) => {
-    const object = item.object
-    const type = object.userData.type
-
-    return object.visible && (type === 'apartment' || type === 'floor')
-  })
-
-  return {
-    intersection,
-    rect,
-  }
-}
-
 const handlePointerMove = (event) => {
   if (isPointerDown) {
     const distance = Math.hypot(event.clientX - pointerDownX, event.clientY - pointerDownY)
@@ -925,6 +901,15 @@ onMounted(() => {
   initScene()
   createGround()
   createBuilding()
+
+  const raycastInteraction = useRaycastInteraction({
+    sceneContainer,
+    camera,
+    building,
+  })
+
+  getInteractiveIntersection = raycastInteraction.getInteractiveIntersection
+
   createLights()
   animate()
 
