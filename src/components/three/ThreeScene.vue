@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { buildings } from '../../data/buildings'
 import { getRoomsLabel, formatPrice } from '../../utils/apartmentFormatters'
+import { useCameraAnimation } from '../../composables/useCameraAnimation'
 
 const sceneContainer = ref(null)
 const tooltip = ref({
@@ -38,12 +39,12 @@ let isPointerDown = false
 let pointerDragged = false
 let pointerDownX = 0
 let pointerDownY = 0
-let cameraTargetPosition = null
-let controlsTargetPosition = null
 let cameraPositionBeforeApartment = null
 let controlsTargetBeforeApartment = null
 let resizeObserver
 let searchMatchedApartmentIds = null
+let setCameraTarget
+let updateCameraAnimation
 const dragThreshold = 6
 const cameraFocusDistance = 9.5
 const cameraAnimationSpeed = 0.055
@@ -106,6 +107,16 @@ const initScene = () => {
   controls.target.copy(defaultControlsTarget)
 
   controls.update()
+
+  const cameraAnimation = useCameraAnimation({
+    camera,
+    controls,
+    animationSpeed: cameraAnimationSpeed,
+    animationThreshold: cameraAnimationThreshold,
+  })
+
+  setCameraTarget = cameraAnimation.setCameraTarget
+  updateCameraAnimation = cameraAnimation.updateCameraAnimation
 }
 
 const createGround = () => {
@@ -270,8 +281,7 @@ const restoreCameraBeforeApartment = () => {
     return
   }
 
-  cameraTargetPosition = cameraPositionBeforeApartment.clone()
-  controlsTargetPosition = controlsTargetBeforeApartment.clone()
+  setCameraTarget(cameraPositionBeforeApartment, controlsTargetBeforeApartment)
 
   cameraPositionBeforeApartment = null
   controlsTargetBeforeApartment = null
@@ -389,8 +399,7 @@ const clearSelectedFloor = () => {
 
   updateFloorAppearance(previousSelectedFloor)
 
-  cameraTargetPosition = defaultCameraPosition.clone()
-  controlsTargetPosition = defaultControlsTarget.clone()
+  setCameraTarget(defaultCameraPosition, defaultControlsTarget)
 }
 
 const resetView = () => {
@@ -409,8 +418,7 @@ const resetView = () => {
   cameraPositionBeforeApartment = null
   controlsTargetBeforeApartment = null
 
-  cameraTargetPosition = defaultCameraPosition.clone()
-  controlsTargetPosition = defaultControlsTarget.clone()
+  setCameraTarget(defaultCameraPosition, defaultControlsTarget)
 }
 
 const updateApartmentsSelection = () => {
@@ -464,8 +472,11 @@ const selectApartmentMesh = (apartmentMesh) => {
     .sub(controlsTargetBeforeApartment)
     .normalize()
 
-  cameraTargetPosition = apartmentTarget.clone().add(direction.multiplyScalar(cameraFocusDistance))
-  controlsTargetPosition = apartmentTarget
+  const targetCameraPosition = apartmentTarget
+    .clone()
+    .add(direction.multiplyScalar(cameraFocusDistance))
+
+  setCameraTarget(targetCameraPosition, apartmentTarget)
 
   updateApartmentsSelection()
 }
@@ -832,25 +843,7 @@ const animate = () => {
 
   controls.update()
 
-  if (cameraTargetPosition && controlsTargetPosition) {
-    camera.position.lerp(cameraTargetPosition, cameraAnimationSpeed)
-
-    controls.target.lerp(controlsTargetPosition, cameraAnimationSpeed)
-
-    const cameraFinished =
-      camera.position.distanceTo(cameraTargetPosition) < cameraAnimationThreshold
-
-    const targetFinished =
-      controls.target.distanceTo(controlsTargetPosition) < cameraAnimationThreshold
-
-    if (cameraFinished && targetFinished) {
-      camera.position.copy(cameraTargetPosition)
-      controls.target.copy(controlsTargetPosition)
-
-      cameraTargetPosition = null
-      controlsTargetPosition = null
-    }
-  }
+  updateCameraAnimation()
 
   if (apartmentPreview) {
     apartmentPreview.children.forEach((apartmentMesh) => {
