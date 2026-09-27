@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { getRoomsLabel, formatPrice } from '../utils/apartmentFormatters'
+import { formatPrice } from '../utils/apartmentFormatters'
 
 export const useSceneTooltip = () => {
   const tooltip = ref({

@@ -225,6 +225,10 @@ const resetView = () => {
   setCameraTarget(defaultCameraPosition, defaultControlsTarget)
 }
 
+const apartmentMatchesSearch = (apartmentId) => {
+  return !searchMatchedApartmentIds || searchMatchedApartmentIds.has(apartmentId)
+}
+
 const updateApartmentsSelection = () => {
   if (!apartmentPreview) {
     return
@@ -233,8 +237,7 @@ const updateApartmentsSelection = () => {
   apartmentPreview.children.forEach((apartmentMesh) => {
     const isSelected = apartmentMesh === selectedApartmentMesh
 
-    const matchesSearch =
-      !searchMatchedApartmentIds || searchMatchedApartmentIds.has(apartmentMesh.userData.id)
+    const matchesSearch = apartmentMatchesSearch(apartmentMesh.userData.id)
 
     const opacity = getApartmentOpacity({
       isSelected,
