@@ -17,6 +17,7 @@ import { disposeThreeScene } from '../../utils/disposeThreeScene'
 import { removeApartmentPreview } from '../../utils/removeApartmentPreview'
 import { getApartmentOpacity } from '../../utils/getApartmentOpacity'
 import { apartmentStatuses } from '../../constants/apartmentStatuses'
+import { usePointerDrag } from '../../composables/usePointerDrag'
 
 const sceneContainer = ref(null)
 
@@ -46,10 +47,6 @@ const {
 })
 let apartmentPreview = null
 let apartmentPreviewFloor = null
-let isPointerDown = false
-let pointerDragged = false
-let pointerDownX = 0
-let pointerDownY = 0
 let startResizeObserver
 let stopResizeObserver
 let searchMatchedApartmentIds = null
@@ -60,6 +57,17 @@ let restorePreviousCameraPosition
 let clearSavedCameraPosition
 let getInteractiveIntersection
 const dragThreshold = 6
+
+const {
+  handlePointerDown,
+  handlePointerMove: trackPointerMove,
+  handlePointerUp,
+  consumePointerDrag,
+} = usePointerDrag({
+  dragThreshold,
+  onDragStart: hideTooltip,
+})
+
 const cameraFocusDistance = 9.5
 const cameraAnimationSpeed = 0.055
 const cameraAnimationThreshold = 0.02
@@ -348,14 +356,7 @@ defineExpose({
 })
 
 const handlePointerMove = (event) => {
-  if (isPointerDown) {
-    const distance = Math.hypot(event.clientX - pointerDownX, event.clientY - pointerDownY)
-
-    if (distance > dragThreshold) {
-      pointerDragged = true
-      hideTooltip()
-    }
-  }
+  trackPointerMove(event)
 
   const { intersection: interactiveIntersection, rect } = getInteractiveIntersection(event)
 
@@ -410,22 +411,8 @@ const handlePointerMove = (event) => {
   setHoveredFloor(hoveredObject)
 }
 
-const handlePointerDown = (event) => {
-  isPointerDown = true
-  pointerDragged = false
-
-  pointerDownX = event.clientX
-  pointerDownY = event.clientY
-}
-
-const handlePointerUp = () => {
-  isPointerDown = false
-}
-
 const handleSceneClick = (event) => {
-  if (pointerDragged) {
-    pointerDragged = false
-
+  if (consumePointerDrag()) {
     return
   }
 
