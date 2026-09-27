@@ -18,6 +18,7 @@ import { removeApartmentPreview } from '../../utils/removeApartmentPreview'
 import { getApartmentOpacity } from '../../utils/getApartmentOpacity'
 import { apartmentStatuses } from '../../constants/apartmentStatuses'
 import { usePointerDrag } from '../../composables/usePointerDrag'
+import SceneTooltip from './SceneTooltip.vue'
 
 const sceneContainer = ref(null)
 
@@ -553,53 +554,7 @@ onBeforeUnmount(() => {
       '--status-sold': apartmentStatuses.sold.cssColor,
     }"
   >
-    <div
-      v-if="tooltip.visible"
-      class="three-scene__tooltip"
-      :style="{
-        left: `${tooltip.x}px`,
-        top: `${tooltip.y}px`,
-      }"
-    >
-      <template v-if="tooltip.type === 'apartment'">
-        <div class="three-scene__tooltip-header">
-          <strong>
-            {{ tooltip.title }}
-          </strong>
-
-          <span
-            class="three-scene__tooltip-status"
-            :class="`three-scene__tooltip-status--${tooltip.status}`"
-          ></span>
-        </div>
-
-        <span>
-          Powierzchnia <strong>{{ tooltip.area }}</strong>
-        </span>
-
-        <span>
-          Piętro <strong>{{ tooltip.floor }}</strong>
-        </span>
-
-        <span>
-          Pokoje <strong>{{ tooltip.rooms }}</strong>
-        </span>
-
-        <span>
-          Cena <strong>{{ tooltip.price }}</strong>
-        </span>
-      </template>
-
-      <template v-else>
-        <strong>
-          {{ tooltip.title }}
-        </strong>
-
-        <span>
-          {{ tooltip.description }}
-        </span>
-      </template>
-    </div>
+    <SceneTooltip :tooltip="tooltip" />
   </div>
 </template>
 
@@ -614,87 +569,5 @@ onBeforeUnmount(() => {
   display: block;
   width: 100%;
   height: 100%;
-}
-
-.three-scene__tooltip {
-  position: absolute;
-  z-index: 30;
-  display: grid;
-  gap: 2px;
-  min-width: 118px;
-  padding: 14px 16px;
-  pointer-events: none;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow:
-    0 8px 28px rgba(0, 0, 0, 0.16),
-    0 2px 8px rgba(0, 0, 0, 0.08);
-  transform: translate(-100%, -50%);
-  color: #151515;
-}
-
-.three-scene__tooltip::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  width: 64px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.95);
-  transform: translateY(-50%);
-}
-
-.three-scene__tooltip::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: calc(100% + 64px);
-  width: 10px;
-  height: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.95);
-  border-radius: 50%;
-  background: #ffffff;
-  transform: translate(-50%, -50%);
-}
-
-.three-scene__tooltip-header {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-bottom: 6px;
-}
-
-.three-scene__tooltip-header strong {
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.three-scene__tooltip > span {
-  font-size: 11px;
-  line-height: 1.25;
-  color: #242424;
-}
-
-.three-scene__tooltip > span strong {
-  font-weight: 600;
-}
-
-.three-scene__tooltip-status {
-  width: 11px;
-  height: 11px;
-  flex-shrink: 0;
-  border-radius: 50%;
-}
-
-.three-scene__tooltip-status--available {
-  background: var(--status-available);
-}
-
-.three-scene__tooltip-status--reserved {
-  background: var(--status-reserved);
-}
-
-.three-scene__tooltip-status--sold {
-  background: var(--status-sold);
 }
 </style>
