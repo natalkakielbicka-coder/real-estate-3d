@@ -7,6 +7,18 @@ export const sceneConfig = {
     focusDistance: 9.5,
     animationSpeed: 0.055,
     animationThreshold: 0.02,
+
+    defaultPosition: {
+      x: 6,
+      y: 5,
+      z: 8,
+    },
+
+    defaultTarget: {
+      x: 0,
+      y: 1.5,
+      z: 0,
+    },
   },
 
   apartments: {

@@ -76,8 +76,15 @@ const {
   onDragStart: hideTooltip,
 })
 
-const defaultCameraPosition = new THREE.Vector3(6, 5, 8)
-const defaultControlsTarget = new THREE.Vector3(0, 1.5, 0)
+const { defaultPosition, defaultTarget } = cameraConfig
+
+const defaultCameraPosition = new THREE.Vector3(
+  defaultPosition.x,
+  defaultPosition.y,
+  defaultPosition.z,
+)
+
+const defaultControlsTarget = new THREE.Vector3(defaultTarget.x, defaultTarget.y, defaultTarget.z)
 
 const initScene = () => {
   const container = sceneContainer.value
