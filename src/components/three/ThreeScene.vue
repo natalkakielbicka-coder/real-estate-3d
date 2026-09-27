@@ -14,6 +14,7 @@ import { createThreeSceneCore } from '../../utils/createThreeSceneCore'
 import { useSceneResize } from '../../composables/useSceneResize'
 import { updateApartmentPreviewAnimation } from '../../utils/updateApartmentPreviewAnimation'
 import { disposeThreeScene } from '../../utils/disposeThreeScene'
+import { removeApartmentPreview } from '../../utils/removeApartmentPreview'
 
 const sceneContainer = ref(null)
 
@@ -121,18 +122,10 @@ const clearApartmentPreview = () => {
     apartmentPreviewFloor.visible = true
   }
 
-  if (apartmentPreview) {
-    apartmentPreview.traverse((object) => {
-      if (!object.isMesh) {
-        return
-      }
-
-      object.geometry.dispose()
-      object.material.dispose()
-    })
-
-    building.remove(apartmentPreview)
-  }
+  removeApartmentPreview({
+    apartmentPreview,
+    building,
+  })
 
   apartmentPreview = null
   apartmentPreviewFloor = null
