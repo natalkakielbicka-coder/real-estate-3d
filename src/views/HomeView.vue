@@ -84,6 +84,7 @@ import { RouterLink } from 'vue-router'
 }
 
 .home h1 {
+  color: #f5f5f2;
   max-width: 900px;
   margin: 0;
   font-size: clamp(4rem, 8vw, 8rem);
