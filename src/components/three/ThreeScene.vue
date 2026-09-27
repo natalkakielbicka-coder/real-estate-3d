@@ -13,6 +13,7 @@ import { createSceneLights } from '../../utils/createSceneLights'
 import { createThreeSceneCore } from '../../utils/createThreeSceneCore'
 import { useSceneResize } from '../../composables/useSceneResize'
 import { updateApartmentPreviewAnimation } from '../../utils/updateApartmentPreviewAnimation'
+import { disposeThreeScene } from '../../utils/disposeThreeScene'
 
 const sceneContainer = ref(null)
 
@@ -550,28 +551,6 @@ onBeforeUnmount(() => {
 
   stopResizeObserver()
 
-  controls?.dispose()
-
-  building?.traverse((object) => {
-    if (!object.isMesh) {
-      return
-    }
-
-    object.geometry.dispose()
-    object.material.dispose()
-  })
-
-  if (ground) {
-    ground.traverse((object) => {
-      if (!object.isMesh) {
-        return
-      }
-
-      object.geometry.dispose()
-      object.material.dispose()
-    })
-  }
-
   if (renderer) {
     renderer.domElement.removeEventListener('pointerdown', handlePointerDown)
 
@@ -580,10 +559,14 @@ onBeforeUnmount(() => {
     renderer.domElement.removeEventListener('pointerup', handlePointerUp)
 
     renderer.domElement.removeEventListener('click', handleSceneClick)
-
-    renderer.dispose()
-    renderer.domElement.remove()
   }
+
+  disposeThreeScene({
+    building,
+    ground,
+    controls,
+    renderer,
+  })
 })
 </script>
 
