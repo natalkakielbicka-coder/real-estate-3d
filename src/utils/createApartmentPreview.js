@@ -5,7 +5,7 @@ export const createApartmentPreview = ({
   buildingWidth,
   buildingDepth,
   floorHeight,
-  apartmentStatusColors,
+  apartmentStatuses,
 }) => {
   const apartments = floor.userData.apartments
 
@@ -29,7 +29,7 @@ export const createApartmentPreview = ({
     const geometry = new THREE.BoxGeometry(apartmentWidth, floorHeight, apartmentDepth)
 
     const material = new THREE.MeshStandardMaterial({
-      color: apartmentStatusColors[apartment.status] ?? 0x777777,
+      color: apartmentStatuses[apartment.status]?.threeColor ?? 0x777777,
       roughness: 0.7,
       transparent: true,
       opacity: 1,

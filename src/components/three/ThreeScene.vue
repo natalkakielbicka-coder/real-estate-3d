@@ -16,6 +16,7 @@ import { updateApartmentPreviewAnimation } from '../../utils/updateApartmentPrev
 import { disposeThreeScene } from '../../utils/disposeThreeScene'
 import { removeApartmentPreview } from '../../utils/removeApartmentPreview'
 import { getApartmentOpacity } from '../../utils/getApartmentOpacity'
+import { apartmentStatuses } from '../../constants/apartmentStatuses'
 
 const sceneContainer = ref(null)
 
@@ -72,12 +73,6 @@ const buildingWidth = 3.6
 const buildingDepth = 2.4
 const defaultCameraPosition = new THREE.Vector3(6, 5, 8)
 const defaultControlsTarget = new THREE.Vector3(0, 1.5, 0)
-
-const apartmentStatusColors = {
-  available: 0x6f8f75,
-  reserved: 0x9b8050,
-  sold: 0x666b67,
-}
 
 const initScene = () => {
   const container = sceneContainer.value
@@ -173,7 +168,7 @@ const showApartmentsForFloor = (floor) => {
     buildingWidth,
     buildingDepth,
     floorHeight,
-    apartmentStatusColors,
+    apartmentStatuses,
   })
 
   apartmentPreviewFloor = floor
@@ -558,7 +553,15 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="sceneContainer" class="three-scene">
+  <div
+    ref="sceneContainer"
+    class="three-scene"
+    :style="{
+      '--status-available': apartmentStatuses.available.cssColor,
+      '--status-reserved': apartmentStatuses.reserved.cssColor,
+      '--status-sold': apartmentStatuses.sold.cssColor,
+    }"
+  >
     <div
       v-if="tooltip.visible"
       class="three-scene__tooltip"
@@ -693,14 +696,14 @@ onBeforeUnmount(() => {
 }
 
 .three-scene__tooltip-status--available {
-  background: #42a84b;
+  background: var(--status-available);
 }
 
 .three-scene__tooltip-status--reserved {
-  background: #c59b3d;
+  background: var(--status-reserved);
 }
 
 .three-scene__tooltip-status--sold {
-  background: #8a8a8a;
+  background: var(--status-sold);
 }
 </style>
