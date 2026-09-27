@@ -1,7 +1,6 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import * as THREE from 'three'
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { buildings } from '../../data/buildings'
 import { useCameraAnimation } from '../../composables/useCameraAnimation'
 import { useRaycastInteraction } from '../../composables/useRaycastInteraction'
@@ -11,6 +10,7 @@ import { createApartmentPreview } from '../../utils/createApartmentPreview'
 import { createBuildingMesh } from '../../utils/createBuildingMesh'
 import { createGroundMesh } from '../../utils/createGround'
 import { createSceneLights } from '../../utils/createSceneLights'
+import { createThreeSceneCore } from '../../utils/createThreeSceneCore'
 
 const sceneContainer = ref(null)
 
@@ -76,42 +76,16 @@ const apartmentStatusColors = {
 const initScene = () => {
   const container = sceneContainer.value
 
-  scene = new THREE.Scene()
-
-  scene.background = new THREE.Color(0xf4f1e9)
-
-  camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100)
-
-  camera.position.copy(defaultCameraPosition)
-
-  // Kamera patrzy na punkt w pobliżu środka wysokości budynku.
-  camera.lookAt(0, 1.8, 0)
-
-  renderer = new THREE.WebGLRenderer({
-    antialias: true,
+  const sceneCore = createThreeSceneCore({
+    container,
+    defaultCameraPosition,
+    defaultControlsTarget,
   })
 
-  renderer.shadowMap.enabled = true
-  renderer.shadowMap.type = THREE.PCFShadowMap
-
-  renderer.setSize(container.clientWidth, container.clientHeight)
-
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-  container.appendChild(renderer.domElement)
-
-  controls = new OrbitControls(camera, renderer.domElement)
-
-  controls.enableDamping = true
-
-  controls.dampingFactor = 0.05
-
-  controls.minDistance = 5
-  controls.maxDistance = 14
-
-  controls.target.copy(defaultControlsTarget)
-
-  controls.update()
+  scene = sceneCore.scene
+  camera = sceneCore.camera
+  renderer = sceneCore.renderer
+  controls = sceneCore.controls
 
   const cameraAnimation = useCameraAnimation({
     camera,
@@ -125,9 +99,6 @@ const initScene = () => {
   saveCurrentCameraPosition = cameraAnimation.saveCurrentCameraPosition
   restorePreviousCameraPosition = cameraAnimation.restorePreviousCameraPosition
   clearSavedCameraPosition = cameraAnimation.clearSavedCameraPosition
-
-  setCameraTarget = cameraAnimation.setCameraTarget
-  updateCameraAnimation = cameraAnimation.updateCameraAnimation
 }
 
 const createGround = () => {
@@ -662,8 +633,14 @@ onBeforeUnmount(() => {
   })
 
   if (ground) {
-    ground.geometry.dispose()
-    ground.material.dispose()
+    ground.traverse((object) => {
+      if (!object.isMesh) {
+        return
+      }
+
+      object.geometry.dispose()
+      object.material.dispose()
+    })
   }
 
   if (renderer) {
