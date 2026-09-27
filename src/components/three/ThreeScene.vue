@@ -3,24 +3,14 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { buildings } from '../../data/buildings'
-import { getRoomsLabel, formatPrice } from '../../utils/apartmentFormatters'
 import { useCameraAnimation } from '../../composables/useCameraAnimation'
 import { useRaycastInteraction } from '../../composables/useRaycastInteraction'
+import { useSceneTooltip } from '../../composables/useSceneTooltip'
 
 const sceneContainer = ref(null)
-const tooltip = ref({
-  visible: false,
-  x: 0,
-  y: 0,
-  type: '',
-  title: '',
-  status: '',
-  area: '',
-  floor: '',
-  rooms: '',
-  description: '',
-  price: '',
-})
+
+const { tooltip, showTooltip, hideTooltip } = useSceneTooltip()
+
 const emit = defineEmits(['floor-selected', 'apartment-selected'])
 
 let scene
@@ -575,7 +565,7 @@ const handlePointerMove = (event) => {
     if (hoveredObject.userData.status === 'sold') {
       clearHoveredApartment()
 
-      showTooltip(hoveredObject, event, rect)
+      showTooltip(hoveredObject, event, rect, selectedFloor)
 
       renderer.domElement.style.cursor = 'not-allowed'
 
@@ -592,7 +582,7 @@ const handlePointerMove = (event) => {
       hoveredApartment.material.emissiveIntensity = 0.8
     }
 
-    showTooltip(hoveredObject, event, rect)
+    showTooltip(hoveredObject, event, rect, selectedFloor)
 
     renderer.domElement.style.cursor = 'pointer'
 
@@ -611,7 +601,7 @@ const handlePointerMove = (event) => {
 
   renderer.domElement.style.cursor = 'pointer'
 
-  showTooltip(hoveredObject, event, rect)
+  showTooltip(hoveredObject, event, rect, selectedFloor)
 
   if (hoveredFloor === hoveredObject) {
     return
@@ -622,37 +612,6 @@ const handlePointerMove = (event) => {
   hoveredFloor = hoveredObject
 
   updateFloorAppearance(hoveredFloor)
-}
-
-const hideTooltip = () => {
-  tooltip.value.visible = false
-}
-
-const showTooltip = (object, event, rect) => {
-  tooltip.value.x = event.clientX - rect.left - 72
-  tooltip.value.y = event.clientY - rect.top
-
-  if (object.userData.type === 'apartment') {
-    tooltip.value.type = 'apartment'
-    tooltip.value.title = object.userData.number
-    tooltip.value.status = object.userData.status
-    tooltip.value.area = `${object.userData.area} m²`
-    tooltip.value.floor =
-      selectedFloor?.userData.floorNumber === 0 ? 'Parter' : selectedFloor?.userData.floorNumber
-
-    tooltip.value.rooms = getRoomsLabel(object.userData.rooms)
-    tooltip.value.price = formatPrice(object.userData.price)
-  }
-
-  if (object.userData.type === 'floor') {
-    tooltip.value.title =
-      object.userData.floorNumber === 0 ? 'Parter' : `Piętro ${object.userData.floorNumber}`
-
-    tooltip.value.description = `${object.userData.availableApartments} z ${object.userData.apartmentCount} dostępnych`
-    tooltip.value.type = 'floor'
-  }
-
-  tooltip.value.visible = true
 }
 
 const handlePointerDown = (event) => {
