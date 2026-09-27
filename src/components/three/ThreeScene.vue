@@ -477,6 +477,24 @@ const animate = () => {
   renderer.render(scene, camera)
 }
 
+const addSceneEventListeners = () => {
+  renderer.domElement.addEventListener('pointermove', handlePointerMove)
+  renderer.domElement.addEventListener('click', handleSceneClick)
+  renderer.domElement.addEventListener('pointerdown', handlePointerDown)
+  renderer.domElement.addEventListener('pointerup', handlePointerUp)
+}
+
+const removeSceneEventListeners = () => {
+  if (!renderer) {
+    return
+  }
+
+  renderer.domElement.removeEventListener('pointermove', handlePointerMove)
+  renderer.domElement.removeEventListener('click', handleSceneClick)
+  renderer.domElement.removeEventListener('pointerdown', handlePointerDown)
+  renderer.domElement.removeEventListener('pointerup', handlePointerUp)
+}
+
 onMounted(() => {
   initScene()
 
@@ -506,13 +524,7 @@ onMounted(() => {
 
   startResizeObserver()
 
-  renderer.domElement.addEventListener('pointermove', handlePointerMove)
-
-  renderer.domElement.addEventListener('click', handleSceneClick)
-
-  renderer.domElement.addEventListener('pointerdown', handlePointerDown)
-
-  renderer.domElement.addEventListener('pointerup', handlePointerUp)
+  addSceneEventListeners()
 })
 
 onBeforeUnmount(() => {
@@ -520,15 +532,7 @@ onBeforeUnmount(() => {
 
   stopResizeObserver()
 
-  if (renderer) {
-    renderer.domElement.removeEventListener('pointerdown', handlePointerDown)
-
-    renderer.domElement.removeEventListener('pointermove', handlePointerMove)
-
-    renderer.domElement.removeEventListener('pointerup', handlePointerUp)
-
-    renderer.domElement.removeEventListener('click', handleSceneClick)
-  }
+  removeSceneEventListeners()
 
   disposeThreeScene({
     building,
