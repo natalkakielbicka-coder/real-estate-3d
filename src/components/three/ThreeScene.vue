@@ -246,8 +246,8 @@ const updateApartmentsSelection = () => {
     apartmentMesh.material.opacity = opacity
 
     if (isSelected) {
-      apartmentMesh.material.emissive.set(0x5a4936)
-      apartmentMesh.material.emissiveIntensity = 0.8
+      apartmentMesh.material.emissive.set(apartmentConfig.selectedEmissiveColor)
+      apartmentMesh.material.emissiveIntensity = apartmentConfig.selectedEmissiveIntensity
     } else {
       apartmentMesh.material.emissiveIntensity = 0
 

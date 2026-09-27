@@ -13,6 +13,8 @@ export const sceneConfig = {
     unmatchedOpacity: 0.18,
     unselectedOpacity: 0.4,
     revealSpeed: 0.045,
+    selectedEmissiveColor: 0x5a4936,
+    selectedEmissiveIntensity: 0.8,
   },
 
   building: {
