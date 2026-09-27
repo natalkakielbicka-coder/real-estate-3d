@@ -19,6 +19,7 @@ import { getApartmentOpacity } from '../../utils/getApartmentOpacity'
 import { apartmentStatuses } from '../../constants/apartmentStatuses'
 import { usePointerDrag } from '../../composables/usePointerDrag'
 import SceneTooltip from './SceneTooltip.vue'
+import { sceneConfig } from '../../config/sceneConfig'
 
 const sceneContainer = ref(null)
 
@@ -57,7 +58,13 @@ let saveCurrentCameraPosition
 let restorePreviousCameraPosition
 let clearSavedCameraPosition
 let getInteractiveIntersection
-const dragThreshold = 6
+
+const {
+  interaction,
+  camera: cameraConfig,
+  apartments: apartmentConfig,
+  building: buildingConfig,
+} = sceneConfig
 
 const {
   handlePointerDown,
@@ -65,21 +72,10 @@ const {
   handlePointerUp,
   consumePointerDrag,
 } = usePointerDrag({
-  dragThreshold,
+  dragThreshold: interaction.dragThreshold,
   onDragStart: hideTooltip,
 })
 
-const cameraFocusDistance = 9.5
-const cameraAnimationSpeed = 0.055
-const cameraAnimationThreshold = 0.02
-const unmatchedApartmentOpacity = 0.18
-const unselectedApartmentOpacity = 0.4
-const apartmentRevealSpeed = 0.045
-
-const floorHeight = 0.7
-const floorGap = 0.06
-const buildingWidth = 3.6
-const buildingDepth = 2.4
 const defaultCameraPosition = new THREE.Vector3(6, 5, 8)
 const defaultControlsTarget = new THREE.Vector3(0, 1.5, 0)
 
@@ -100,8 +96,8 @@ const initScene = () => {
   const cameraAnimation = useCameraAnimation({
     camera,
     controls,
-    animationSpeed: cameraAnimationSpeed,
-    animationThreshold: cameraAnimationThreshold,
+    animationSpeed: cameraConfig.animationSpeed,
+    animationThreshold: cameraConfig.animationThreshold,
   })
 
   setCameraTarget = cameraAnimation.setCameraTarget
@@ -113,8 +109,8 @@ const initScene = () => {
 
 const createGround = () => {
   ground = createGroundMesh({
-    buildingWidth,
-    buildingDepth,
+    buildingWidth: buildingConfig.width,
+    buildingDepth: buildingConfig.depth,
   })
 
   scene.add(ground)
@@ -174,9 +170,9 @@ const showApartmentsForFloor = (floor) => {
 
   apartmentPreview = createApartmentPreview({
     floor,
-    buildingWidth,
-    buildingDepth,
-    floorHeight,
+    buildingWidth: buildingConfig.width,
+    buildingDepth: buildingConfig.depth,
+    floorHeight: buildingConfig.floorHeight,
     apartmentStatuses,
   })
 
@@ -243,8 +239,8 @@ const updateApartmentsSelection = () => {
       isSelected,
       hasSelectedApartment: Boolean(selectedApartmentMesh),
       matchesSearch,
-      unmatchedOpacity: unmatchedApartmentOpacity,
-      unselectedOpacity: unselectedApartmentOpacity,
+      unmatchedOpacity: apartmentConfig.unmatchedOpacity,
+      unselectedOpacity: apartmentConfig.unselectedOpacity,
     })
 
     apartmentMesh.material.opacity = opacity
@@ -279,7 +275,7 @@ const selectApartmentMesh = (apartmentMesh) => {
 
   const targetCameraPosition = apartmentTarget
     .clone()
-    .add(direction.multiplyScalar(cameraFocusDistance))
+    .add(direction.multiplyScalar(cameraConfig.focusDistance))
 
   setCameraTarget(targetCameraPosition, apartmentTarget)
 
@@ -450,10 +446,10 @@ const handleSceneClick = (event) => {
 const createBuilding = () => {
   building = createBuildingMesh({
     buildingData: buildings[0],
-    buildingWidth,
-    buildingDepth,
-    floorHeight,
-    floorGap,
+    buildingWidth: buildingConfig.width,
+    buildingDepth: buildingConfig.depth,
+    floorHeight: buildingConfig.floorHeight,
+    floorGap: buildingConfig.floorGap,
   })
 
   scene.add(building)
@@ -475,7 +471,7 @@ const animate = () => {
   updateApartmentPreviewAnimation({
     apartmentPreview,
     selectedApartmentMesh,
-    apartmentRevealSpeed,
+    apartmentRevealSpeed: apartmentConfig.revealSpeed,
   })
 
   renderer.render(scene, camera)
