@@ -15,9 +15,9 @@ import { useSceneResize } from '../../composables/useSceneResize'
 import { updateApartmentPreviewAnimation } from '../../utils/updateApartmentPreviewAnimation'
 import { disposeThreeScene } from '../../utils/disposeThreeScene'
 import { removeApartmentPreview } from '../../utils/removeApartmentPreview'
-import { getApartmentOpacity } from '../../utils/getApartmentOpacity'
 import { apartmentStatuses } from '../../constants/apartmentStatuses'
 import { usePointerDrag } from '../../composables/usePointerDrag'
+import { useApartmentSelection } from '../../composables/useApartmentSelection'
 import SceneTooltip from './SceneTooltip.vue'
 import { sceneConfig } from '../../config/sceneConfig'
 
@@ -26,6 +26,13 @@ const sceneContainer = ref(null)
 const { tooltip, showTooltip, hideTooltip } = useSceneTooltip()
 
 const emit = defineEmits(['floor-selected', 'apartment-selected'])
+
+const {
+  interaction,
+  camera: cameraConfig,
+  apartments: apartmentConfig,
+  building: buildingConfig,
+} = sceneConfig
 
 let scene
 let camera
@@ -47,24 +54,25 @@ const {
   getSelectedFloor: () => selectedFloor,
   getSelectedApartment: () => selectedApartmentMesh,
 })
+
+const { updateApartmentsSelection, setSearchMatches, clearSearchMatches, findApartmentMeshById } =
+  useApartmentSelection({
+    apartmentConfig,
+    getApartmentPreview: () => apartmentPreview,
+    getSelectedApartment: () => selectedApartmentMesh,
+    isApartmentHovered,
+  })
+
 let apartmentPreview = null
 let apartmentPreviewFloor = null
 let startResizeObserver
 let stopResizeObserver
-let searchMatchedApartmentIds = null
 let setCameraTarget
 let updateCameraAnimation
 let saveCurrentCameraPosition
 let restorePreviousCameraPosition
 let clearSavedCameraPosition
 let getInteractiveIntersection
-
-const {
-  interaction,
-  camera: cameraConfig,
-  apartments: apartmentConfig,
-  building: buildingConfig,
-} = sceneConfig
 
 const {
   handlePointerDown,
@@ -138,18 +146,6 @@ const clearApartmentPreview = () => {
   apartmentPreview = null
   apartmentPreviewFloor = null
   selectedApartmentMesh = null
-}
-
-const setSearchMatches = (apartmentIds) => {
-  searchMatchedApartmentIds = new Set(apartmentIds)
-
-  updateApartmentsSelection()
-}
-
-const clearSearchMatches = () => {
-  searchMatchedApartmentIds = null
-
-  updateApartmentsSelection()
 }
 
 const clearSelectedApartment = () => {
@@ -228,43 +224,6 @@ const resetView = () => {
   setCameraTarget(defaultCameraPosition, defaultControlsTarget)
 }
 
-const apartmentMatchesSearch = (apartmentId) => {
-  return !searchMatchedApartmentIds || searchMatchedApartmentIds.has(apartmentId)
-}
-
-const updateApartmentsSelection = () => {
-  if (!apartmentPreview) {
-    return
-  }
-
-  apartmentPreview.children.forEach((apartmentMesh) => {
-    const isSelected = apartmentMesh === selectedApartmentMesh
-
-    const matchesSearch = apartmentMatchesSearch(apartmentMesh.userData.id)
-
-    const opacity = getApartmentOpacity({
-      isSelected,
-      hasSelectedApartment: Boolean(selectedApartmentMesh),
-      matchesSearch,
-      unmatchedOpacity: apartmentConfig.unmatchedOpacity,
-      unselectedOpacity: apartmentConfig.unselectedOpacity,
-    })
-
-    apartmentMesh.material.opacity = opacity
-
-    if (isSelected) {
-      apartmentMesh.material.emissive.set(apartmentConfig.selectedEmissiveColor)
-      apartmentMesh.material.emissiveIntensity = apartmentConfig.selectedEmissiveIntensity
-    } else {
-      apartmentMesh.material.emissiveIntensity = 0
-
-      if (!isApartmentHovered(apartmentMesh)) {
-        apartmentMesh.material.emissive.set(0x000000)
-      }
-    }
-  })
-}
-
 const selectApartmentMesh = (apartmentMesh) => {
   if (!apartmentMesh || apartmentMesh.userData.status === 'sold') {
     return
@@ -287,14 +246,6 @@ const selectApartmentMesh = (apartmentMesh) => {
   setCameraTarget(targetCameraPosition, apartmentTarget)
 
   updateApartmentsSelection()
-}
-
-const findApartmentMeshById = (apartmentId) => {
-  if (!apartmentPreview) {
-    return null
-  }
-
-  return apartmentPreview.children.find((mesh) => mesh.userData.id === apartmentId)
 }
 
 const selectApartmentById = (apartmentId) => {
