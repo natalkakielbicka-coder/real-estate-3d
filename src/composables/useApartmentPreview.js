@@ -6,7 +6,6 @@ export const useApartmentPreview = ({
   apartmentStatuses,
   getBuilding,
   clearHoveredApartment,
-  clearSelectedApartment,
   updateApartmentsSelection,
 }) => {
   let apartmentPreview = null
@@ -28,12 +27,9 @@ export const useApartmentPreview = ({
 
     apartmentPreview = null
     apartmentPreviewFloor = null
-
-    clearSelectedApartment()
   }
 
   const showApartmentsForFloor = (floor) => {
-    clearSelectedApartment()
     clearApartmentPreview()
 
     const apartments = floor.userData.apartments

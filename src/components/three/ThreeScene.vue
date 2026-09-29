@@ -6,7 +6,6 @@ import { useCameraAnimation } from '../../composables/useCameraAnimation'
 import { useRaycastInteraction } from '../../composables/useRaycastInteraction'
 import { useSceneTooltip } from '../../composables/useSceneTooltip'
 import { useSceneHover } from '../../composables/useSceneHover'
-import { createApartmentPreview } from '../../utils/createApartmentPreview'
 import { createBuildingMesh } from '../../utils/createBuildingMesh'
 import { createGroundMesh } from '../../utils/createGround'
 import { createSceneLights } from '../../utils/createSceneLights'
@@ -14,10 +13,10 @@ import { createThreeSceneCore } from '../../utils/createThreeSceneCore'
 import { useSceneResize } from '../../composables/useSceneResize'
 import { updateApartmentPreviewAnimation } from '../../utils/updateApartmentPreviewAnimation'
 import { disposeThreeScene } from '../../utils/disposeThreeScene'
-import { removeApartmentPreview } from '../../utils/removeApartmentPreview'
 import { apartmentStatuses } from '../../constants/apartmentStatuses'
 import { usePointerDrag } from '../../composables/usePointerDrag'
 import { useApartmentSelection } from '../../composables/useApartmentSelection'
+import { useApartmentPreview } from '../../composables/useApartmentPreview'
 import SceneTooltip from './SceneTooltip.vue'
 import { sceneConfig } from '../../config/sceneConfig'
 
@@ -58,15 +57,26 @@ const {
 const { updateApartmentsSelection, setSearchMatches, clearSearchMatches, findApartmentMeshById } =
   useApartmentSelection({
     apartmentConfig,
-    getApartmentPreview: () => apartmentPreview,
+    getApartmentPreview: () => getApartmentPreview(),
     getSelectedApartment: () => selectedApartmentMesh,
     isApartmentHovered,
   })
 
-let apartmentPreview = null
-let apartmentPreviewFloor = null
+const apartmentPreviewComposable = useApartmentPreview({
+  buildingConfig,
+  apartmentStatuses,
+  getBuilding: () => building,
+  clearHoveredApartment,
+  updateApartmentsSelection,
+})
+
+getApartmentPreview = apartmentPreviewComposable.getApartmentPreview
+
+const { clearApartmentPreview, showApartmentsForFloor } = apartmentPreviewComposable
+
 let startResizeObserver
 let stopResizeObserver
+let getApartmentPreview
 let setCameraTarget
 let updateCameraAnimation
 let saveCurrentCameraPosition
@@ -131,23 +141,6 @@ const createGround = () => {
   scene.add(ground)
 }
 
-const clearApartmentPreview = () => {
-  clearHoveredApartment()
-
-  if (apartmentPreviewFloor) {
-    apartmentPreviewFloor.visible = true
-  }
-
-  removeApartmentPreview({
-    apartmentPreview,
-    building,
-  })
-
-  apartmentPreview = null
-  apartmentPreviewFloor = null
-  selectedApartmentMesh = null
-}
-
 const clearSelectedApartment = () => {
   if (!selectedApartmentMesh) {
     return
@@ -156,34 +149,6 @@ const clearSelectedApartment = () => {
   restorePreviousCameraPosition()
 
   selectedApartmentMesh = null
-
-  updateApartmentsSelection()
-}
-
-const showApartmentsForFloor = (floor) => {
-  selectedApartmentMesh = null
-
-  clearApartmentPreview()
-
-  const apartments = floor.userData.apartments
-
-  if (!apartments?.length) {
-    return
-  }
-
-  apartmentPreview = createApartmentPreview({
-    floor,
-    buildingWidth: buildingConfig.width,
-    buildingDepth: buildingConfig.depth,
-    floorHeight: buildingConfig.floorHeight,
-    apartmentStatuses,
-  })
-
-  apartmentPreviewFloor = floor
-
-  floor.visible = false
-
-  building.add(apartmentPreview)
 
   updateApartmentsSelection()
 }
@@ -280,6 +245,8 @@ const selectFloorMesh = (floor) => {
   const previousSelectedFloor = selectedFloor
 
   selectedFloor = floor
+
+  selectedApartmentMesh = null
 
   showApartmentsForFloor(selectedFloor)
 
@@ -427,7 +394,7 @@ const animate = () => {
   updateCameraAnimation()
 
   updateApartmentPreviewAnimation({
-    apartmentPreview,
+    apartmentPreview: getApartmentPreview(),
     selectedApartmentMesh,
     apartmentRevealSpeed: apartmentConfig.revealSpeed,
   })
