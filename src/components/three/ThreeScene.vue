@@ -17,6 +17,7 @@ import { apartmentStatuses } from '../../constants/apartmentStatuses'
 import { usePointerDrag } from '../../composables/usePointerDrag'
 import { useApartmentSelection } from '../../composables/useApartmentSelection'
 import { useApartmentPreview } from '../../composables/useApartmentPreview'
+import { useFloorSelection } from '../../composables/useFloorSelection'
 import SceneTooltip from './SceneTooltip.vue'
 import { sceneConfig } from '../../config/sceneConfig'
 
@@ -233,40 +234,20 @@ const clearApartmentHover = () => {
   clearHoveredApartment()
 }
 
-const selectFloorMesh = (floor) => {
-  if (!floor) {
-    return
-  }
-
-  if (selectedApartmentMesh) {
-    restorePreviousCameraPosition()
-  }
-
-  const previousSelectedFloor = selectedFloor
-
-  selectedFloor = floor
-
-  selectedApartmentMesh = null
-
-  showApartmentsForFloor(selectedFloor)
-
-  updateFloorAppearance(previousSelectedFloor)
-  updateFloorAppearance(selectedFloor)
-
-  emit('floor-selected', selectedFloor.userData)
-}
-
-const selectFloorByNumber = (floorNumber) => {
-  if (!building) {
-    return
-  }
-
-  const floor = building.children.find(
-    (child) => child.userData.type === 'floor' && child.userData.floorNumber === floorNumber,
-  )
-
-  selectFloorMesh(floor)
-}
+const { selectFloorMesh, selectFloorByNumber } = useFloorSelection({
+  getBuilding: () => building,
+  getSelectedFloor: () => selectedFloor,
+  setSelectedFloor: (floor) => {
+    selectedFloor = floor
+  },
+  getSelectedApartment: () => selectedApartmentMesh,
+  clearSelectedApartment,
+  showApartmentsForFloor,
+  updateFloorAppearance,
+  emitFloorSelected: (floorData) => {
+    emit('floor-selected', floorData)
+  },
+})
 
 defineExpose({
   clearSelectedFloor,
