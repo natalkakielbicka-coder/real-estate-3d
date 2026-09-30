@@ -6,6 +6,7 @@ export const createApartmentPreview = ({
   buildingDepth,
   floorHeight,
   apartmentStatuses,
+  startY = floor.position.y,
 }) => {
   const apartments = floor.userData.apartments
 
@@ -45,7 +46,7 @@ export const createApartmentPreview = ({
 
     const targetZ = -buildingDepth / 2 + gap + apartmentDepth / 2 + row * (apartmentDepth + gap)
 
-    apartmentMesh.position.set(0, floor.position.y, 0)
+    apartmentMesh.position.set(0, startY, 0)
 
     apartmentMesh.scale.set(0.82, 0.82, 0.82)
 
@@ -55,6 +56,8 @@ export const createApartmentPreview = ({
       targetX,
       targetZ,
       baseY: floor.position.y,
+      startY,
+      targetY: floor.position.y,
       animationProgress: 0,
       animationDelay: index * 0.06,
     }

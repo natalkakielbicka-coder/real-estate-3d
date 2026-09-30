@@ -29,7 +29,7 @@ export const useApartmentPreview = ({
     apartmentPreviewFloor = null
   }
 
-  const showApartmentsForFloor = (floor) => {
+  const showApartmentsForFloor = (floor, startY = floor.position.y) => {
     clearApartmentPreview()
 
     const apartments = floor.userData.apartments
@@ -44,6 +44,7 @@ export const useApartmentPreview = ({
       buildingDepth: buildingConfig.depth,
       floorHeight: buildingConfig.floorHeight,
       apartmentStatuses,
+      startY,
     })
 
     apartmentPreviewFloor = floor

@@ -25,7 +25,9 @@ export const useFloorSelection = ({
 
     setSelectedFloor(floor)
 
-    showApartmentsForFloor(floor)
+    const startY = previousSelectedFloor?.position.y ?? floor.position.y
+
+    showApartmentsForFloor(floor, startY)
 
     updateFloorAppearance(previousSelectedFloor)
     updateFloorAppearance(floor)

@@ -27,6 +27,12 @@ export const updateApartmentPreviewAnimation = ({
       easedProgress,
     )
 
+    apartmentMesh.position.y = THREE.MathUtils.lerp(
+      apartmentMesh.userData.startY,
+      apartmentMesh.userData.targetY,
+      easedProgress,
+    )
+
     apartmentMesh.position.z = THREE.MathUtils.lerp(
       0,
       apartmentMesh.userData.targetZ,
