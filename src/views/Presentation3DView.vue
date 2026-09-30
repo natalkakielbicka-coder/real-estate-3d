@@ -146,7 +146,7 @@ const handleSearchClear = () => {
 
 .presentation__stage {
   position: absolute;
-  top: 292px;
+  top: clamp(220px, 28vh, 292px);
   right: 28px;
   bottom: 24px;
   left: 28px;
@@ -183,7 +183,7 @@ const handleSearchClear = () => {
 
 @media (max-width: 767px) {
   .presentation__stage {
-    top: 294px;
+    top: 230px;
     right: 12px;
     bottom: 12px;
     left: 12px;
