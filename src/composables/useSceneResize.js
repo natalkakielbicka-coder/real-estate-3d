@@ -38,8 +38,11 @@ export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) =
       return
     }
 
-    const width = container.clientWidth
-    const height = container.clientHeight
+    const { width, height } = container.getBoundingClientRect()
+
+    if (!width || !height) {
+      return
+    }
 
     camera.aspect = width / height
     camera.updateProjectionMatrix()
@@ -55,6 +58,8 @@ export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) =
     resizeObserver.observe(sceneContainer.value)
 
     window.addEventListener('resize', handleResize)
+
+    handleResize()
   }
 
   const stopResizeObserver = () => {
