@@ -13,11 +13,15 @@ export const useFloorSelection = ({
       return
     }
 
+    const previousSelectedFloor = getSelectedFloor()
+
+    if (previousSelectedFloor === floor) {
+      return
+    }
+
     if (getSelectedApartment()) {
       clearSelectedApartment()
     }
-
-    const previousSelectedFloor = getSelectedFloor()
 
     setSelectedFloor(floor)
 
