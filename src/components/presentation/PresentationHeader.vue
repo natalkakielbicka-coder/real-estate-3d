@@ -14,13 +14,10 @@ import { RouterLink } from 'vue-router'
     </RouterLink>
 
     <nav class="presentation-header__nav" aria-label="Główna nawigacja">
-      <RouterLink to="/">Inwestycja</RouterLink>
+      <RouterLink to="/" class="presentation-header__nav-active">Inwestycja</RouterLink>
       <span>Mieszkania</span>
       <span>Lokalizacja</span>
       <span>Galeria</span>
-      <RouterLink to="/prezentacja-3d" class="presentation-header__nav-active">
-        Prezentacja 3D
-      </RouterLink>
     </nav>
 
     <button type="button" class="presentation-header__contact">
