@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { buildings } from '../../data/buildings'
+import { getRoomsLabel } from '../../utils/getRoomsLabel'
 
 const emit = defineEmits(['select-apartment', 'filter-results', 'clear-filter-results'])
 
@@ -277,7 +278,7 @@ const resetFilters = () => {
 
                 <span class="apartment-search__meta">
                   {{ apartment.rooms }}
-                  {{ apartment.rooms === 1 ? 'pokój' : 'pokoje' }}
+                  {{ getRoomsLabel(apartment.rooms) }}
                   ·
                   {{ apartment.area }} m² · {{ apartment.price.toLocaleString('pl-PL') }} zł
                 </span>
