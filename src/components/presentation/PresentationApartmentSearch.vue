@@ -7,6 +7,7 @@ const emit = defineEmits(['select-apartment', 'filter-results', 'clear-filter-re
 
 const isOpen = ref(false)
 const showResults = ref(false)
+const searchRef = ref(null)
 
 const selectedRooms = ref([])
 const selectedStatuses = ref([])
@@ -127,17 +128,25 @@ const handleKeydown = (event) => {
   }
 }
 
+const handleClickOutside = (event) => {
+  if (!searchRef.value?.contains(event.target)) {
+    isOpen.value = false
+  }
+}
+
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
+  document.addEventListener('pointerdown', handleClickOutside)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('pointerdown', handleClickOutside)
 })
 </script>
 
 <template>
-  <div class="apartment-search">
+  <div ref="searchRef" class="apartment-search">
     <button
       type="button"
       class="apartment-search__trigger"
