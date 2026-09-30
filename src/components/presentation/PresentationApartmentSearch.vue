@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { buildings } from '../../data/buildings'
 import { getRoomsLabel } from '../../utils/getRoomsLabel'
 
@@ -120,6 +120,20 @@ const resetFilters = () => {
 
   emit('clear-filter-results')
 }
+
+const handleKeydown = (event) => {
+  if (event.key === 'Escape') {
+    isOpen.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
