@@ -43,6 +43,7 @@ let ground
 let animationFrameId
 let selectedFloor = null
 let selectedApartmentMesh = null
+let getApartmentPreview
 const {
   updateFloorAppearance,
   clearHoveredFloor,
@@ -77,7 +78,6 @@ const { clearApartmentPreview, showApartmentsForFloor } = apartmentPreviewCompos
 
 let startResizeObserver
 let stopResizeObserver
-let getApartmentPreview
 let setCameraTarget
 let updateCameraAnimation
 let saveCurrentCameraPosition
@@ -162,6 +162,8 @@ const clearSelectedFloor = () => {
   const previousSelectedFloor = selectedFloor
 
   clearApartmentPreview()
+
+  selectedApartmentMesh = null
 
   clearSavedCameraPosition()
 
