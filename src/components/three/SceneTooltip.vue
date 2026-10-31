@@ -33,7 +33,7 @@ defineProps({
       </span>
 
       <span>
-        Piętro <strong>{{ tooltip.floor }}</strong>
+        Kondygnacja <strong>{{ tooltip.floor }}</strong>
       </span>
 
       <span>

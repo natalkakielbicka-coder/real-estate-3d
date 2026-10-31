@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { apartmentStatusLabels } from '../../constants/apartmentStatuses'
-import { getRoomsLabel, formatPrice } from '../../utils/apartmentFormatters'
+import { getRoomsLabel, formatPrice, formatFloorLabel } from '../../utils/apartmentFormatters'
 
 const props = defineProps({
   selectedFloor: {
@@ -67,11 +67,7 @@ const nextApartment = computed(() => {
   return selectableApartments.value[currentApartmentIndex.value + 1]
 })
 
-const floorLabel = computed(() => {
-  return props.selectedFloor.floorNumber === 0
-    ? 'Parter'
-    : `Piętro ${props.selectedFloor.floorNumber}`
-})
+const floorLabel = computed(() => formatFloorLabel(props.selectedFloor.floorNumber))
 </script>
 
 <template>
@@ -133,11 +129,7 @@ const floorLabel = computed(() => {
 
           <div class="apartment-details__item">
             <span>Piętro</span>
-            <strong>
-              {{
-                selectedFloor.floorNumber === 0 ? 'Parter' : `Piętro ${selectedFloor.floorNumber}`
-              }}
-            </strong>
+            <strong>{{ floorLabel }}</strong>
           </div>
 
           <div class="apartment-details__item">
@@ -238,7 +230,7 @@ const floorLabel = computed(() => {
           <div class="floor-panel__detail">
             <span>Piętro</span>
             <strong>
-              {{ selectedFloor.floorNumber === 0 ? 'Parter' : selectedFloor.floorNumber }}
+              {{ floorLabel }}
             </strong>
           </div>
         </div>

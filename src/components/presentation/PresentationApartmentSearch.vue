@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { buildings } from '../../data/buildings'
-import { getRoomsLabel } from '../../utils/apartmentFormatters'
+import { getRoomsLabel, formatFloorLabel } from '../../utils/apartmentFormatters'
 
 const emit = defineEmits(['select-apartment', 'filter-results', 'clear-filter-results'])
 
@@ -307,7 +307,7 @@ onBeforeUnmount(() => {
               </div>
 
               <span class="apartment-search__floor">
-                {{ apartment.floorNumber === 0 ? 'Parter' : `Piętro ${apartment.floorNumber}` }}
+                {{ formatFloorLabel(apartment.floorNumber) }}
               </span>
             </button>
           </div>
