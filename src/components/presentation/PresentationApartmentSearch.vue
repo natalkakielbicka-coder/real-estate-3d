@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { buildings } from '../../data/buildings'
-import { getRoomsLabel } from '../../utils/getRoomsLabel'
+import { getRoomsLabel } from '../../utils/apartmentFormatters'
 
 const emit = defineEmits(['select-apartment', 'filter-results', 'clear-filter-results'])
 
@@ -300,7 +300,6 @@ onBeforeUnmount(() => {
                 <strong>{{ apartment.number }}</strong>
 
                 <span class="apartment-search__meta">
-                  {{ apartment.rooms }}
                   {{ getRoomsLabel(apartment.rooms) }}
                   ·
                   {{ apartment.area }} m² · {{ apartment.price.toLocaleString('pl-PL') }} zł
