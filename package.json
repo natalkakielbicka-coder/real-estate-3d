@@ -10,7 +10,8 @@
     "test:unit": "vitest",
     "test:e2e": "playwright test",
     "lint": "eslint .",
-    "format": "prettier --write --experimental-cli src/"
+    "format": "prettier --write --experimental-cli src/",
+    "format:check": "prettier --check src/"
   },
   "dependencies": {
     "three": "^0.186.0",
