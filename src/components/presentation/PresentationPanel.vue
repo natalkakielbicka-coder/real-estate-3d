@@ -1,7 +1,12 @@
 <script setup>
 import { computed } from 'vue'
 import { apartmentStatusLabels } from '../../constants/apartmentStatuses'
-import { getRoomsLabel, formatPrice, formatFloorLabel } from '../../utils/apartmentFormatters'
+import {
+  getRoomsLabel,
+  formatPrice,
+  formatFloorLabel,
+  formatPricePerSquareMeter,
+} from '../../utils/apartmentFormatters'
 
 const props = defineProps({
   selectedFloor: {
@@ -145,7 +150,7 @@ const floorLabel = computed(() => formatFloorLabel(props.selectedFloor.floorNumb
           <div class="apartment-details__item">
             <span>Cena za m²</span>
             <strong>
-              {{ formatPrice(selectedApartment.price / selectedApartment.area) }}
+              {{ formatPricePerSquareMeter(selectedApartment.price, selectedApartment.area) }}
             </strong>
           </div>
         </div>

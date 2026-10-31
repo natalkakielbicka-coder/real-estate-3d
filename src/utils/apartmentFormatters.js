@@ -21,3 +21,11 @@ export const formatPrice = (price) => {
 export const formatFloorLabel = (floorNumber) => {
   return floorNumber === 0 ? 'Parter' : `Piętro ${floorNumber}`
 }
+
+export const formatPricePerSquareMeter = (price, area) => {
+  if (!Number.isFinite(price) || !Number.isFinite(area) || area <= 0) {
+    return '—'
+  }
+
+  return `${formatPrice(price / area)}/m²`
+}
