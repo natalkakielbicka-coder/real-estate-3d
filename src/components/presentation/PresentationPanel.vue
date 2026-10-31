@@ -645,7 +645,8 @@ const copyApartmentLink = async () => {
 .apartment-details__share {
   width: 100%;
   margin-top: 8px;
-  padding: 11px 12px;
+  height: 36px;
+  padding: 0 12px;
   border: 1px solid #dedad1;
   border-radius: 9px;
   background: #faf9f6;
