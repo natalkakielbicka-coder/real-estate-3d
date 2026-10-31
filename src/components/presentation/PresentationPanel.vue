@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { apartmentStatusLabels } from '../../constants/apartmentStatuses'
 import {
   getRoomsLabel,
@@ -73,6 +73,18 @@ const nextApartment = computed(() => {
 })
 
 const floorLabel = computed(() => formatFloorLabel(props.selectedFloor.floorNumber))
+
+const linkCopied = ref(false)
+
+const copyApartmentLink = async () => {
+  await navigator.clipboard.writeText(window.location.href)
+
+  linkCopied.value = true
+
+  setTimeout(() => {
+    linkCopied.value = false
+  }, 2000)
+}
 </script>
 
 <template>
@@ -174,6 +186,10 @@ const floorLabel = computed(() => formatFloorLabel(props.selectedFloor.floorNumb
             Następne →
           </button>
         </div>
+
+        <button type="button" class="apartment-details__share" @click="copyApartmentLink">
+          {{ linkCopied ? 'Skopiowano link ✓' : 'Kopiuj link do mieszkania' }}
+        </button>
       </div>
 
       <!-- PIĘTRO -->
@@ -624,6 +640,29 @@ const floorLabel = computed(() => formatFloorLabel(props.selectedFloor.floorNumb
 .apartment-details__navigation-button:disabled {
   cursor: default;
   opacity: 0.35;
+}
+
+.apartment-details__share {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px 12px;
+  border: 1px solid #dedad1;
+  border-radius: 9px;
+  background: #faf9f6;
+  color: #60655b;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.apartment-details__share:hover {
+  border-color: #aeb7a5;
+  color: #2e342b;
+}
+
+.apartment-details__share:focus-visible {
+  outline: 2px solid #9caa88;
+  outline-offset: 3px;
 }
 
 .floor-panel__content {
