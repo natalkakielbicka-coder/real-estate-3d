@@ -659,6 +659,15 @@ const floorLabel = computed(() => formatFloorLabel(props.selectedFloor.floorNumb
   opacity: 0;
 }
 
+.panel-content-forward-leave-active,
+.panel-content-back-leave-active {
+  position: absolute;
+  top: 28px;
+  right: 24px;
+  left: 24px;
+  min-height: 0;
+}
+
 .floor-panel__breadcrumb {
   display: flex;
   align-items: center;
