@@ -84,16 +84,28 @@ const router = useRouter()
 const route = useRoute()
 
 const openFromQuery = (query) => {
-  const floorNumber = Number(query.floor)
-
-  if (!query.floor || Number.isNaN(floorNumber)) {
+  if (!query.floor) {
     handlePanelClose()
     return
   }
 
+  const floorNumber = Number(query.floor)
+
   threeScene.value?.selectFloorByNumber(floorNumber)
 
-  const apartment = selectedFloor.value?.apartments.find((item) => item.id === query.apartment)
+  if (selectedFloor.value?.floorNumber !== floorNumber) {
+    handlePanelClose()
+    router.replace({ query: {} })
+    return
+  }
+
+  const apartment = selectedFloor.value.apartments.find(
+    (item) => item.id === query.apartment && item.status !== 'sold',
+  )
+
+  if (query.apartment && !apartment) {
+    router.replace({ query: { floor: floorNumber } })
+  }
 
   if (apartment && apartment.id !== selectedApartment.value?.id) {
     handlePanelApartmentSelected(apartment)
