@@ -86,17 +86,34 @@ const route = useRoute()
 onMounted(() => {
   const floorNumber = Number(route.query.floor)
 
-  if (route.query.floor && !Number.isNaN(floorNumber)) {
-    threeScene.value?.selectFloorByNumber(floorNumber)
+  if (!route.query.floor || Number.isNaN(floorNumber)) {
+    return
+  }
+
+  threeScene.value?.selectFloorByNumber(floorNumber)
+
+  const apartment = selectedFloor.value?.apartments.find(
+    (item) => item.id === route.query.apartment,
+  )
+
+  if (apartment) {
+    handlePanelApartmentSelected(apartment)
   }
 })
 
-watch(selectedFloor, (floor) => {
-  if (floor) {
-    router.push({ query: { floor: floor.floorNumber } })
-  } else {
+watch([selectedFloor, selectedApartment], ([floor, apartment]) => {
+  if (!floor) {
     router.push({ query: {} })
+    return
   }
+
+  const query = { floor: floor.floorNumber }
+
+  if (apartment) {
+    query.apartment = apartment.id
+  }
+
+  router.push({ query })
 })
 </script>
 
