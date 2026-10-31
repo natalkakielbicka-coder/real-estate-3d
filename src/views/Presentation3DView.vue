@@ -108,7 +108,7 @@ onMounted(() => {
 
 watch(() => route.query, openFromQuery)
 
-watch([selectedFloor, selectedApartment], ([floor, apartment]) => {
+watch([selectedFloor, selectedApartment], ([floor, apartment], [, previousApartment]) => {
   if (!floor) {
     router.push({ query: {} })
     return
@@ -120,7 +120,11 @@ watch([selectedFloor, selectedApartment], ([floor, apartment]) => {
     query.apartment = apartment.id
   }
 
-  router.push({ query })
+  if (apartment && previousApartment) {
+    router.replace({ query })
+  } else {
+    router.push({ query })
+  }
 })
 </script>
 
