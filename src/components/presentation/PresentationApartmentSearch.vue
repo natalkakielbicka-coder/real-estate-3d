@@ -45,6 +45,26 @@ const filteredApartments = computed(() =>
   }),
 )
 
+const rangeError = computed(() => {
+  const hasInvalidRange = (min, max) => {
+    if (min === '' || max === '') {
+      return false
+    }
+
+    return Number(min) > Number(max)
+  }
+
+  if (hasInvalidRange(minArea.value, maxArea.value)) {
+    return 'Minimalna powierzchnia nie może być większa od maksymalnej.'
+  }
+
+  if (hasInvalidRange(minPrice.value, maxPrice.value)) {
+    return 'Minimalna cena nie może być większa od maksymalnej.'
+  }
+
+  return ''
+})
+
 const toggleRoom = (rooms) => {
   if (selectedRooms.value.includes(rooms)) {
     selectedRooms.value = selectedRooms.value.filter((item) => item !== rooms)
@@ -66,6 +86,11 @@ const toggleStatus = (status) => {
 }
 
 const handleSubmit = () => {
+  if (rangeError.value) {
+    showResults.value = false
+    return
+  }
+
   showResults.value = true
 
   emit(
@@ -249,16 +274,25 @@ onBeforeUnmount(() => {
           </strong>
         </div>
 
+        <p v-if="rangeError" class="apartment-search__error" role="alert">
+          {{ rangeError }}
+        </p>
+
         <button type="button" class="apartment-search__reset" @click="resetFilters">
           Wyczyść filtry
         </button>
 
-        <button type="button" class="apartment-search__submit" @click="handleSubmit">
+        <button
+          type="button"
+          class="apartment-search__submit"
+          :disabled="Boolean(rangeError)"
+          @click="handleSubmit"
+        >
           Pokaż mieszkania
           <span>→</span>
         </button>
 
-        <div v-if="showResults" class="apartment-search__apartments">
+        <div v-if="showResults && !rangeError" class="apartment-search__apartments">
           <span class="apartment-search__apartments-title"> Pasujące mieszkania </span>
 
           <div v-if="filteredApartments.length" class="apartment-search__apartments-list">
@@ -645,5 +679,21 @@ onBeforeUnmount(() => {
 
 .apartment-search__reset:hover {
   color: #34452f;
+}
+
+.apartment-search__error {
+  margin: 1rem 0 0;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid #e9b7b7;
+  border-radius: 0.5rem;
+  background: #fff3f3;
+  color: #a33a3a;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.apartment-search__submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 </style>
