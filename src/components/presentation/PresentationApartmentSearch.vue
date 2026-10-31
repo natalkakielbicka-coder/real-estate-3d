@@ -2,6 +2,8 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { buildings } from '../../data/buildings'
 import { getRoomsLabel, formatFloorLabel } from '../../utils/apartmentFormatters'
+import { getAllApartments } from '../../utils/getAllApartments'
+import { filterApartments } from '../../utils/filterApartments'
 
 const emit = defineEmits(['select-apartment', 'filter-results', 'clear-filter-results'])
 
@@ -30,46 +32,18 @@ const statusOptions = [
   },
 ]
 
-const apartments = computed(() => {
-  return buildings.flatMap((building) =>
-    building.floors.flatMap((floor) =>
-      floor.apartments.map((apartment) => ({
-        ...apartment,
-        floorNumber: floor.floorNumber,
-        buildingId: building.id,
-        buildingName: building.name,
-      })),
-    ),
-  )
-})
+const apartments = getAllApartments(buildings)
 
-const filteredApartments = computed(() => {
-  return apartments.value.filter((apartment) => {
-    const matchesRooms =
-      selectedRooms.value.length === 0 ||
-      selectedRooms.value.includes(apartment.rooms >= 4 ? 4 : apartment.rooms)
-
-    const matchesStatus =
-      selectedStatuses.value.length === 0 || selectedStatuses.value.includes(apartment.status)
-
-    const matchesMinArea = !minArea.value || apartment.area >= Number(minArea.value)
-
-    const matchesMaxArea = !maxArea.value || apartment.area <= Number(maxArea.value)
-
-    const matchesMinPrice = !minPrice.value || apartment.price >= Number(minPrice.value)
-
-    const matchesMaxPrice = !maxPrice.value || apartment.price <= Number(maxPrice.value)
-
-    return (
-      matchesRooms &&
-      matchesStatus &&
-      matchesMinArea &&
-      matchesMaxArea &&
-      matchesMinPrice &&
-      matchesMaxPrice
-    )
-  })
-})
+const filteredApartments = computed(() =>
+  filterApartments(apartments, {
+    rooms: selectedRooms.value,
+    statuses: selectedStatuses.value,
+    minArea: minArea.value,
+    maxArea: maxArea.value,
+    minPrice: minPrice.value,
+    maxPrice: maxPrice.value,
+  }),
+)
 
 const toggleRoom = (rooms) => {
   if (selectedRooms.value.includes(rooms)) {
