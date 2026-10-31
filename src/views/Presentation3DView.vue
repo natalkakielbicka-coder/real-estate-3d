@@ -83,23 +83,30 @@ const handleSearchClear = () => {
 const router = useRouter()
 const route = useRoute()
 
-onMounted(() => {
-  const floorNumber = Number(route.query.floor)
+const openFromQuery = (query) => {
+  const floorNumber = Number(query.floor)
 
-  if (!route.query.floor || Number.isNaN(floorNumber)) {
+  if (!query.floor || Number.isNaN(floorNumber)) {
+    handlePanelClose()
     return
   }
 
   threeScene.value?.selectFloorByNumber(floorNumber)
 
-  const apartment = selectedFloor.value?.apartments.find(
-    (item) => item.id === route.query.apartment,
-  )
+  const apartment = selectedFloor.value?.apartments.find((item) => item.id === query.apartment)
 
-  if (apartment) {
+  if (apartment && apartment.id !== selectedApartment.value?.id) {
     handlePanelApartmentSelected(apartment)
+  } else if (!apartment && selectedApartment.value) {
+    handleApartmentBack()
   }
+}
+
+onMounted(() => {
+  openFromQuery(route.query)
 })
+
+watch(() => route.query, openFromQuery)
 
 watch([selectedFloor, selectedApartment], ([floor, apartment]) => {
   if (!floor) {
