@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import ThreeScene from '../components/three/ThreeScene.vue'
 import PresentationPanel from '../components/presentation/PresentationPanel.vue'
 import PresentationHeader from '../components/presentation/PresentationHeader.vue'
@@ -78,6 +79,16 @@ const handleSearchResults = (apartmentIds) => {
 const handleSearchClear = () => {
   threeScene.value?.clearSearchMatches?.()
 }
+
+const router = useRouter()
+
+watch(selectedFloor, (floor) => {
+  if (floor) {
+    router.push({ query: { floor: floor.floorNumber } })
+  } else {
+    router.push({ query: {} })
+  }
+})
 </script>
 
 <template>
