@@ -17,3 +17,7 @@ export const formatPrice = (price) => {
     maximumFractionDigits: 0,
   }).format(price)
 }
+
+export const formatFloorLabel = (floorNumber) => {
+  return floorNumber === 0 ? 'Parter' : `Piętro ${floorNumber}`
+}
