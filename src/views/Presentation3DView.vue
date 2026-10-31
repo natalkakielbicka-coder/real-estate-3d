@@ -1,6 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import ThreeScene from '../components/three/ThreeScene.vue'
 import PresentationPanel from '../components/presentation/PresentationPanel.vue'
 import PresentationHeader from '../components/presentation/PresentationHeader.vue'
@@ -81,6 +81,15 @@ const handleSearchClear = () => {
 }
 
 const router = useRouter()
+const route = useRoute()
+
+onMounted(() => {
+  const floorNumber = Number(route.query.floor)
+
+  if (route.query.floor && !Number.isNaN(floorNumber)) {
+    threeScene.value?.selectFloorByNumber(floorNumber)
+  }
+})
 
 watch(selectedFloor, (floor) => {
   if (floor) {
