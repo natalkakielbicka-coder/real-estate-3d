@@ -4,6 +4,7 @@ import {
   formatPrice,
   formatFloorLabel,
   formatPricePerSquareMeter,
+  getApartmentsCountLabel,
 } from '../apartmentFormatters'
 
 describe('apartmentFormatters', () => {
@@ -59,6 +60,27 @@ describe('apartmentFormatters', () => {
     it('handles invalid numbers', () => {
       expect(formatPricePerSquareMeter(NaN, 50)).toBe('—')
       expect(formatPricePerSquareMeter(450000, Infinity)).toBe('—')
+    })
+  })
+
+  describe('getApartmentsCountLabel', () => {
+    it('uses singular form for one apartment', () => {
+      expect(getApartmentsCountLabel(1)).toBe('1 mieszkanie')
+    })
+
+    it('uses "mieszkania" for 2-4, 22-24 etc.', () => {
+      expect(getApartmentsCountLabel(2)).toBe('2 mieszkania')
+      expect(getApartmentsCountLabel(4)).toBe('4 mieszkania')
+      expect(getApartmentsCountLabel(23)).toBe('23 mieszkania')
+    })
+
+    it('uses "mieszkań" for 0, 5-21 and teens', () => {
+      expect(getApartmentsCountLabel(0)).toBe('0 mieszkań')
+      expect(getApartmentsCountLabel(5)).toBe('5 mieszkań')
+      expect(getApartmentsCountLabel(12)).toBe('12 mieszkań')
+      expect(getApartmentsCountLabel(14)).toBe('14 mieszkań')
+      expect(getApartmentsCountLabel(21)).toBe('21 mieszkań')
+      expect(getApartmentsCountLabel(112)).toBe('112 mieszkań')
     })
   })
 })

@@ -10,6 +10,21 @@ export const getRoomsLabel = (rooms) => {
   return `${rooms} pokoi`
 }
 
+export const getApartmentsCountLabel = (count) => {
+  const lastDigit = count % 10
+  const lastTwoDigits = count % 100
+
+  if (count === 1) {
+    return '1 mieszkanie'
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4 && (lastTwoDigits < 12 || lastTwoDigits > 14)) {
+    return `${count} mieszkania`
+  }
+
+  return `${count} mieszkań`
+}
+
 export const formatPrice = (price) => {
   return new Intl.NumberFormat('pl-PL', {
     style: 'currency',

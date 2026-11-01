@@ -1,7 +1,11 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { buildings } from '../../data/buildings'
-import { getRoomsLabel, formatFloorLabel } from '../../utils/apartmentFormatters'
+import {
+  getRoomsLabel,
+  formatFloorLabel,
+  getApartmentsCountLabel,
+} from '../../utils/apartmentFormatters'
 import { getAllApartments } from '../../utils/getAllApartments'
 import { isApartmentSelectable } from '../../utils/isApartmentSelectable'
 import { useApartmentSearch } from '../../composables/useApartmentSearch'
@@ -211,12 +215,11 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <div class="apartment-search__results">
+        <div class="apartment-search__results" aria-live="polite" aria-atomic="true">
           <span>Znaleziono</span>
 
           <strong>
-            {{ filteredApartments.length }}
-            mieszkań
+            {{ rangeError ? '—' : getApartmentsCountLabel(filteredApartments.length) }}
           </strong>
         </div>
 
