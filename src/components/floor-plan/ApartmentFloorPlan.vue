@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { getFloorPlanLayout } from '@/data/floorPlanLayouts'
 
 const props = defineProps({
@@ -48,6 +48,20 @@ const viewBox = computed(() => {
 })
 
 const openings = computed(() => layout.value?.openings ?? [])
+
+const hoveredRoomId = ref(null)
+
+const emit = defineEmits(['room-hover'])
+
+const handleRoomHover = (room) => {
+  hoveredRoomId.value = room.id
+  emit('room-hover', room)
+}
+
+const handleRoomLeave = () => {
+  hoveredRoomId.value = null
+  emit('room-hover', null)
+}
 </script>
 
 <template>
@@ -83,7 +97,16 @@ const openings = computed(() => layout.value?.openings ?? [])
         </defs>
 
         <!-- Kolorowe powierzchnie pomieszczeń -->
-        <g v-for="room in rooms" :key="room.id" class="floor-plan__room">
+        <g
+          v-for="room in rooms"
+          :key="room.id"
+          class="floor-plan__room"
+          :class="{
+            'floor-plan__room--hovered': hoveredRoomId === room.id,
+          }"
+          @mouseenter="handleRoomHover(room)"
+          @mouseleave="handleRoomLeave"
+        >
           <rect
             class="floor-plan__room-fill"
             :x="room.x"
@@ -209,5 +232,33 @@ const openings = computed(() => layout.value?.openings ?? [])
   padding: 2rem;
   color: #7b7f76;
   text-align: center;
+}
+
+.floor-plan__room {
+  cursor: pointer;
+}
+
+.floor-plan__room-fill {
+  fill: #e5ebe1;
+  transition: fill 0.2s ease;
+}
+
+.floor-plan__room:nth-child(even) .floor-plan__room-fill {
+  fill: #f0ece4;
+}
+
+/* Hover musi mieć wyższy priorytet */
+.floor-plan__room.floor-plan__room--hovered .floor-plan__room-fill {
+  fill: #b8cbb1;
+}
+
+.floor-plan__room {
+  cursor: pointer;
+}
+
+/* Ściany nie mogą przechwytywać hover pomieszczeń */
+.floor-plan__internal-wall,
+.floor-plan__external-wall {
+  pointer-events: none;
 }
 </style>

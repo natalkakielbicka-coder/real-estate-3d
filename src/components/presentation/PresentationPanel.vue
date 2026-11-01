@@ -32,6 +32,7 @@ const emit = defineEmits([
   'apartment-back',
   'apartment-hover',
   'apartment-hover-end',
+  'open-floor-plan',
 ])
 
 const sortedApartments = computed(() => sortApartmentsByStatus(props.selectedFloor.apartments))
@@ -172,6 +173,17 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
             Następne →
           </button>
         </div>
+
+        <button
+          v-if="selectedApartment.floorPlanType"
+          type="button"
+          class="apartment-details__floor-plan"
+          @click="emit('open-floor-plan')"
+        >
+          <span>▦</span>
+          Zobacz rzut 2D
+          <span>→</span>
+        </button>
 
         <button type="button" class="apartment-details__share" @click="copyApartmentLink">
           {{
@@ -794,6 +806,34 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
   height: 6px;
   border-radius: 50%;
   background: currentColor;
+}
+
+.apartment-details__floor-plan {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: #34452f;
+  color: #fff;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.apartment-details__floor-plan:hover {
+  background: #536b4a;
+}
+
+.apartment-details__floor-plan:focus-visible {
+  outline: 2px solid #899c80;
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
