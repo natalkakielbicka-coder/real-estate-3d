@@ -20,6 +20,7 @@ import { useApartmentPreview } from '../../composables/useApartmentPreview'
 import { useFloorSelection } from '../../composables/useFloorSelection'
 import SceneTooltip from './SceneTooltip.vue'
 import { sceneConfig } from '../../config/sceneConfig'
+import { isApartmentSelectable } from '../../utils/isApartmentSelectable'
 
 const sceneContainer = ref(null)
 
@@ -193,7 +194,7 @@ const resetView = () => {
 }
 
 const selectApartmentMesh = (apartmentMesh) => {
-  if (!apartmentMesh || apartmentMesh.userData.status === 'sold') {
+  if (!isApartmentSelectable(apartmentMesh?.userData)) {
     return
   }
 
@@ -225,7 +226,7 @@ const selectApartmentById = (apartmentId) => {
 const hoverApartmentById = (apartmentId) => {
   const apartmentMesh = findApartmentMeshById(apartmentId)
 
-  if (!apartmentMesh || apartmentMesh.userData.status === 'sold') {
+  if (!isApartmentSelectable(apartmentMesh?.userData)) {
     return
   }
 
@@ -283,7 +284,7 @@ const handlePointerMove = (event) => {
   if (hoveredObject.userData.type === 'apartment') {
     clearHoveredFloor()
 
-    if (hoveredObject.userData.status === 'sold') {
+    if (!isApartmentSelectable(hoveredObject.userData)) {
       clearHoveredApartment()
 
       showTooltip(hoveredObject, event, rect, selectedFloor)
@@ -334,7 +335,7 @@ const handleSceneClick = (event) => {
 
   // Kliknięcie mieszkania
   if (clickedObject.userData.type === 'apartment') {
-    if (clickedObject.userData.status === 'sold') {
+    if (!isApartmentSelectable(clickedObject.userData)) {
       return
     }
 
