@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { apartmentStatusLabels } from '../../constants/apartmentStatuses'
 import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
+import { getAdjacentApartments, sortApartmentsByStatus } from '../../utils/apartmentList'
 import {
   getRoomsLabel,
   formatPrice,
@@ -32,46 +33,17 @@ const emit = defineEmits([
   'apartment-hover-end',
 ])
 
-const apartmentStatusOrder = {
-  available: 0,
-  reserved: 1,
-  sold: 2,
-}
+const sortedApartments = computed(() => sortApartmentsByStatus(props.selectedFloor.apartments))
 
-const sortedApartments = computed(() => {
-  return [...props.selectedFloor.apartments].sort((a, b) => {
-    return apartmentStatusOrder[a.status] - apartmentStatusOrder[b.status]
-  })
-})
+const adjacentApartments = computed(() =>
+  getAdjacentApartments(
+    props.selectedFloor.apartments.filter(isApartmentSelectable),
+    props.selectedApartment?.id,
+  ),
+)
 
-const selectableApartments = computed(() => {
-  return props.selectedFloor.apartments.filter(isApartmentSelectable)
-})
-
-const currentApartmentIndex = computed(() => {
-  return selectableApartments.value.findIndex(
-    (apartment) => apartment.id === props.selectedApartment?.id,
-  )
-})
-
-const previousApartment = computed(() => {
-  if (currentApartmentIndex.value <= 0) {
-    return null
-  }
-
-  return selectableApartments.value[currentApartmentIndex.value - 1]
-})
-
-const nextApartment = computed(() => {
-  if (
-    currentApartmentIndex.value === -1 ||
-    currentApartmentIndex.value >= selectableApartments.value.length - 1
-  ) {
-    return null
-  }
-
-  return selectableApartments.value[currentApartmentIndex.value + 1]
-})
+const previousApartment = computed(() => adjacentApartments.value.previous)
+const nextApartment = computed(() => adjacentApartments.value.next)
 
 const floorLabel = computed(() => formatFloorLabel(props.selectedFloor.floorNumber))
 
