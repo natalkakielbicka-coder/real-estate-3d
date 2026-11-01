@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 import { buildings } from '../../data/buildings'
+import { countApartmentsByStatus } from '../../utils/countApartmentsByStatus'
+import { formatFloorLabel } from '../../utils/apartmentFormatters'
 
 defineProps({
   selectedFloor: {
@@ -12,11 +14,20 @@ defineProps({
 const emit = defineEmits(['select-floor'])
 
 const floors = computed(() => {
-  return [...buildings[0].floors].sort((a, b) => a.floorNumber - b.floorNumber)
+  return [...buildings[0].floors]
+    .sort((a, b) => a.floorNumber - b.floorNumber)
+    .map((floor) => ({
+      ...floor,
+      availableCount: countApartmentsByStatus(floor.apartments).available,
+    }))
 })
 
 const getFloorLabel = (floorNumber) => {
   return floorNumber === 0 ? 'Parter' : floorNumber
+}
+
+const getFloorAriaLabel = (floor) => {
+  return `${formatFloorLabel(floor.floorNumber)}: ${floor.availableCount} z ${floor.apartments.length} dostępnych`
 }
 </script>
 
@@ -33,9 +44,12 @@ const getFloorLabel = (floorNumber) => {
         :class="{
           'floor-selector__item--active': selectedFloor?.floorNumber === floor.floorNumber,
         }"
+        :aria-label="getFloorAriaLabel(floor)"
+        :title="getFloorAriaLabel(floor)"
         @click="emit('select-floor', floor.floorNumber)"
       >
         {{ getFloorLabel(floor.floorNumber) }}
+        <span class="floor-selector__count" aria-hidden="true">{{ floor.availableCount }}</span>
       </button>
     </div>
   </div>
@@ -71,6 +85,9 @@ const getFloorLabel = (floorNumber) => {
   font: inherit;
   font-size: 9px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .floor-selector__item:hover {
@@ -82,6 +99,22 @@ const getFloorLabel = (floorNumber) => {
   background: #34452f;
   color: #ffffff;
   font-weight: 600;
+}
+
+.floor-selector__count {
+  min-width: 14px;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: #edf4eb;
+  color: #557052;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.floor-selector__item--active .floor-selector__count {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
 }
 
 .floor-selector__item:focus-visible {

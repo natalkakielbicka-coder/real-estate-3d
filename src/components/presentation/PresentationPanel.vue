@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { apartmentStatusLabels } from '../../constants/apartmentStatuses'
+import { apartmentStatuses, apartmentStatusLabels } from '../../constants/apartmentStatuses'
+import { countApartmentsByStatus } from '../../utils/countApartmentsByStatus'
 import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
 import { getAdjacentApartments, sortApartmentsByStatus } from '../../utils/apartmentList'
 import {
@@ -46,6 +47,8 @@ const previousApartment = computed(() => adjacentApartments.value.previous)
 const nextApartment = computed(() => adjacentApartments.value.next)
 
 const floorLabel = computed(() => formatFloorLabel(props.selectedFloor.floorNumber))
+
+const statusCounts = computed(() => countApartmentsByStatus(props.selectedFloor.apartments))
 
 const linkCopied = ref(false)
 const linkCopyFailed = ref(false)
@@ -224,6 +227,19 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
               }"
             ></span>
           </div>
+
+          <ul class="floor-panel__status-counts">
+            <li
+              v-for="(config, status) in apartmentStatuses"
+              :key="status"
+              class="floor-panel__status-count"
+              :data-status="status"
+            >
+              <i :style="{ background: config.cssColor }" aria-hidden="true"></i>
+              {{ config.label }}
+              <strong>{{ statusCounts[status] }}</strong>
+            </li>
+          </ul>
         </div>
 
         <div class="floor-panel__details">
@@ -412,6 +428,34 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
   height: 100%;
   border-radius: inherit;
   background: #799274;
+}
+
+.floor-panel__status-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.floor-panel__status-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #7b7f76;
+  font-size: 10px;
+}
+
+.floor-panel__status-count i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.floor-panel__status-count strong {
+  color: #353932;
+  font-weight: 600;
 }
 
 .floor-panel__details {
