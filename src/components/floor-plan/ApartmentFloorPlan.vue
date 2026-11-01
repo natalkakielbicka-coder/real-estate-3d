@@ -30,6 +30,8 @@ const viewBox = computed(() => {
 
   return `0 0 ${layout.value.width} ${layout.value.height}`
 })
+
+const openings = computed(() => layout.value?.openings ?? [])
 </script>
 
 <template>
@@ -41,8 +43,38 @@ const viewBox = computed(() => {
         role="img"
         :aria-label="`Rzut mieszkania ${apartment.number}`"
       >
+        <defs>
+          <mask id="floor-plan-wall-mask" maskUnits="userSpaceOnUse">
+            <rect
+              x="-20"
+              y="-20"
+              :width="layout.width + 40"
+              :height="layout.height + 40"
+              fill="white"
+            />
+
+            <line
+              v-for="opening in openings"
+              :key="opening.id"
+              :x1="opening.x1"
+              :y1="opening.y1"
+              :x2="opening.x2"
+              :y2="opening.y2"
+              stroke="black"
+              stroke-width="22"
+            />
+          </mask>
+        </defs>
+
+        <!-- Kolorowe powierzchnie pomieszczeń -->
         <g v-for="room in rooms" :key="room.id" class="floor-plan__room">
-          <rect :x="room.x" :y="room.y" :width="room.width" :height="room.height" />
+          <rect
+            class="floor-plan__room-fill"
+            :x="room.x"
+            :y="room.y"
+            :width="room.width"
+            :height="room.height"
+          />
 
           <text
             :x="room.x + room.width / 2"
@@ -54,13 +86,26 @@ const viewBox = computed(() => {
           </text>
         </g>
 
-        <rect
-          class="floor-plan__outline"
-          x="0"
-          y="0"
-          :width="layout.width"
-          :height="layout.height"
-        />
+        <!-- Ściany działowe i zewnętrzne -->
+        <g mask="url(#floor-plan-wall-mask)">
+          <rect
+            v-for="room in rooms"
+            :key="room.id"
+            class="floor-plan__internal-wall"
+            :x="room.x"
+            :y="room.y"
+            :width="room.width"
+            :height="room.height"
+          />
+
+          <rect
+            class="floor-plan__external-wall"
+            x="0"
+            y="0"
+            :width="layout.width"
+            :height="layout.height"
+          />
+        </g>
       </svg>
     </div>
 
@@ -87,12 +132,6 @@ const viewBox = computed(() => {
   height: auto;
 }
 
-.floor-plan__room rect {
-  fill: #e5ebe1;
-  stroke: #777e72;
-  stroke-width: 4;
-}
-
 .floor-plan__room:nth-child(even) rect {
   fill: #f0ece4;
 }
@@ -105,10 +144,31 @@ const viewBox = computed(() => {
   pointer-events: none;
 }
 
-.floor-plan__outline {
+.floor-plan__room-fill {
+  fill: #e5ebe1;
+}
+
+.floor-plan__room:nth-child(even) .floor-plan__room-fill {
+  fill: #f0ece4;
+}
+
+.floor-plan__internal-wall {
+  fill: none;
+  stroke: #777e72;
+  stroke-width: 8;
+}
+
+.floor-plan__external-wall {
   fill: none;
   stroke: #34452f;
-  stroke-width: 8;
+  stroke-width: 14;
+}
+
+.floor-plan__room text {
+  fill: #343b33;
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 500;
   pointer-events: none;
 }
 
