@@ -1,13 +1,11 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref } from 'vue'
 import ThreeScene from '../components/three/ThreeScene.vue'
 import PresentationPanel from '../components/presentation/PresentationPanel.vue'
 import PresentationHeader from '../components/presentation/PresentationHeader.vue'
 import PresentationIntro from '@/components/presentation/PresentationIntro.vue'
 import PresentationSceneToolbar from '../components/presentation/PresentationSceneToolbar.vue'
-import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
-import { buildPresentationQuery, parsePresentationQuery } from '@/utils/presentationQuery'
+import { usePresentationQuerySync } from '@/composables/usePresentationQuerySync'
 
 const selectedFloor = ref(null)
 const selectedApartment = ref(null)
@@ -82,59 +80,13 @@ const handleSearchClear = () => {
   threeScene.value?.clearSearchMatches?.()
 }
 
-const router = useRouter()
-const route = useRoute()
-
-const openFromQuery = (query) => {
-  const { floorNumber, apartmentId } = parsePresentationQuery(query)
-
-  if (floorNumber === null) {
-    handlePanelClose()
-    return
-  }
-
-  threeScene.value?.selectFloorByNumber(floorNumber)
-
-  if (selectedFloor.value?.floorNumber !== floorNumber) {
-    handlePanelClose()
-    router.replace({ query: {} })
-    return
-  }
-
-  const apartment = selectedFloor.value.apartments.find(
-    (item) => item.id === apartmentId && isApartmentSelectable(item),
-  )
-
-  if (apartmentId && !apartment) {
-    router.replace({ query: buildPresentationQuery({ floor: selectedFloor.value }) })
-  }
-
-  if (apartment && apartment.id !== selectedApartment.value?.id) {
-    handlePanelApartmentSelected(apartment)
-  } else if (!apartment && selectedApartment.value) {
-    handleApartmentBack()
-  }
-}
-
-onMounted(() => {
-  openFromQuery(route.query)
-})
-
-watch(() => route.query, openFromQuery)
-
-watch([selectedFloor, selectedApartment], ([floor, apartment], [, previousApartment]) => {
-  if (!floor) {
-    router.push({ query: {} })
-    return
-  }
-
-  const query = buildPresentationQuery({ floor, apartment })
-
-  if (apartment && previousApartment) {
-    router.replace({ query })
-  } else {
-    router.push({ query })
-  }
+usePresentationQuerySync({
+  threeScene,
+  selectedFloor,
+  selectedApartment,
+  onClose: handlePanelClose,
+  onApartmentSelect: handlePanelApartmentSelected,
+  onApartmentBack: handleApartmentBack,
 })
 </script>
 
