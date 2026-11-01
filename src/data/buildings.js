@@ -1,15 +1,23 @@
+import { getFloorPlanType, getApartmentRooms } from './floorPlans'
+
 const createApartments = (floorNumber, statuses) => {
   return statuses.map((status, index) => {
     const area = 38 + index * 7
     const pricePerSquareMeter = 12500 + floorNumber * 250 + index * 180
 
-    return {
+    const apartment = {
       id: `A-${floorNumber}-${index + 1}`,
       number: `${floorNumber}.${index + 1}`,
       rooms: (index % 3) + 1,
       area,
       price: area * pricePerSquareMeter,
       status,
+    }
+
+    return {
+      ...apartment,
+      floorPlanType: getFloorPlanType(apartment.rooms),
+      roomDetails: getApartmentRooms(apartment),
     }
   })
 }
