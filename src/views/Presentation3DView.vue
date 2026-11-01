@@ -7,6 +7,7 @@ import PresentationHeader from '../components/presentation/PresentationHeader.vu
 import PresentationIntro from '@/components/presentation/PresentationIntro.vue'
 import PresentationSceneToolbar from '../components/presentation/PresentationSceneToolbar.vue'
 import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
+import { buildPresentationQuery, parsePresentationQuery } from '@/utils/presentationQuery'
 
 const selectedFloor = ref(null)
 const selectedApartment = ref(null)
@@ -85,12 +86,12 @@ const router = useRouter()
 const route = useRoute()
 
 const openFromQuery = (query) => {
-  if (!query.floor) {
+  const { floorNumber, apartmentId } = parsePresentationQuery(query)
+
+  if (floorNumber === null) {
     handlePanelClose()
     return
   }
-
-  const floorNumber = Number(query.floor)
 
   threeScene.value?.selectFloorByNumber(floorNumber)
 
@@ -101,11 +102,11 @@ const openFromQuery = (query) => {
   }
 
   const apartment = selectedFloor.value.apartments.find(
-    (item) => item.id === query.apartment && isApartmentSelectable(item),
+    (item) => item.id === apartmentId && isApartmentSelectable(item),
   )
 
-  if (query.apartment && !apartment) {
-    router.replace({ query: { floor: floorNumber } })
+  if (apartmentId && !apartment) {
+    router.replace({ query: buildPresentationQuery({ floor: selectedFloor.value }) })
   }
 
   if (apartment && apartment.id !== selectedApartment.value?.id) {
@@ -127,11 +128,7 @@ watch([selectedFloor, selectedApartment], ([floor, apartment], [, previousApartm
     return
   }
 
-  const query = { floor: floor.floorNumber }
-
-  if (apartment) {
-    query.apartment = apartment.id
-  }
+  const query = buildPresentationQuery({ floor, apartment })
 
   if (apartment && previousApartment) {
     router.replace({ query })
