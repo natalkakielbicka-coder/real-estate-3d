@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { getFloorPlanLayout } from '@/data/floorPlanLayouts'
 
 const props = defineProps({
@@ -51,6 +51,16 @@ const openings = computed(() => layout.value?.openings ?? [])
 
 const hoveredRoomId = ref(null)
 
+const selectedRoomId = ref(null)
+
+const selectedRoom = computed(() => {
+  return rooms.value.find((room) => room.id === selectedRoomId.value) ?? null
+})
+
+const handleRoomSelect = (room) => {
+  selectedRoomId.value = selectedRoomId.value === room.id ? null : room.id
+}
+
 const emit = defineEmits(['room-hover'])
 
 const handleRoomHover = (room) => {
@@ -62,6 +72,14 @@ const handleRoomLeave = () => {
   hoveredRoomId.value = null
   emit('room-hover', null)
 }
+
+watch(
+  () => props.apartment.id,
+  () => {
+    selectedRoomId.value = null
+    hoveredRoomId.value = null
+  },
+)
 </script>
 
 <template>
@@ -97,15 +115,24 @@ const handleRoomLeave = () => {
         </defs>
 
         <!-- Kolorowe powierzchnie pomieszczeń -->
+
         <g
           v-for="room in rooms"
           :key="room.id"
           class="floor-plan__room"
           :class="{
             'floor-plan__room--hovered': hoveredRoomId === room.id,
+            'floor-plan__room--selected': selectedRoomId === room.id,
           }"
+          role="button"
+          tabindex="0"
+          :aria-label="`${room.name}, ${formatArea(room.area)}`"
+          :aria-pressed="selectedRoomId === room.id"
           @mouseenter="handleRoomHover(room)"
           @mouseleave="handleRoomLeave"
+          @click="handleRoomSelect(room)"
+          @keydown.enter.prevent="handleRoomSelect(room)"
+          @keydown.space.prevent="handleRoomSelect(room)"
         >
           <rect
             class="floor-plan__room-fill"
@@ -162,6 +189,31 @@ const handleRoomLeave = () => {
           />
         </g>
       </svg>
+
+      <Transition name="room-details">
+        <div v-if="selectedRoom" class="floor-plan__details">
+          <div class="floor-plan__details-content">
+            <span class="floor-plan__details-label"> Wybrane pomieszczenie </span>
+
+            <strong class="floor-plan__details-name">
+              {{ selectedRoom.name }}
+            </strong>
+
+            <span class="floor-plan__details-area">
+              {{ formatArea(selectedRoom.area) }}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="floor-plan__details-close"
+            aria-label="Odznacz pomieszczenie"
+            @click="selectedRoomId = null"
+          >
+            ×
+          </button>
+        </div>
+      </Transition>
     </div>
 
     <p v-else class="floor-plan__empty">Brak rzutu dla wybranego mieszkania.</p>
@@ -260,5 +312,94 @@ const handleRoomLeave = () => {
 .floor-plan__internal-wall,
 .floor-plan__external-wall {
   pointer-events: none;
+}
+
+/* Wybrane pomieszczenie */
+.floor-plan__room.floor-plan__room--selected .floor-plan__room-fill {
+  fill: #91ad86;
+}
+
+/* Hover wybranego pomieszczenia */
+.floor-plan__room.floor-plan__room--selected.floor-plan__room--hovered .floor-plan__room-fill {
+  fill: #83a078;
+}
+
+/* Obsługa klawiatury */
+.floor-plan__room:focus-visible {
+  outline: none;
+}
+
+.floor-plan__room:focus-visible .floor-plan__room-fill {
+  stroke: #34452f;
+  stroke-width: 6;
+}
+
+/* Panel szczegółów */
+.floor-plan__details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #d8e2d3;
+  border-radius: 0.875rem;
+  background: #eef3eb;
+}
+
+.floor-plan__details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.floor-plan__details-label {
+  color: #798b73;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.floor-plan__details-name {
+  color: #34452f;
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-weight: 600;
+}
+
+.floor-plan__details-area {
+  color: #657d62;
+  font-size: 0.875rem;
+}
+
+.floor-plan__details-close {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid #d8e2d3;
+  border-radius: 50%;
+  background: white;
+  color: #34452f;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.floor-plan__details-close:hover {
+  background: #dce8d7;
+}
+
+.room-details-enter-active,
+.room-details-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.room-details-enter-from,
+.room-details-leave-to {
+  opacity: 0;
+  transform: translateY(0.5rem);
 }
 </style>
