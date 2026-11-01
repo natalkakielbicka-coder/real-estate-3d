@@ -1,25 +1,16 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { buildings } from '../../data/buildings'
 import { getRoomsLabel, formatFloorLabel } from '../../utils/apartmentFormatters'
 import { getAllApartments } from '../../utils/getAllApartments'
-import { filterApartments } from '../../utils/filterApartments'
-import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
+import { isApartmentSelectable } from '../../utils/isApartmentSelectable'
+import { useApartmentSearch } from '../../composables/useApartmentSearch'
 
 const emit = defineEmits(['select-apartment', 'filter-results', 'clear-filter-results'])
 
 const isOpen = ref(false)
 const showResults = ref(false)
 const searchRef = ref(null)
-
-const selectedRooms = ref([])
-const selectedStatuses = ref([])
-
-const minArea = ref('')
-const maxArea = ref('')
-
-const minPrice = ref('')
-const maxPrice = ref('')
 
 const roomOptions = [1, 2, 3, 4]
 const statusOptions = [
@@ -33,58 +24,19 @@ const statusOptions = [
   },
 ]
 
-const apartments = getAllApartments(buildings)
-
-const filteredApartments = computed(() =>
-  filterApartments(apartments, {
-    rooms: selectedRooms.value,
-    statuses: selectedStatuses.value,
-    minArea: minArea.value,
-    maxArea: maxArea.value,
-    minPrice: minPrice.value,
-    maxPrice: maxPrice.value,
-  }),
-)
-
-const rangeError = computed(() => {
-  const hasInvalidRange = (min, max) => {
-    if (min === '' || max === '') {
-      return false
-    }
-
-    return Number(min) > Number(max)
-  }
-
-  if (hasInvalidRange(minArea.value, maxArea.value)) {
-    return 'Minimalna powierzchnia nie może być większa od maksymalnej.'
-  }
-
-  if (hasInvalidRange(minPrice.value, maxPrice.value)) {
-    return 'Minimalna cena nie może być większa od maksymalnej.'
-  }
-
-  return ''
-})
-
-const toggleRoom = (rooms) => {
-  if (selectedRooms.value.includes(rooms)) {
-    selectedRooms.value = selectedRooms.value.filter((item) => item !== rooms)
-
-    return
-  }
-
-  selectedRooms.value.push(rooms)
-}
-
-const toggleStatus = (status) => {
-  if (selectedStatuses.value.includes(status)) {
-    selectedStatuses.value = selectedStatuses.value.filter((item) => item !== status)
-
-    return
-  }
-
-  selectedStatuses.value.push(status)
-}
+const {
+  selectedRooms,
+  selectedStatuses,
+  minArea,
+  maxArea,
+  minPrice,
+  maxPrice,
+  filteredApartments,
+  rangeError,
+  toggleRoom,
+  toggleStatus,
+  resetFilters: resetSearchFilters,
+} = useApartmentSearch(getAllApartments(buildings))
 
 const handleSubmit = () => {
   if (rangeError.value) {
@@ -108,14 +60,7 @@ const handleApartmentSelect = (apartment) => {
 }
 
 const resetFilters = () => {
-  selectedRooms.value = []
-  selectedStatuses.value = []
-
-  minArea.value = ''
-  maxArea.value = ''
-
-  minPrice.value = ''
-  maxPrice.value = ''
+  resetSearchFilters()
 
   showResults.value = false
 
