@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { apartmentStatusLabels } from '../../constants/apartmentStatuses'
 import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
 import { getAdjacentApartments, sortApartmentsByStatus } from '../../utils/apartmentList'
@@ -48,16 +48,26 @@ const nextApartment = computed(() => adjacentApartments.value.next)
 const floorLabel = computed(() => formatFloorLabel(props.selectedFloor.floorNumber))
 
 const linkCopied = ref(false)
+const linkCopyFailed = ref(false)
+let copyFeedbackTimeout
 
 const copyApartmentLink = async () => {
-  await navigator.clipboard.writeText(window.location.href)
+  clearTimeout(copyFeedbackTimeout)
 
-  linkCopied.value = true
+  try {
+    await navigator.clipboard.writeText(window.location.href)
+    linkCopied.value = true
+  } catch {
+    linkCopyFailed.value = true
+  }
 
-  setTimeout(() => {
+  copyFeedbackTimeout = setTimeout(() => {
     linkCopied.value = false
+    linkCopyFailed.value = false
   }, 2000)
 }
+
+onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
 </script>
 
 <template>
@@ -161,7 +171,13 @@ const copyApartmentLink = async () => {
         </div>
 
         <button type="button" class="apartment-details__share" @click="copyApartmentLink">
-          {{ linkCopied ? 'Skopiowano link ✓' : 'Kopiuj link do mieszkania' }}
+          {{
+            linkCopied
+              ? 'Skopiowano link ✓'
+              : linkCopyFailed
+                ? 'Nie udało się skopiować'
+                : 'Kopiuj link do mieszkania'
+          }}
         </button>
       </div>
 
