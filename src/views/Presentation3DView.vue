@@ -6,6 +6,7 @@ import PresentationPanel from '../components/presentation/PresentationPanel.vue'
 import PresentationHeader from '../components/presentation/PresentationHeader.vue'
 import PresentationIntro from '@/components/presentation/PresentationIntro.vue'
 import PresentationSceneToolbar from '../components/presentation/PresentationSceneToolbar.vue'
+import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
 
 const selectedFloor = ref(null)
 const selectedApartment = ref(null)
@@ -100,7 +101,7 @@ const openFromQuery = (query) => {
   }
 
   const apartment = selectedFloor.value.apartments.find(
-    (item) => item.id === query.apartment && item.status !== 'sold',
+    (item) => item.id === query.apartment && isApartmentSelectable(item),
   )
 
   if (query.apartment && !apartment) {

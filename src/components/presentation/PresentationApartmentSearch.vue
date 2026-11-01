@@ -4,6 +4,7 @@ import { buildings } from '../../data/buildings'
 import { getRoomsLabel, formatFloorLabel } from '../../utils/apartmentFormatters'
 import { getAllApartments } from '../../utils/getAllApartments'
 import { filterApartments } from '../../utils/filterApartments'
+import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
 
 const emit = defineEmits(['select-apartment', 'filter-results', 'clear-filter-results'])
 
@@ -301,7 +302,7 @@ onBeforeUnmount(() => {
               :key="apartment.id"
               type="button"
               class="apartment-search__apartment"
-              :disabled="apartment.status === 'sold'"
+              :disabled="!isApartmentSelectable(apartment)"
               @click="handleApartmentSelect(apartment)"
             >
               <div>

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { apartmentStatusLabels } from '../../constants/apartmentStatuses'
+import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
 import {
   getRoomsLabel,
   formatPrice,
@@ -44,7 +45,7 @@ const sortedApartments = computed(() => {
 })
 
 const selectableApartments = computed(() => {
-  return props.selectedFloor.apartments.filter((apartment) => apartment.status !== 'sold')
+  return props.selectedFloor.apartments.filter(isApartmentSelectable)
 })
 
 const currentApartmentIndex = computed(() => {
@@ -265,7 +266,7 @@ const copyApartmentLink = async () => {
               :key="apartment.id"
               type="button"
               class="apartment-row"
-              :disabled="apartment.status === 'sold'"
+              :disabled="!isApartmentSelectable(apartment)"
               @click="emit('apartment-selected', apartment)"
               @mouseenter="emit('apartment-hover', apartment)"
               @mouseleave="emit('apartment-hover-end')"
