@@ -1,6 +1,7 @@
 <script setup>
 import PresentationFloorSelector from './PresentationFloorSelector.vue'
 import PresentationApartmentSearch from './PresentationApartmentSearch.vue'
+import StatusLegend from './StatusLegend.vue'
 
 defineProps({
   selectedFloor: {
@@ -37,22 +38,7 @@ defineEmits(['select-floor', 'select-apartment', 'filter-results', 'clear-filter
         @clear-filter-results="$emit('clear-filter-results')"
       />
 
-      <div class="scene-toolbar__legend">
-        <span class="scene-toolbar__legend-item">
-          <i class="scene-toolbar__dot scene-toolbar__dot--available"></i>
-          Dostępne
-        </span>
-
-        <span class="scene-toolbar__legend-item">
-          <i class="scene-toolbar__dot scene-toolbar__dot--reserved"></i>
-          Zarezerwowane
-        </span>
-
-        <span class="scene-toolbar__legend-item">
-          <i class="scene-toolbar__dot scene-toolbar__dot--sold"></i>
-          Sprzedane
-        </span>
-      </div>
+      <StatusLegend />
     </div>
   </div>
 </template>
@@ -124,46 +110,7 @@ defineEmits(['select-floor', 'select-apartment', 'filter-results', 'clear-filter
   font-size: 13px;
 }
 
-.scene-toolbar__legend {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.scene-toolbar__legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: #777b72;
-  font-size: 8px;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.scene-toolbar__dot {
-  width: 6px;
-  height: 6px;
-  flex-shrink: 0;
-  border-radius: 50%;
-}
-
-.scene-toolbar__dot--available {
-  background: #6f9a70;
-}
-
-.scene-toolbar__dot--reserved {
-  background: #c4a66d;
-}
-
-.scene-toolbar__dot--sold {
-  background: #d17979;
-}
-
 @media (max-width: 1199px) {
-  .scene-toolbar {
-    gap: 16px;
-  }
-
   .scene-toolbar__left {
     gap: 14px;
   }
@@ -178,10 +125,6 @@ defineEmits(['select-floor', 'select-apartment', 'filter-results', 'clear-filter
 }
 
 @media (max-width: 991px) {
-  .scene-toolbar {
-    flex-wrap: wrap;
-  }
-
   .scene-toolbar__left,
   .scene-toolbar__right {
     width: 100%;
@@ -207,19 +150,6 @@ defineEmits(['select-floor', 'select-apartment', 'filter-results', 'clear-filter
 
   .scene-toolbar__left {
     overflow-x: auto;
-  }
-
-  .scene-toolbar__legend {
-    gap: 10px;
-  }
-
-  .scene-toolbar__legend-item {
-    font-size: 0;
-  }
-
-  .scene-toolbar__dot {
-    width: 8px;
-    height: 8px;
   }
 }
 </style>
