@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import ThreeScene from '../components/three/ThreeScene.vue'
 import PresentationPanel from '../components/presentation/PresentationPanel.vue'
 import PresentationHeader from '../components/presentation/PresentationHeader.vue'
@@ -11,6 +11,12 @@ import { usePresentationQuerySync } from '@/composables/usePresentationQuerySync
 
 const threeScene = ref(null)
 const isFloorPlanOpen = ref(false)
+
+const floorPlanDialog = ref(null)
+const floorPlanCloseButton = ref(null)
+
+let previousFocusedElement = null
+let previousBodyOverflow = ''
 
 const {
   selectedFloor,
@@ -30,14 +36,76 @@ const {
   handleSearchClear,
 } = usePresentationState({ threeScene })
 
-const openFloorPlan = () => {
-  if (!selectedApartment.value) return
+const openFloorPlan = async () => {
+  if (!selectedApartment.value || isFloorPlanOpen.value) {
+    return
+  }
+
+  previousFocusedElement = document.activeElement
+  previousBodyOverflow = document.body.style.overflow
 
   isFloorPlanOpen.value = true
+  document.body.style.overflow = 'hidden'
+
+  await nextTick()
+
+  floorPlanCloseButton.value?.focus()
 }
 
 const closeFloorPlan = () => {
+  if (!isFloorPlanOpen.value) return
+
   isFloorPlanOpen.value = false
+  document.body.style.overflow = previousBodyOverflow
+
+  const elementToFocus = previousFocusedElement
+  previousFocusedElement = null
+
+  nextTick(() => {
+    if (elementToFocus?.isConnected) {
+      elementToFocus.focus()
+    }
+  })
+}
+
+const handleFloorPlanKeydown = (event) => {
+  if (!isFloorPlanOpen.value) return
+
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    closeFloorPlan()
+    return
+  }
+
+  if (event.key !== 'Tab') return
+
+  const dialog = floorPlanDialog.value
+
+  if (!dialog) return
+
+  const focusableElements = Array.from(
+    dialog.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((element) => element.getClientRects().length > 0)
+
+  if (!focusableElements.length) {
+    event.preventDefault()
+    dialog.focus()
+    return
+  }
+
+  const first = focusableElements[0]
+  const last = focusableElements[focusableElements.length - 1]
+  const active = document.activeElement
+
+  if (event.shiftKey && (active === first || active === dialog)) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && active === last) {
+    event.preventDefault()
+    first.focus()
+  }
 }
 
 watch(
@@ -46,6 +114,12 @@ watch(
     closeFloorPlan()
   },
 )
+
+onBeforeUnmount(() => {
+  if (isFloorPlanOpen.value) {
+    document.body.style.overflow = previousBodyOverflow
+  }
+})
 
 usePresentationQuerySync({
   threeScene,
@@ -106,10 +180,13 @@ usePresentationQuerySync({
         <div class="floor-plan-modal__backdrop" @click="closeFloorPlan"></div>
 
         <section
+          ref="floorPlanDialog"
           class="floor-plan-modal__dialog"
           role="dialog"
           aria-modal="true"
           aria-labelledby="floor-plan-title"
+          tabindex="-1"
+          @keydown="handleFloorPlanKeydown"
         >
           <div class="floor-plan-modal__header">
             <div>
@@ -121,6 +198,7 @@ usePresentationQuerySync({
             </div>
 
             <button
+              ref="floorPlanCloseButton"
               type="button"
               class="floor-plan-modal__close"
               aria-label="Zamknij rzut mieszkania"
@@ -278,6 +356,18 @@ usePresentationQuerySync({
 .floor-plan-modal-enter-from,
 .floor-plan-modal-leave-to {
   opacity: 0;
+}
+
+.floor-plan-modal__close:focus-visible {
+  outline: 2px solid #899c80;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floor-plan-modal-enter-active,
+  .floor-plan-modal-leave-active {
+    transition: none;
+  }
 }
 
 @media (max-width: 767px) {
