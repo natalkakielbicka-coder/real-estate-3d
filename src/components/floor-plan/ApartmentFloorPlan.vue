@@ -18,12 +18,28 @@ const roomDetails = computed(() => {
 const rooms = computed(() => {
   if (!layout.value) return []
 
-  return layout.value.rooms.map((room) => ({
-    ...room,
-    name: roomDetails.value.get(room.id)?.name ?? room.id,
-    area: roomDetails.value.get(room.id)?.area ?? null,
-  }))
+  return layout.value.rooms.map((room) => {
+    const details = roomDetails.value.get(room.id)
+
+    return {
+      ...room,
+      name: details?.name ?? room.id,
+      area: details?.area ?? null,
+      labelX: room.x + room.width / 2,
+      labelY: room.y + room.height / 2,
+      fontSize: Math.min(22, Math.max(12, Math.min(room.width / 14, room.height / 6))),
+    }
+  })
 })
+
+const formatArea = (area) => {
+  if (area == null) return ''
+
+  return `${area.toLocaleString('pl-PL', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })} m²`
+}
 
 const viewBox = computed(() => {
   if (!layout.value) return '0 0 1000 700'
@@ -77,12 +93,28 @@ const openings = computed(() => layout.value?.openings ?? [])
           />
 
           <text
-            :x="room.x + room.width / 2"
-            :y="room.y + room.height / 2"
+            class="floor-plan__room-label"
+            :x="room.labelX"
+            :y="room.labelY"
+            :font-size="room.fontSize"
             text-anchor="middle"
-            dominant-baseline="middle"
           >
-            {{ room.name }}
+            <tspan
+              class="floor-plan__room-name"
+              :x="room.labelX"
+              :dy="room.area == null ? 0 : -room.fontSize * 0.25"
+            >
+              {{ room.name }}
+            </tspan>
+
+            <tspan
+              v-if="room.area != null"
+              class="floor-plan__room-area"
+              :x="room.labelX"
+              :dy="room.fontSize * 1.5"
+            >
+              {{ formatArea(room.area) }}
+            </tspan>
           </text>
         </g>
 
@@ -136,12 +168,21 @@ const openings = computed(() => layout.value?.openings ?? [])
   fill: #f0ece4;
 }
 
-.floor-plan__room text {
+.floor-plan__room-label {
   fill: #343b33;
   font-family: inherit;
-  font-size: 22px;
   font-weight: 500;
   pointer-events: none;
+}
+
+.floor-plan__room-name {
+  font-weight: 600;
+}
+
+.floor-plan__room-area {
+  fill: #747e70;
+  font-size: 0.85em;
+  font-weight: 400;
 }
 
 .floor-plan__room-fill {
@@ -162,14 +203,6 @@ const openings = computed(() => layout.value?.openings ?? [])
   fill: none;
   stroke: #34452f;
   stroke-width: 14;
-}
-
-.floor-plan__room text {
-  fill: #343b33;
-  font-family: inherit;
-  font-size: 22px;
-  font-weight: 500;
-  pointer-events: none;
 }
 
 .floor-plan__empty {
