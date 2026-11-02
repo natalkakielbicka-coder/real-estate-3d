@@ -294,15 +294,8 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
                 <span>
                   {{ getRoomsLabel(apartment.rooms) }}
                   ·
-                  {{ apartment.area }} m²
-
-                  <span class="apartment-row__balcony">
-                    ·
-                    <template v-if="apartment.balcony !== undefined">
-                      {{ getBalconyLabel(apartment.balcony) }}
-                    </template>
-                    <template v-else>Brak danych</template>
-                  </span>
+                  {{ apartment.area }} m² ·
+                  {{ getBalconyLabel(apartment.balcony) }}
                 </span>
 
                 <span class="apartment-row__price">
