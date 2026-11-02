@@ -12,6 +12,7 @@ const createApartments = (floorNumber, statuses) => {
       area,
       price: area * pricePerSquareMeter,
       status,
+      balcony: index % 2 === 0,
     }
 
     return {
