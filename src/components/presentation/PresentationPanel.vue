@@ -294,6 +294,14 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
                   {{ getRoomsLabel(apartment.rooms) }}
                   ·
                   {{ apartment.area }} m²
+
+                  <span class="apartment-row__balcony">
+                    ·
+                    <template v-if="apartment.balcony !== undefined">
+                      {{ apartment.balcony ? 'Balkon' : 'Brak balkonu' }}
+                    </template>
+                    <template v-else>Brak danych</template>
+                  </span>
                 </span>
 
                 <span class="apartment-row__price">
@@ -584,6 +592,10 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
   font-size: 10px;
 }
 
+.apartment-row__main .apartment-row__balcony {
+  display: inline;
+}
+
 .apartment-row__price {
   margin-top: 5px;
   color: #4f554c !important;
@@ -614,6 +626,10 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
 .apartment-row__status--sold {
   color: #9b6464;
   background: #f7eaea;
+}
+
+.apartment-row__balcony {
+  margin-top: 5px;
 }
 
 .apartment-details__status {
