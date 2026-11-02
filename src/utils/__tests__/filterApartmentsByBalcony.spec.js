@@ -21,4 +21,9 @@ describe('filterApartmentsByBalcony', () => {
     const filteredApartments = filterApartmentsByBalcony(apartments)
     expect(filteredApartments).toHaveLength(0)
   })
+  it('returns empty array when input is empty', () => {
+    const apartments = []
+    const filteredApartments = filterApartmentsByBalcony(apartments)
+    expect(filteredApartments).toHaveLength(0)
+  })
 })
