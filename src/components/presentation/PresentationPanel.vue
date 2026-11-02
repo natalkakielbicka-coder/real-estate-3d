@@ -4,6 +4,7 @@ import { apartmentStatuses, apartmentStatusLabels } from '../../constants/apartm
 import { countApartmentsByStatus } from '../../utils/countApartmentsByStatus'
 import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
 import { getAdjacentApartments, sortApartmentsByStatus } from '../../utils/apartmentList'
+import { getBalconyLabel } from '@/utils/getBalconyLabel'
 import {
   getRoomsLabel,
   formatPrice,
@@ -298,7 +299,7 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
                   <span class="apartment-row__balcony">
                     ·
                     <template v-if="apartment.balcony !== undefined">
-                      {{ apartment.balcony ? 'Balkon' : 'Brak balkonu' }}
+                      {{ getBalconyLabel(apartment.balcony) }}
                     </template>
                     <template v-else>Brak danych</template>
                   </span>
