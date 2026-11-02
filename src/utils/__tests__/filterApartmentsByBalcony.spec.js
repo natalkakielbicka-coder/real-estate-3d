@@ -26,4 +26,10 @@ describe('filterApartmentsByBalcony', () => {
     const filteredApartments = filterApartmentsByBalcony(apartments)
     expect(filteredApartments).toHaveLength(0)
   })
+  it('ignores apartments without balcony property', () => {
+    const apartments = [{ id: 1, balcony: true }, { id: 2 }, { id: 3, balcony: false }]
+    const filteredApartments = filterApartmentsByBalcony(apartments)
+    expect(filteredApartments).toHaveLength(1)
+    expect(filteredApartments[0]).toEqual({ id: 1, balcony: true })
+  })
 })
