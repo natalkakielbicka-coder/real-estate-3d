@@ -32,4 +32,17 @@ describe('filterApartmentsByBalcony', () => {
     expect(filteredApartments).toHaveLength(1)
     expect(filteredApartments[0]).toEqual({ id: 1, balcony: true })
   })
+  it('filters apartments with balcony in the correct order', () => {
+    const apartments = [
+      { id: 5, balcony: true },
+      { id: 2, balcony: false },
+      { id: 8, balcony: true },
+      { id: 1, balcony: true },
+    ]
+    const filteredApartments = filterApartmentsByBalcony(apartments)
+    expect(filteredApartments).toHaveLength(3)
+    expect(filteredApartments[0]).toEqual({ id: 5, balcony: true })
+    expect(filteredApartments[1]).toEqual({ id: 8, balcony: true })
+    expect(filteredApartments[2]).toEqual({ id: 1, balcony: true })
+  })
 })
