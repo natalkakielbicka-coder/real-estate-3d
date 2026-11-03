@@ -7,6 +7,7 @@ import { getAdjacentApartments, sortApartmentsByStatus } from '../../utils/apart
 import { getBalconyLabel } from '@/utils/getBalconyLabel'
 import { getAverageApartmentPrice } from '@/utils/getAverageApartmentPrice'
 import { countApartmentsWithBalcony } from '@/utils/countApartmentsWithBalcony'
+import { filterApartmentsByPrice } from '@/utils/filterApartmentsByPrice'
 import {
   getRoomsLabel,
   formatPrice,
@@ -38,7 +39,13 @@ const emit = defineEmits([
   'open-floor-plan',
 ])
 
-const sortedApartments = computed(() => sortApartmentsByStatus(props.selectedFloor.apartments))
+const maxPrice = ref(500000)
+
+const filteredApartments = computed(() =>
+  filterApartmentsByPrice(props.selectedFloor.apartments, maxPrice.value),
+)
+
+const sortedApartments = computed(() => sortApartmentsByStatus(filteredApartments.value))
 
 const adjacentApartments = computed(() =>
   getAdjacentApartments(
@@ -297,6 +304,10 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
         <div class="floor-panel__apartments">
           <span class="floor-panel__apartments-title"> Mieszkania na kondygnacji </span>
 
+          <div class="floor-panel__price-filter">
+            <label for="max-price">Cena maksymalna</label>
+            <input id="max-price" v-model.number="maxPrice" type="number" min="0" step="10000" />
+          </div>
           <div class="floor-panel__apartments-list">
             <button
               v-for="apartment in sortedApartments"
@@ -856,6 +867,47 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
 .apartment-details__floor-plan:focus-visible {
   outline: 2px solid #899c80;
   outline-offset: 3px;
+}
+
+.floor-panel__price-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.875rem;
+  border: 1px solid #ebe7df;
+  border-radius: 0.75rem;
+  background: #faf9f6;
+}
+
+.floor-panel__price-filter label {
+  color: #747970;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.floor-panel__price-filter input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid #dedad1;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #30342d;
+  font: inherit;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+.floor-panel__price-filter input:hover {
+  border-color: #aeb7a5;
+}
+
+.floor-panel__price-filter input:focus-visible {
+  outline: 2px solid #799274;
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
