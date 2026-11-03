@@ -5,6 +5,7 @@ import { countApartmentsByStatus } from '../../utils/countApartmentsByStatus'
 import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
 import { getAdjacentApartments, sortApartmentsByStatus } from '../../utils/apartmentList'
 import { getBalconyLabel } from '@/utils/getBalconyLabel'
+import { getAverageApartmentPrice } from '@/utils/getAverageApartmentPrice'
 import {
   getRoomsLabel,
   formatPrice,
@@ -73,6 +74,8 @@ const copyApartmentLink = async () => {
 }
 
 onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
+
+const averagePrice = computed(() => getAverageApartmentPrice(props.selectedFloor.apartments))
 </script>
 
 <template>
@@ -270,6 +273,13 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
             <span>Piętro</span>
             <strong>
               {{ floorLabel }}
+            </strong>
+          </div>
+
+          <div class="floor-panel__detail">
+            <span>Średnia cena</span>
+            <strong>
+              {{ formatPrice(averagePrice) }}
             </strong>
           </div>
         </div>
@@ -474,7 +484,7 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
 
 .floor-panel__details {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   margin-top: 16px;
   padding-top: 0;
@@ -867,7 +877,7 @@ onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
   }
 
   .floor-panel__details {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .apartment-details {
