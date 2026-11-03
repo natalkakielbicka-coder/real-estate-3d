@@ -606,10 +606,6 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
   font-size: 10px;
 }
 
-.apartment-row__main .apartment-row__balcony {
-  display: inline;
-}
-
 .apartment-row__price {
   margin-top: 5px;
   color: #4f554c !important;
@@ -640,10 +636,6 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
 .apartment-row__status--sold {
   color: #9b6464;
   background: #f7eaea;
-}
-
-.apartment-row__balcony {
-  margin-top: 5px;
 }
 
 .apartment-details__status {
