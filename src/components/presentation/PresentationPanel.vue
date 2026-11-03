@@ -39,11 +39,14 @@ const emit = defineEmits([
   'open-floor-plan',
 ])
 
-const maxPrice = ref(500000)
+const maxPrice = ref(null)
 
-const filteredApartments = computed(() =>
-  filterApartmentsByPrice(props.selectedFloor.apartments, maxPrice.value),
-)
+const filteredApartments = computed(() => {
+  if (maxPrice.value !== null && maxPrice.value > 0) {
+    return filterApartmentsByPrice(props.selectedFloor.apartments, maxPrice.value)
+  }
+  return props.selectedFloor.apartments
+})
 
 const sortedApartments = computed(() => sortApartmentsByStatus(filteredApartments.value))
 
@@ -306,7 +309,14 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
 
           <div class="floor-panel__price-filter">
             <label for="max-price">Cena maksymalna</label>
-            <input id="max-price" v-model.number="maxPrice" type="number" min="0" step="10000" />
+            <input
+              id="max-price"
+              v-model.number="maxPrice"
+              type="number"
+              min="0"
+              step="10000"
+              placeholder="Wpisz maksymalną cenę"
+            />
           </div>
           <div class="floor-panel__apartments-list">
             <button
