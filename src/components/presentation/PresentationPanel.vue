@@ -8,6 +8,7 @@ import { getBalconyLabel } from '@/utils/getBalconyLabel'
 import { getAverageApartmentPrice } from '@/utils/getAverageApartmentPrice'
 import { countApartmentsWithBalcony } from '@/utils/countApartmentsWithBalcony'
 import { filterApartmentsByPrice } from '@/utils/filterApartmentsByPrice'
+import { filterApartmentsByBalcony } from '@/utils/filterApartmentsByBalcony'
 import {
   getRoomsLabel,
   formatPrice,
@@ -40,12 +41,20 @@ const emit = defineEmits([
 ])
 
 const maxPrice = ref(null)
+const onlyWithBalcony = ref(false)
 
 const filteredApartments = computed(() => {
+  let apartments = props.selectedFloor.apartments
+
   if (maxPrice.value !== null && maxPrice.value > 0) {
-    return filterApartmentsByPrice(props.selectedFloor.apartments, maxPrice.value)
+    apartments = filterApartmentsByPrice(apartments, maxPrice.value)
   }
-  return props.selectedFloor.apartments
+
+  if (onlyWithBalcony.value) {
+    apartments = filterApartmentsByBalcony(apartments)
+  }
+
+  return apartments
 })
 
 const sortedApartments = computed(() => sortApartmentsByStatus(filteredApartments.value))
@@ -318,6 +327,11 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
               placeholder="Wpisz maksymalną cenę"
             />
           </div>
+
+          <label class="floor-panel__checkbox">
+            <input v-model="onlyWithBalcony" type="checkbox" />
+            <span>Tylko mieszkania z balkonem</span>
+          </label>
           <div class="floor-panel__apartments-list">
             <button
               v-for="apartment in sortedApartments"
@@ -918,6 +932,30 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
 .floor-panel__price-filter input:focus-visible {
   outline: 2px solid #799274;
   outline-offset: 2px;
+}
+
+.floor-panel__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: 0.875rem;
+  margin-bottom: 0.875rem;
+  color: #60655b;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.floor-panel__checkbox input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: #657d62;
+  cursor: pointer;
+}
+
+.floor-panel__checkbox input:focus-visible {
+  outline: 2px solid #799274;
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
