@@ -6,6 +6,7 @@ import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
 import { getAdjacentApartments, sortApartmentsByStatus } from '../../utils/apartmentList'
 import { getBalconyLabel } from '@/utils/getBalconyLabel'
 import { getAverageApartmentPrice } from '@/utils/getAverageApartmentPrice'
+import { countApartmentsWithBalcony } from '@/utils/countApartmentsWithBalcony'
 import {
   getRoomsLabel,
   formatPrice,
@@ -76,6 +77,8 @@ const copyApartmentLink = async () => {
 onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
 
 const averagePrice = computed(() => getAverageApartmentPrice(props.selectedFloor.apartments))
+
+const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFloor.apartments))
 </script>
 
 <template>
@@ -280,6 +283,13 @@ const averagePrice = computed(() => getAverageApartmentPrice(props.selectedFloor
             <span>Średnia cena</span>
             <strong>
               {{ formatPrice(averagePrice) }}
+            </strong>
+          </div>
+
+          <div class="floor-panel__detail">
+            <span>Mieszkania z balkonem</span>
+            <strong>
+              {{ balconyCount }}
             </strong>
           </div>
         </div>
