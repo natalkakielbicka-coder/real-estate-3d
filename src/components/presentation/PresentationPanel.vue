@@ -366,9 +366,27 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
           </div>
 
           <div v-if="hasActiveFilters" class="floor-panel__active-filters">
-            <span v-if="maxPrice > 0 && !maxPriceError"> Cena do {{ formatPrice(maxPrice) }} </span>
+            <button
+              v-if="maxPrice > 0 && !maxPriceError"
+              type="button"
+              class="floor-panel__filter-tag"
+              aria-label="Usuń filtr ceny maksymalnej"
+              @click="maxPrice = null"
+            >
+              Cena do {{ formatPrice(maxPrice) }}
+              <span aria-hidden="true">×</span>
+            </button>
 
-            <span v-if="onlyWithBalcony"> Tylko z balkonem </span>
+            <button
+              v-if="onlyWithBalcony"
+              type="button"
+              class="floor-panel__filter-tag"
+              aria-label="Usuń filtr balkonu"
+              @click="onlyWithBalcony = false"
+            >
+              Tylko z balkonem
+              <span aria-hidden="true">×</span>
+            </button>
           </div>
 
           <div class="floor-panel__price-filter">
@@ -1165,14 +1183,49 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
   margin-bottom: 1rem;
 }
 
-.floor-panel__active-filters span {
-  padding: 0.375rem 0.75rem;
+.floor-panel__filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem 0.375rem 0.75rem;
   border: 1px solid #cddfca;
   border-radius: 999px;
   background: #edf4eb;
   color: #557052;
+  font: inherit;
   font-size: 0.6875rem;
   font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.floor-panel__filter-tag:hover {
+  border-color: #9cba97;
+  background: #dcebd8;
+}
+
+.floor-panel__filter-tag span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background: #d2e3ce;
+  color: #34452f;
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.floor-panel__filter-tag:hover span {
+  background: #bcd5b6;
+}
+
+.floor-panel__filter-tag:focus-visible {
+  outline: 2px solid #799274;
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
