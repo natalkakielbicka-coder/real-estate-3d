@@ -51,6 +51,12 @@ const maxPrice = ref(null)
 const onlyWithBalcony = ref(false)
 const sortBy = ref('status')
 
+const resetFilters = () => {
+  maxPrice.value = null
+  onlyWithBalcony.value = false
+  sortBy.value = 'status'
+}
+
 const filteredApartments = computed(() => {
   let apartments = props.selectedFloor.apartments
 
@@ -369,6 +375,10 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
               <option value="area">Powierzchnia: od najmniejszej</option>
             </select>
           </div>
+
+          <button type="button" class="floor-panel__reset" @click="resetFilters">
+            Wyczyść filtry
+          </button>
 
           <div class="floor-panel__apartments-list">
             <button
@@ -1025,6 +1035,29 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
 .floor-panel__sort select:focus-visible {
   outline: 2px solid #799274;
   outline-offset: 2px;
+}
+
+.floor-panel__reset {
+  display: block;
+  margin: 0 0 1rem auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #657d62;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.floor-panel__reset:hover {
+  color: #34452f;
+  text-decoration: underline;
+}
+
+.floor-panel__reset:focus-visible {
+  outline: 2px solid #799274;
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
