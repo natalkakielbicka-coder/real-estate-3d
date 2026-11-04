@@ -22,3 +22,7 @@ export const getAdjacentApartments = (apartments, currentId) => {
     next: apartments[index + 1] ?? null,
   }
 }
+
+export const sortApartmentsByPriceAsc = (apartments) => {
+  return [...apartments].sort((a, b) => a.price - b.price)
+}
