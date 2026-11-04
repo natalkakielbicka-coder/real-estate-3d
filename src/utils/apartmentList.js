@@ -26,3 +26,7 @@ export const getAdjacentApartments = (apartments, currentId) => {
 export const sortApartmentsByPriceAsc = (apartments) => {
   return [...apartments].sort((a, b) => a.price - b.price)
 }
+
+export const sortApartmentsByPriceDesc = (apartments) => {
+  return [...apartments].sort((a, b) => b.price - a.price)
+}
