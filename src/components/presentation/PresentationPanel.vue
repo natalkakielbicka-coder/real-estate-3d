@@ -388,7 +388,16 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
             Wyczyść filtry
           </button>
 
-          <div class="floor-panel__apartments-list">
+          <div v-if="filteredApartmentsCount === 0" class="floor-panel__empty" role="status">
+            <strong>Nie znaleziono mieszkań</strong>
+
+            <p>
+              Żadne mieszkanie nie spełnia wybranych kryteriów. Zmień filtry lub wyczyść je, aby
+              zobaczyć wszystkie mieszkania.
+            </p>
+          </div>
+
+          <div v-else class="floor-panel__apartments-list">
             <button
               v-for="apartment in sortedApartments"
               :key="apartment.id"
@@ -1088,6 +1097,28 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
   color: #557052;
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+.floor-panel__empty {
+  padding: 1.5rem;
+  border: 1px dashed #d9ddd3;
+  border-radius: 0.75rem;
+  background: #fafbf8;
+  text-align: center;
+}
+
+.floor-panel__empty strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #34452f;
+  font-size: 0.875rem;
+}
+
+.floor-panel__empty p {
+  margin: 0;
+  color: #747970;
+  font-size: 0.75rem;
+  line-height: 1.6;
 }
 
 @media (prefers-reduced-motion: reduce) {
