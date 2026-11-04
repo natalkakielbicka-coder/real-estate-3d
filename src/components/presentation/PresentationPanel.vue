@@ -54,6 +54,12 @@ const sortBy = ref('status')
 
 const maxPriceError = computed(() => getMaxPriceError(maxPrice.value))
 
+const hasActiveFilters = computed(() => {
+  const hasPriceFilter = !maxPriceError.value && maxPrice.value !== null && maxPrice.value > 0
+
+  return hasPriceFilter || onlyWithBalcony.value
+})
+
 const resetFilters = () => {
   maxPrice.value = null
   onlyWithBalcony.value = false
@@ -358,6 +364,8 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
               {{ filteredApartmentsCount }} z {{ selectedFloor.apartmentCount }}
             </span>
           </div>
+
+          <span v-if="hasActiveFilters" class="floor-panel__active-filters"> Filtry aktywne </span>
 
           <div class="floor-panel__price-filter">
             <label for="max-price">Cena maksymalna</label>
@@ -1144,6 +1152,19 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
   color: #b65d5d;
   font-size: 0.75rem;
   line-height: 1.5;
+}
+
+.floor-panel__active-filters {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #cddfca;
+  border-radius: 999px;
+  background: #edf4eb;
+  color: #557052;
+  font-size: 0.6875rem;
+  font-weight: 600;
 }
 
 @media (prefers-reduced-motion: reduce) {
