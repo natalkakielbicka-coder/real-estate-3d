@@ -71,6 +71,8 @@ const filteredApartments = computed(() => {
   return apartments
 })
 
+const filteredApartmentsCount = computed(() => filteredApartments.value.length)
+
 const sortedApartments = computed(() => {
   let apartments = filteredApartments.value
 
@@ -346,7 +348,13 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
         </div>
 
         <div class="floor-panel__apartments">
-          <span class="floor-panel__apartments-title"> Mieszkania na kondygnacji </span>
+          <div class="floor-panel__apartments-heading">
+            <span class="floor-panel__apartments-title"> Mieszkania na kondygnacji </span>
+
+            <span class="floor-panel__apartments-count">
+              {{ filteredApartmentsCount }} z {{ selectedFloor.apartmentCount }}
+            </span>
+          </div>
 
           <div class="floor-panel__price-filter">
             <label for="max-price">Cena maksymalna</label>
@@ -1058,6 +1066,28 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
 .floor-panel__reset:focus-visible {
   outline: 2px solid #799274;
   outline-offset: 3px;
+}
+
+.floor-panel__apartments-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.floor-panel__apartments-heading .floor-panel__apartments-title {
+  margin-bottom: 0;
+}
+
+.floor-panel__apartments-count {
+  flex-shrink: 0;
+  padding: 0.375rem 0.625rem;
+  border-radius: 999px;
+  background: #edf4eb;
+  color: #557052;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 @media (prefers-reduced-motion: reduce) {
