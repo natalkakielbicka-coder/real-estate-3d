@@ -30,3 +30,7 @@ export const sortApartmentsByPriceAsc = (apartments) => {
 export const sortApartmentsByPriceDesc = (apartments) => {
   return [...apartments].sort((a, b) => b.price - a.price)
 }
+
+export const sortApartmentsByArea = (apartments) => {
+  return [...apartments].sort((a, b) => a.area - b.area)
+}
