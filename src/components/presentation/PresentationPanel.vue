@@ -22,6 +22,7 @@ import {
   formatFloorLabel,
   formatPricePerSquareMeter,
 } from '../../utils/apartmentFormatters'
+import { getMaxPriceError } from '@/utils/getMaxPriceError'
 
 const props = defineProps({
   selectedFloor: {
@@ -51,17 +52,7 @@ const maxPrice = ref(null)
 const onlyWithBalcony = ref(false)
 const sortBy = ref('status')
 
-const maxPriceError = computed(() => {
-  if (maxPrice.value === null || maxPrice.value === '') {
-    return ''
-  }
-
-  if (!Number.isFinite(maxPrice.value) || maxPrice.value < 0) {
-    return 'Podaj poprawną cenę, nie mniejszą niż 0.'
-  }
-
-  return ''
-})
+const maxPriceError = computed(() => getMaxPriceError(maxPrice.value))
 
 const resetFilters = () => {
   maxPrice.value = null
