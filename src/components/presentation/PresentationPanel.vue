@@ -365,7 +365,11 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
             </span>
           </div>
 
-          <span v-if="hasActiveFilters" class="floor-panel__active-filters"> Filtry aktywne </span>
+          <div v-if="hasActiveFilters" class="floor-panel__active-filters">
+            <span v-if="maxPrice > 0 && !maxPriceError"> Cena do {{ formatPrice(maxPrice) }} </span>
+
+            <span v-if="onlyWithBalcony"> Tylko z balkonem </span>
+          </div>
 
           <div class="floor-panel__price-filter">
             <label for="max-price">Cena maksymalna</label>
@@ -1155,9 +1159,13 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
 }
 
 .floor-panel__active-filters {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-bottom: 1rem;
+}
+
+.floor-panel__active-filters span {
   padding: 0.375rem 0.75rem;
   border: 1px solid #cddfca;
   border-radius: 999px;
