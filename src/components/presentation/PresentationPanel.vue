@@ -51,6 +51,18 @@ const maxPrice = ref(null)
 const onlyWithBalcony = ref(false)
 const sortBy = ref('status')
 
+const maxPriceError = computed(() => {
+  if (maxPrice.value === null || maxPrice.value === '') {
+    return ''
+  }
+
+  if (!Number.isFinite(maxPrice.value) || maxPrice.value < 0) {
+    return 'Podaj poprawną cenę, nie mniejszą niż 0.'
+  }
+
+  return ''
+})
+
 const resetFilters = () => {
   maxPrice.value = null
   onlyWithBalcony.value = false
@@ -60,7 +72,7 @@ const resetFilters = () => {
 const filteredApartments = computed(() => {
   let apartments = props.selectedFloor.apartments
 
-  if (maxPrice.value !== null && maxPrice.value > 0) {
+  if (!maxPriceError.value && maxPrice.value !== null && maxPrice.value > 0) {
     apartments = filterApartmentsByPrice(apartments, maxPrice.value)
   }
 
@@ -365,7 +377,18 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
               min="0"
               step="10000"
               placeholder="Wpisz maksymalną cenę"
+              :aria-invalid="Boolean(maxPriceError)"
+              :aria-describedby="maxPriceError ? 'max-price-error' : undefined"
             />
+
+            <p
+              v-if="maxPriceError"
+              id="max-price-error"
+              class="floor-panel__price-error"
+              role="alert"
+            >
+              {{ maxPriceError }}
+            </p>
           </div>
 
           <label class="floor-panel__checkbox">
@@ -1119,6 +1142,17 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
   color: #747970;
   font-size: 0.75rem;
   line-height: 1.6;
+}
+
+.floor-panel__price-filter input[aria-invalid='true'] {
+  border-color: #b65d5d;
+}
+
+.floor-panel__price-error {
+  margin: 0;
+  color: #b65d5d;
+  font-size: 0.75rem;
+  line-height: 1.5;
 }
 
 @media (prefers-reduced-motion: reduce) {
