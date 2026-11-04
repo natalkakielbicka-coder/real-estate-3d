@@ -23,6 +23,8 @@ import {
   formatPricePerSquareMeter,
 } from '../../utils/apartmentFormatters'
 import { getMaxPriceError } from '@/utils/getMaxPriceError'
+import { getMinimumApartmentPrice } from '@/utils/getMinimumApartmentPrice'
+import { getMaximumApartmentPrice } from '@/utils/getMaximumApartmentPrice'
 
 const props = defineProps({
   selectedFloor: {
@@ -145,6 +147,10 @@ onBeforeUnmount(() => {
 })
 
 const averagePrice = computed(() => getAverageApartmentPrice(props.selectedFloor.apartments))
+
+const minimumPrice = computed(() => getMinimumApartmentPrice(props.selectedFloor.apartments))
+
+const maximumPrice = computed(() => getMaximumApartmentPrice(props.selectedFloor.apartments))
 
 const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFloor.apartments))
 
@@ -368,6 +374,16 @@ watch(maxPriceInput, (value) => {
             <strong>
               {{ formatPrice(averagePrice) }}
             </strong>
+          </div>
+
+          <div class="floor-panel__detail">
+            <span>Najniższa cena</span>
+            <strong>{{ formatPrice(minimumPrice) }}</strong>
+          </div>
+
+          <div class="floor-panel__detail">
+            <span>Najwyższa cena</span>
+            <strong>{{ formatPrice(maximumPrice) }}</strong>
           </div>
 
           <div class="floor-panel__detail">
