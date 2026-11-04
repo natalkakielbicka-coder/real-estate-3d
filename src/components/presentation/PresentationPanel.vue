@@ -3,7 +3,14 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { apartmentStatuses, apartmentStatusLabels } from '../../constants/apartmentStatuses'
 import { countApartmentsByStatus } from '../../utils/countApartmentsByStatus'
 import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
-import { getAdjacentApartments, sortApartmentsByStatus } from '../../utils/apartmentList'
+import {
+  getAdjacentApartments,
+  sortApartmentsByStatus,
+  sortApartmentsByPriceAsc,
+  sortApartmentsByPriceDesc,
+  sortApartmentsByArea,
+} from '../../utils/apartmentList'
+
 import { getBalconyLabel } from '@/utils/getBalconyLabel'
 import { getAverageApartmentPrice } from '@/utils/getAverageApartmentPrice'
 import { countApartmentsWithBalcony } from '@/utils/countApartmentsWithBalcony'
@@ -42,6 +49,7 @@ const emit = defineEmits([
 
 const maxPrice = ref(null)
 const onlyWithBalcony = ref(false)
+const sortBy = ref('status')
 
 const filteredApartments = computed(() => {
   let apartments = props.selectedFloor.apartments
@@ -57,7 +65,25 @@ const filteredApartments = computed(() => {
   return apartments
 })
 
-const sortedApartments = computed(() => sortApartmentsByStatus(filteredApartments.value))
+const sortedApartments = computed(() => {
+  let apartments = filteredApartments.value
+
+  switch (sortBy.value) {
+    case 'priceAsc':
+      apartments = sortApartmentsByPriceAsc(apartments)
+      break
+    case 'priceDesc':
+      apartments = sortApartmentsByPriceDesc(apartments)
+      break
+    case 'area':
+      apartments = sortApartmentsByArea(apartments)
+      break
+    default:
+      apartments = sortApartmentsByStatus(apartments)
+  }
+
+  return apartments
+})
 
 const adjacentApartments = computed(() =>
   getAdjacentApartments(
@@ -332,6 +358,18 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
             <input v-model="onlyWithBalcony" type="checkbox" />
             <span>Tylko mieszkania z balkonem</span>
           </label>
+
+          <div class="floor-panel__sort">
+            <label for="apartment-sort">Sortuj mieszkania</label>
+
+            <select id="apartment-sort" v-model="sortBy">
+              <option value="status">Według statusu</option>
+              <option value="priceAsc">Cena: od najniższej</option>
+              <option value="priceDesc">Cena: od najwyższej</option>
+              <option value="area">Powierzchnia: od najmniejszej</option>
+            </select>
+          </div>
+
           <div class="floor-panel__apartments-list">
             <button
               v-for="apartment in sortedApartments"
@@ -956,6 +994,37 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
 .floor-panel__checkbox input:focus-visible {
   outline: 2px solid #799274;
   outline-offset: 3px;
+}
+
+.floor-panel__sort {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.floor-panel__sort label {
+  color: #747970;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.floor-panel__sort select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #dedad1;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #30342d;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.floor-panel__sort select:focus-visible {
+  outline: 2px solid #799274;
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
