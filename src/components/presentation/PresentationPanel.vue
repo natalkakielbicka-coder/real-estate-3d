@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { apartmentStatuses, apartmentStatusLabels } from '../../constants/apartmentStatuses'
 import { countApartmentsByStatus } from '../../utils/countApartmentsByStatus'
 import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
@@ -49,6 +49,7 @@ const emit = defineEmits([
 ])
 
 const maxPrice = ref(null)
+const maxPriceInput = ref(null)
 const onlyWithBalcony = ref(false)
 const sortBy = ref('status')
 
@@ -61,6 +62,8 @@ const hasActiveFilters = computed(() => {
 })
 
 const resetFilters = () => {
+  clearTimeout(priceFilterTimeout)
+  maxPriceInput.value = null
   maxPrice.value = null
   onlyWithBalcony.value = false
   sortBy.value = 'status'
@@ -136,11 +139,30 @@ const copyApartmentLink = async () => {
   }, 2000)
 }
 
-onBeforeUnmount(() => clearTimeout(copyFeedbackTimeout))
+onBeforeUnmount(() => {
+  clearTimeout(copyFeedbackTimeout)
+  clearTimeout(priceFilterTimeout)
+})
 
 const averagePrice = computed(() => getAverageApartmentPrice(props.selectedFloor.apartments))
 
 const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFloor.apartments))
+
+const clearPriceFilter = () => {
+  clearTimeout(priceFilterTimeout)
+  maxPriceInput.value = null
+  maxPrice.value = null
+}
+
+let priceFilterTimeout
+
+watch(maxPriceInput, (value) => {
+  clearTimeout(priceFilterTimeout)
+
+  priceFilterTimeout = setTimeout(() => {
+    maxPrice.value = value
+  }, 600)
+})
 </script>
 
 <template>
@@ -371,7 +393,7 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
               type="button"
               class="floor-panel__filter-tag"
               aria-label="Usuń filtr ceny maksymalnej"
-              @click="maxPrice = null"
+              @click="clearPriceFilter"
             >
               Cena do {{ formatPrice(maxPrice) }}
               <span aria-hidden="true">×</span>
@@ -393,7 +415,7 @@ const balconyCount = computed(() => countApartmentsWithBalcony(props.selectedFlo
             <label for="max-price">Cena maksymalna</label>
             <input
               id="max-price"
-              v-model.number="maxPrice"
+              v-model.number="maxPriceInput"
               type="number"
               min="0"
               step="10000"
