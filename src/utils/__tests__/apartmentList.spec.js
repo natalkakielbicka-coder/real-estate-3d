@@ -60,3 +60,17 @@ describe('sortApartmentsByPriceAsc', () => {
     expect(result.map((apartment) => apartment.id)).toEqual([2, 3, 1])
   })
 })
+
+describe('sortApartmentsByPriceDesc', () => {
+  it('sorts apartments by price from highest to lowest', () => {
+    const apartments = [
+      { id: 1, price: 420000 },
+      { id: 2, price: 650000 },
+      { id: 3, price: 510000 },
+    ]
+
+    const result = sortApartmentsByPriceDesc(apartments)
+
+    expect(result.map((apartment) => apartment.id)).toEqual([2, 3, 1])
+  })
+})
