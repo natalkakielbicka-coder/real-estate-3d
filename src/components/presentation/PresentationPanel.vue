@@ -200,6 +200,8 @@ watch(maxPriceInput, (value) => {
         <button
           type="button"
           class="floor-panel__favorite"
+          :aria-pressed="favoriteIds.includes(selectedApartment.id)"
+          :class="{ 'floor-panel__favorite--active': favoriteIds.includes(selectedApartment.id) }"
           @click="emit('toggle-favorite', selectedApartment.id)"
         >
           <span v-if="favoriteIds.includes(selectedApartment.id)">♥</span>
@@ -1307,12 +1309,61 @@ watch(maxPriceInput, (value) => {
   outline-offset: 3px;
 }
 
+.floor-panel__favorite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid #d6dce0;
+  border-radius: 0.75rem;
+  background: #fff;
+  color: #39434a;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.floor-panel__favorite:hover {
+  background: #f7f9f8;
+  border-color: #a9b7af;
+  transform: translateY(-1px);
+}
+
+.floor-panel__favorite--active {
+  background: #fff1f2;
+  border-color: #fda4af;
+  color: #be123c;
+}
+
+.floor-panel__favorite--active:hover {
+  background: #ffe4e6;
+  border-color: #fb7185;
+}
+
+.floor-panel__favorite:focus-visible {
+  outline: 3px solid #6f8f75;
+  outline-offset: 3px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .panel-content-forward-enter-active,
   .panel-content-forward-leave-active,
   .panel-content-back-enter-active,
-  .panel-content-back-leave-active {
+  .panel-content-back-leave-active,
+  .floor-panel__favorite {
     transition: none;
+  }
+
+  .floor-panel__favorite:hover {
+    transform: none;
   }
 }
 
