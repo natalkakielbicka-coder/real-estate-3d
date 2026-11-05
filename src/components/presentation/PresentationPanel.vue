@@ -39,6 +39,10 @@ const props = defineProps({
     type: String,
     default: 'forward',
   },
+  favoriteIds: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const emit = defineEmits([
@@ -48,6 +52,8 @@ const emit = defineEmits([
   'apartment-hover',
   'apartment-hover-end',
   'open-floor-plan',
+  'toggle-favorite',
+  'remove-favorite',
 ])
 
 const maxPrice = ref(null)

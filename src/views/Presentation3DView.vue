@@ -8,12 +8,15 @@ import PresentationSceneToolbar from '../components/presentation/PresentationSce
 import ApartmentFloorPlan from '@/components/floor-plan/ApartmentFloorPlan.vue'
 import { usePresentationState } from '@/composables/usePresentationState'
 import { usePresentationQuerySync } from '@/composables/usePresentationQuerySync'
+import { useFavorites } from '@/composables/useFavorites'
 
 const threeScene = ref(null)
 const isFloorPlanOpen = ref(false)
 
 const floorPlanDialog = ref(null)
 const floorPlanCloseButton = ref(null)
+
+const { favoriteIds, toggleFavorite, removeFavorite } = useFavorites()
 
 let previousFocusedElement = null
 let previousBodyOverflow = ''
@@ -166,12 +169,15 @@ usePresentationQuerySync({
         :selected-floor="selectedFloor"
         :selected-apartment="selectedApartment"
         :transition-direction="panelTransitionDirection"
+        :favorite-ids="favoriteIds"
         @close="handlePanelClose"
         @apartment-selected="handlePanelApartmentSelected"
         @apartment-back="handleApartmentBack"
         @apartment-hover="handleApartmentHover"
         @apartment-hover-end="handleApartmentHoverEnd"
         @open-floor-plan="openFloorPlan"
+        @toggle-favorite="toggleFavorite"
+        @remove-favorite="removeFavorite"
       />
     </Transition>
 
