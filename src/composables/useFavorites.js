@@ -21,6 +21,15 @@ export const useFavorites = () => {
     }
   }
 
+  const loadFavorites = () => {
+    const storedFavorites = localStorage.getItem('favoriteApartments')
+    if (storedFavorites) {
+      favoriteIds.value = JSON.parse(storedFavorites)
+    }
+  }
+
+  loadFavorites()
+
   return {
     favoriteIds,
     addFavorite,
