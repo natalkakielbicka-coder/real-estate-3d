@@ -13,9 +13,18 @@ export const useFavorites = () => {
     favoriteIds.value = removeFavoriteApartment(favoriteIds.value, apartmentId)
   }
 
+  const toggleFavorite = (apartmentId) => {
+    if (favoriteIds.value.includes(apartmentId)) {
+      removeFavorite(apartmentId)
+    } else {
+      addFavorite(apartmentId)
+    }
+  }
+
   return {
     favoriteIds,
     addFavorite,
     removeFavorite,
+    toggleFavorite,
   }
 }
