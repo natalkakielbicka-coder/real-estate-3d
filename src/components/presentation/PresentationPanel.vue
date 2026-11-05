@@ -59,6 +59,7 @@ const emit = defineEmits([
 const maxPrice = ref(null)
 const maxPriceInput = ref(null)
 const onlyWithBalcony = ref(false)
+const onlyFavorites = ref(false)
 const sortBy = ref('status')
 
 const maxPriceError = computed(() => getMaxPriceError(maxPrice.value))
@@ -75,6 +76,7 @@ const resetFilters = () => {
   maxPrice.value = null
   onlyWithBalcony.value = false
   sortBy.value = 'status'
+  onlyFavorites.value = false
 }
 
 const filteredApartments = computed(() => {
@@ -86,6 +88,10 @@ const filteredApartments = computed(() => {
 
   if (onlyWithBalcony.value) {
     apartments = filterApartmentsByBalcony(apartments)
+  }
+
+  if (onlyFavorites.value) {
+    apartments = apartments.filter((apartment) => props.favoriteIds.includes(apartment.id))
   }
 
   return apartments
@@ -479,6 +485,11 @@ watch(maxPriceInput, (value) => {
           <label class="floor-panel__checkbox">
             <input v-model="onlyWithBalcony" type="checkbox" />
             <span>Tylko mieszkania z balkonem</span>
+          </label>
+
+          <label class="floor-panel__checkbox">
+            <input v-model="onlyFavorites" type="checkbox" />
+            <span>Tylko ulubione</span>
           </label>
 
           <div class="floor-panel__sort">
