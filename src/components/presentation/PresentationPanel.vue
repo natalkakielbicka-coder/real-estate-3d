@@ -197,6 +197,17 @@ watch(maxPriceInput, (value) => {
           ← Wróć do piętra
         </button>
 
+        <button
+          type="button"
+          class="floor-panel__favorite"
+          @click="emit('toggle-favorite', selectedApartment.id)"
+        >
+          <span v-if="favoriteIds.includes(selectedApartment.id)">♥</span>
+          <span v-else>♡</span>
+          <span v-if="favoriteIds.includes(selectedApartment.id)">Usuń z ulubionych</span>
+          <span v-else>Dodaj do ulubionych</span>
+        </button>
+
         <div class="floor-panel__breadcrumb">
           <span>{{ selectedFloor.buildingName }}</span>
           <i>/</i>
