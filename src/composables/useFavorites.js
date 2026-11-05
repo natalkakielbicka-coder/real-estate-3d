@@ -1,6 +1,7 @@
 import { ref, watch } from 'vue'
 import { addFavoriteApartment } from '@/utils/addFavoriteApartment'
 import { removeFavoriteApartment } from '@/utils/removeFavoriteApartment'
+import { parseStoredFavorites } from '@/utils/parseStoredFavorites'
 
 export const useFavorites = () => {
   const favoriteIds = ref([])
@@ -23,9 +24,7 @@ export const useFavorites = () => {
 
   const loadFavorites = () => {
     const storedFavorites = localStorage.getItem('favoriteApartments')
-    if (storedFavorites) {
-      favoriteIds.value = JSON.parse(storedFavorites)
-    }
+    favoriteIds.value = parseStoredFavorites(storedFavorites)
   }
 
   loadFavorites()
