@@ -1309,47 +1309,70 @@ watch(maxPriceInput, (value) => {
   outline-offset: 3px;
 }
 
+/* Odstęp między powrotem a ulubionymi */
+.floor-panel__content > .floor-panel__back {
+  display: flex;
+  width: fit-content;
+  margin-bottom: 0.875rem;
+}
+
+/* Przycisk ulubionych */
 .floor-panel__favorite {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border: 1px solid #d6dce0;
-  border-radius: 0.75rem;
-  background: #fff;
-  color: #39434a;
+  gap: 0.375rem;
+  width: fit-content;
+  min-height: 32px;
+  margin: 0 0 1.25rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #e4e5df;
+  border-radius: 999px;
+  background: #faf9f6;
+  color: #596357;
   font: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.4;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
+    color 0.2s ease;
+}
+
+.floor-panel__favorite span:first-child {
+  font-size: 1rem;
+  line-height: 1;
+  color: #788477;
 }
 
 .floor-panel__favorite:hover {
-  background: #f7f9f8;
-  border-color: #a9b7af;
-  transform: translateY(-1px);
+  background: #edf2eb;
+  border-color: #b7c5b2;
+  color: #34452f;
 }
 
+/* Aktywny przycisk */
 .floor-panel__favorite--active {
-  background: #fff1f2;
-  border-color: #fda4af;
-  color: #be123c;
+  background: #f9eded;
+  border-color: #ebcece;
+  color: #975555;
+}
+
+.floor-panel__favorite--active span:first-child {
+  color: #ad6464;
 }
 
 .floor-panel__favorite--active:hover {
-  background: #ffe4e6;
-  border-color: #fb7185;
+  background: #f5e3e3;
+  border-color: #d9b3b3;
+  color: #874747;
 }
 
 .floor-panel__favorite:focus-visible {
-  outline: 3px solid #6f8f75;
+  outline: 2px solid #799274;
   outline-offset: 3px;
 }
 
