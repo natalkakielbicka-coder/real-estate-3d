@@ -458,13 +458,30 @@ watch(maxPriceInput, (value) => {
           <div class="floor-panel__sort">
             <label for="apartment-sort">Sortuj mieszkania</label>
 
-            <select id="apartment-sort" v-model="sortBy">
+            <select
+              id="apartment-sort"
+              v-model="sortBy"
+              aria-describedby="apartment-sort-description"
+            >
               <option value="status">Według statusu</option>
               <option value="priceAsc">Cena: od najniższej</option>
               <option value="priceDesc">Cena: od najwyższej</option>
               <option value="area">Powierzchnia: od najmniejszej</option>
             </select>
+
+            <p id="apartment-sort-description" class="floor-panel__sort-description">
+              Zmień kolejność wyświetlania mieszkań na wybranym piętrze.
+            </p>
           </div>
+
+          <button
+            v-if="sortBy !== 'status'"
+            type="button"
+            class="floor-panel__reset"
+            @click="sortBy = 'status'"
+          >
+            Resetuj sortowanie
+          </button>
 
           <button type="button" class="floor-panel__reset" @click="resetFilters">
             Wyczyść filtry
@@ -1134,6 +1151,13 @@ watch(maxPriceInput, (value) => {
 .floor-panel__sort select:focus-visible {
   outline: 2px solid #799274;
   outline-offset: 2px;
+}
+
+.floor-panel__sort-description {
+  margin: 0;
+  color: #747970;
+  font-size: 0.6875rem;
+  line-height: 1.5;
 }
 
 .floor-panel__reset {
