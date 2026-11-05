@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { addFavoriteApartment } from '@/utils/addFavoriteApartment'
 import { removeFavoriteApartment } from '@/utils/removeFavoriteApartment'
 
@@ -29,6 +29,10 @@ export const useFavorites = () => {
   }
 
   loadFavorites()
+
+  watch(favoriteIds, (newFavorites) => {
+    localStorage.setItem('favoriteApartments', JSON.stringify(newFavorites))
+  })
 
   return {
     favoriteIds,
