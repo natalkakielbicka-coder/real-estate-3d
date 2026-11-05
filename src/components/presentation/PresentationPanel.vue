@@ -166,6 +166,8 @@ const clearPriceFilter = () => {
   maxPrice.value = null
 }
 
+const favoritesCount = computed(() => props.favoriteIds.length)
+
 let priceFilterTimeout
 
 watch(maxPriceInput, (value) => {
@@ -223,6 +225,11 @@ watch(maxPriceInput, (value) => {
             <strong class="floor-panel__title">
               {{ selectedApartment.number }}
             </strong>
+
+            <div class="floor-panel__favorites-count">
+              <span aria-hidden="true">♥</span>
+              <span>Ulubione: {{ favoritesCount }}</span>
+            </div>
           </div>
 
           <span
@@ -1444,6 +1451,27 @@ watch(maxPriceInput, (value) => {
   right: 24px;
   left: 24px;
   min-height: 0;
+}
+
+.floor-panel__favorites-count {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid #ebcece;
+  border-radius: 999px;
+  background: #f9eded;
+  color: #975555;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.floor-panel__favorites-count > span:first-child {
+  color: #b65d5d;
+  font-size: 0.875rem;
+  line-height: 1;
 }
 
 /* Dostępność i responsywność */
