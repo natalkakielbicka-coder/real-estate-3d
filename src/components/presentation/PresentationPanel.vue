@@ -516,38 +516,57 @@ watch(maxPriceInput, (value) => {
           </div>
 
           <div v-else class="floor-panel__apartments-list">
-            <button
-              v-for="apartment in sortedApartments"
-              :key="apartment.id"
-              type="button"
-              class="apartment-row"
-              :disabled="!isApartmentSelectable(apartment)"
-              @click="emit('apartment-selected', apartment)"
-              @mouseenter="emit('apartment-hover', apartment)"
-              @mouseleave="emit('apartment-hover-end')"
-            >
-              <div class="apartment-row__main">
-                <strong>{{ apartment.number }}</strong>
-
-                <span>
-                  {{ getRoomsLabel(apartment.rooms) }}
-                  ·
-                  {{ apartment.area }} m² ·
-                  {{ getBalconyLabel(apartment.balcony) }}
-                </span>
-
-                <span class="apartment-row__price">
-                  {{ formatPrice(apartment.price) }}
-                </span>
-              </div>
-
-              <span
-                class="apartment-row__status"
-                :class="`apartment-row__status--${apartment.status}`"
+            <div v-for="apartment in sortedApartments" :key="apartment.id" class="apartment-row">
+              <button
+                type="button"
+                class="apartment-row__select"
+                :disabled="!isApartmentSelectable(apartment)"
+                @click="emit('apartment-selected', apartment)"
+                @mouseenter="emit('apartment-hover', apartment)"
+                @mouseleave="emit('apartment-hover-end')"
               >
-                {{ apartmentStatusLabels[apartment.status] }}
-              </span>
-            </button>
+                <div class="apartment-row__main">
+                  <strong>{{ apartment.number }}</strong>
+
+                  <span>
+                    {{ getRoomsLabel(apartment.rooms) }}
+                    ·
+                    {{ apartment.area }} m² ·
+                    {{ getBalconyLabel(apartment.balcony) }}
+                  </span>
+
+                  <span class="apartment-row__price">
+                    {{ formatPrice(apartment.price) }}
+                  </span>
+                </div>
+
+                <span
+                  class="apartment-row__status"
+                  :class="`apartment-row__status--${apartment.status}`"
+                >
+                  {{ apartmentStatusLabels[apartment.status] }}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                class="apartment-row__favorite"
+                :class="{
+                  'apartment-row__favorite--active': favoriteIds.includes(apartment.id),
+                }"
+                :aria-pressed="favoriteIds.includes(apartment.id)"
+                :aria-label="
+                  favoriteIds.includes(apartment.id)
+                    ? `Usuń mieszkanie ${apartment.number} z ulubionych`
+                    : `Dodaj mieszkanie ${apartment.number} do ulubionych`
+                "
+                @click="emit('toggle-favorite', apartment.id)"
+              >
+                <span aria-hidden="true">
+                  {{ favoriteIds.includes(apartment.id) ? '♥' : '♡' }}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -616,13 +635,19 @@ watch(maxPriceInput, (value) => {
   color: #2f342c;
 }
 
+.floor-panel__content > .floor-panel__back {
+  display: flex;
+  width: fit-content;
+  margin-bottom: 0.875rem;
+}
+
 .floor-panel__label {
   display: block;
-  margin-bottom: 10px;
-  color: #9c8a6b;
+  margin-bottom: 7px;
+  color: #a18b67;
   font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -630,9 +655,9 @@ watch(maxPriceInput, (value) => {
   display: block;
   color: #272a24;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 
 .floor-panel__description {
@@ -641,6 +666,37 @@ watch(maxPriceInput, (value) => {
   font-size: 13px;
   line-height: 1.6;
 }
+
+.floor-panel__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 22px;
+  padding-right: 48px;
+  color: #92958d;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.floor-panel__breadcrumb i {
+  color: #c4bba9;
+  font-style: normal;
+}
+
+.floor-panel__heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.floor-panel__heading > div {
+  min-width: 0;
+}
+
+/* Dostępność mieszkań */
 
 .floor-panel__availability {
   margin-top: 22px;
@@ -710,13 +766,13 @@ watch(maxPriceInput, (value) => {
   font-weight: 600;
 }
 
+/* Informacje o piętrze */
+
 .floor-panel__details {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   margin-top: 16px;
-  padding-top: 0;
-  border-top: 0;
 }
 
 .floor-panel__detail {
@@ -743,15 +799,24 @@ watch(maxPriceInput, (value) => {
   font-weight: 500;
 }
 
+/* Lista mieszkań */
+
 .floor-panel__apartments {
   margin-top: 22px;
   padding-top: 20px;
   border-top: 1px solid #ebe7df;
 }
 
+.floor-panel__apartments-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
 .floor-panel__apartments-title {
   display: block;
-  margin-bottom: 12px;
   color: #747970;
   font-size: 9px;
   font-weight: 600;
@@ -759,25 +824,32 @@ watch(maxPriceInput, (value) => {
   text-transform: uppercase;
 }
 
+.floor-panel__apartments-count {
+  flex-shrink: 0;
+  padding: 0.375rem 0.625rem;
+  border-radius: 999px;
+  background: #edf4eb;
+  color: #557052;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .floor-panel__apartments-list {
   display: grid;
   gap: 8px;
 }
 
+/* Karta pojedynczego mieszkania */
+
 .apartment-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  align-items: stretch;
   width: 100%;
-  padding: 12px;
+  min-width: 0;
+  overflow: hidden;
   border: 1px solid #ebe7df;
   border-radius: 11px;
-  background: #ffffff;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
+  background: #fff;
   transition:
     border-color 0.2s ease,
     background-color 0.2s ease,
@@ -790,20 +862,32 @@ watch(maxPriceInput, (value) => {
   box-shadow: 0 8px 20px rgba(63, 70, 57, 0.06);
 }
 
-.apartment-row:focus-visible {
-  outline: 2px solid #9caa88;
-  outline-offset: 2px;
+/* Przycisk otwierania szczegółów */
+
+.apartment-row__select {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
-.apartment-row:disabled {
+.apartment-row__select:focus-visible {
+  outline: 2px solid #799274;
+  outline-offset: -3px;
+}
+
+.apartment-row__select:disabled {
   cursor: not-allowed;
   opacity: 0.48;
-}
-
-.apartment-row:disabled:hover {
-  border-color: #ebe7df;
-  background: #ffffff;
-  box-shadow: none;
 }
 
 .apartment-row__main {
@@ -856,6 +940,57 @@ watch(maxPriceInput, (value) => {
   background: #f7eaea;
 }
 
+/* Serduszko przy mieszkaniu */
+
+.apartment-row__favorite {
+  display: flex;
+  flex: 0 0 38px;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 38px;
+  height: 38px;
+  margin-right: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #9a9f96;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.apartment-row__favorite span {
+  display: block;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.apartment-row__favorite:hover {
+  background: #f4e9e9;
+  color: #ad6464;
+  transform: scale(1.05);
+}
+
+.apartment-row__favorite--active {
+  color: #b65d5d;
+}
+
+.apartment-row__favorite--active:hover {
+  background: #f7e5e5;
+  color: #964545;
+}
+
+.apartment-row__favorite:focus-visible {
+  outline: 2px solid #799274;
+  outline-offset: 2px;
+}
+
+/* Szczegóły mieszkania */
+
 .apartment-details__status {
   display: inline-block;
   margin-top: 14px;
@@ -865,6 +1000,13 @@ watch(maxPriceInput, (value) => {
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.apartment-details__status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 .apartment-details {
@@ -909,7 +1051,7 @@ watch(maxPriceInput, (value) => {
   padding: 11px 12px;
   border: 1px solid #dedad1;
   border-radius: 9px;
-  background: #ffffff;
+  background: #fff;
   color: #60655b;
   font: inherit;
   font-size: 10px;
@@ -927,126 +1069,7 @@ watch(maxPriceInput, (value) => {
   opacity: 0.35;
 }
 
-.apartment-details__share {
-  width: 100%;
-  margin-top: 8px;
-  height: 36px;
-  padding: 0 12px;
-  border: 1px solid #dedad1;
-  border-radius: 9px;
-  background: #faf9f6;
-  color: #60655b;
-  font: inherit;
-  font-size: 10px;
-  cursor: pointer;
-}
-
-.apartment-details__share:hover {
-  border-color: #aeb7a5;
-  color: #2e342b;
-}
-
-.apartment-details__share:focus-visible {
-  outline: 2px solid #9caa88;
-  outline-offset: 3px;
-}
-
-.floor-panel__content {
-  min-height: 100%;
-}
-
-.panel-content-forward-enter-active,
-.panel-content-forward-leave-active,
-.panel-content-back-enter-active,
-.panel-content-back-leave-active {
-  transition:
-    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.16s ease;
-}
-
-.panel-content-forward-enter-from {
-  transform: translateX(32px);
-  opacity: 0;
-}
-
-.panel-content-forward-leave-to {
-  transform: translateX(-16px);
-  opacity: 0;
-}
-
-.panel-content-back-enter-from {
-  transform: translateX(-32px);
-  opacity: 0;
-}
-
-.panel-content-back-leave-to {
-  transform: translateX(16px);
-  opacity: 0;
-}
-
-.panel-content-forward-leave-active,
-.panel-content-back-leave-active {
-  position: absolute;
-  top: 28px;
-  right: 24px;
-  left: 24px;
-  min-height: 0;
-}
-
-.floor-panel__breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-bottom: 22px;
-  padding-right: 48px;
-  color: #92958d;
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.floor-panel__breadcrumb i {
-  color: #c4bba9;
-  font-style: normal;
-}
-
-.floor-panel__heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.floor-panel__heading > div {
-  min-width: 0;
-}
-
-.floor-panel__label {
-  display: block;
-  margin-bottom: 7px;
-  color: #a18b67;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.floor-panel__title {
-  display: block;
-  color: #272a24;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 32px;
-  font-weight: 400;
-  line-height: 1.05;
-}
-
-.apartment-details__status i {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-}
+/* Przycisk rzutu 2D */
 
 .apartment-details__floor-plan {
   display: flex;
@@ -1075,6 +1098,94 @@ watch(maxPriceInput, (value) => {
   outline: 2px solid #899c80;
   outline-offset: 3px;
 }
+
+/* Udostępnianie mieszkania */
+
+.apartment-details__share {
+  width: 100%;
+  height: 36px;
+  margin-top: 8px;
+  padding: 0 12px;
+  border: 1px solid #dedad1;
+  border-radius: 9px;
+  background: #faf9f6;
+  color: #60655b;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.apartment-details__share:hover {
+  border-color: #aeb7a5;
+  color: #2e342b;
+}
+
+.apartment-details__share:focus-visible {
+  outline: 2px solid #9caa88;
+  outline-offset: 3px;
+}
+
+/* Ulubione w szczegółach mieszkania */
+
+.floor-panel__favorite {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  width: fit-content;
+  min-height: 32px;
+  margin: 0 0 1.25rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #e4e5df;
+  border-radius: 999px;
+  background: #faf9f6;
+  color: #596357;
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.floor-panel__favorite span:first-child {
+  font-size: 1rem;
+  line-height: 1;
+  color: #788477;
+}
+
+.floor-panel__favorite:hover {
+  background: #edf2eb;
+  border-color: #b7c5b2;
+  color: #34452f;
+}
+
+.floor-panel__favorite--active {
+  background: #f9eded;
+  border-color: #ebcece;
+  color: #975555;
+}
+
+.floor-panel__favorite--active span:first-child {
+  color: #ad6464;
+}
+
+.floor-panel__favorite--active:hover {
+  background: #f5e3e3;
+  border-color: #d9b3b3;
+  color: #874747;
+}
+
+.floor-panel__favorite:focus-visible {
+  outline: 2px solid #799274;
+  outline-offset: 3px;
+}
+
+/* Filtry */
 
 .floor-panel__price-filter {
   display: flex;
@@ -1115,6 +1226,17 @@ watch(maxPriceInput, (value) => {
 .floor-panel__price-filter input:focus-visible {
   outline: 2px solid #799274;
   outline-offset: 2px;
+}
+
+.floor-panel__price-filter input[aria-invalid='true'] {
+  border-color: #b65d5d;
+}
+
+.floor-panel__price-error {
+  margin: 0;
+  color: #b65d5d;
+  font-size: 0.75rem;
+  line-height: 1.5;
 }
 
 .floor-panel__checkbox {
@@ -1202,60 +1324,7 @@ watch(maxPriceInput, (value) => {
   outline-offset: 3px;
 }
 
-.floor-panel__apartments-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
-}
-
-.floor-panel__apartments-heading .floor-panel__apartments-title {
-  margin-bottom: 0;
-}
-
-.floor-panel__apartments-count {
-  flex-shrink: 0;
-  padding: 0.375rem 0.625rem;
-  border-radius: 999px;
-  background: #edf4eb;
-  color: #557052;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.floor-panel__empty {
-  padding: 1.5rem;
-  border: 1px dashed #d9ddd3;
-  border-radius: 0.75rem;
-  background: #fafbf8;
-  text-align: center;
-}
-
-.floor-panel__empty strong {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #34452f;
-  font-size: 0.875rem;
-}
-
-.floor-panel__empty p {
-  margin: 0;
-  color: #747970;
-  font-size: 0.75rem;
-  line-height: 1.6;
-}
-
-.floor-panel__price-filter input[aria-invalid='true'] {
-  border-color: #b65d5d;
-}
-
-.floor-panel__price-error {
-  margin: 0;
-  color: #b65d5d;
-  font-size: 0.75rem;
-  line-height: 1.5;
-}
+/* Aktywne filtry */
 
 .floor-panel__active-filters {
   display: flex;
@@ -1309,83 +1378,88 @@ watch(maxPriceInput, (value) => {
   outline-offset: 3px;
 }
 
-/* Odstęp między powrotem a ulubionymi */
-.floor-panel__content > .floor-panel__back {
-  display: flex;
-  width: fit-content;
-  margin-bottom: 0.875rem;
+/* Brak wyników */
+
+.floor-panel__empty {
+  padding: 1.5rem;
+  border: 1px dashed #d9ddd3;
+  border-radius: 0.75rem;
+  background: #fafbf8;
+  text-align: center;
 }
 
-/* Przycisk ulubionych */
-.floor-panel__favorite {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  width: fit-content;
-  min-height: 32px;
-  margin: 0 0 1.25rem;
-  padding: 0.375rem 0.75rem;
-  border: 1px solid #e4e5df;
-  border-radius: 999px;
-  background: #faf9f6;
-  color: #596357;
-  font: inherit;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  line-height: 1.3;
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.floor-panel__favorite span:first-child {
-  font-size: 1rem;
-  line-height: 1;
-  color: #788477;
-}
-
-.floor-panel__favorite:hover {
-  background: #edf2eb;
-  border-color: #b7c5b2;
+.floor-panel__empty strong {
+  display: block;
+  margin-bottom: 0.5rem;
   color: #34452f;
+  font-size: 0.875rem;
 }
 
-/* Aktywny przycisk */
-.floor-panel__favorite--active {
-  background: #f9eded;
-  border-color: #ebcece;
-  color: #975555;
+.floor-panel__empty p {
+  margin: 0;
+  color: #747970;
+  font-size: 0.75rem;
+  line-height: 1.6;
 }
 
-.floor-panel__favorite--active span:first-child {
-  color: #ad6464;
+/* Animacja przechodzenia między widokami */
+
+.floor-panel__content {
+  min-height: 100%;
 }
 
-.floor-panel__favorite--active:hover {
-  background: #f5e3e3;
-  border-color: #d9b3b3;
-  color: #874747;
+.panel-content-forward-enter-active,
+.panel-content-forward-leave-active,
+.panel-content-back-enter-active,
+.panel-content-back-leave-active {
+  transition:
+    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.16s ease;
 }
 
-.floor-panel__favorite:focus-visible {
-  outline: 2px solid #799274;
-  outline-offset: 3px;
+.panel-content-forward-enter-from {
+  transform: translateX(32px);
+  opacity: 0;
 }
+
+.panel-content-forward-leave-to {
+  transform: translateX(-16px);
+  opacity: 0;
+}
+
+.panel-content-back-enter-from {
+  transform: translateX(-32px);
+  opacity: 0;
+}
+
+.panel-content-back-leave-to {
+  transform: translateX(16px);
+  opacity: 0;
+}
+
+.panel-content-forward-leave-active,
+.panel-content-back-leave-active {
+  position: absolute;
+  top: 28px;
+  right: 24px;
+  left: 24px;
+  min-height: 0;
+}
+
+/* Dostępność i responsywność */
 
 @media (prefers-reduced-motion: reduce) {
   .panel-content-forward-enter-active,
   .panel-content-forward-leave-active,
   .panel-content-back-enter-active,
   .panel-content-back-leave-active,
-  .floor-panel__favorite {
+  .floor-panel__favorite,
+  .apartment-row,
+  .apartment-row__favorite {
     transition: none;
   }
 
-  .floor-panel__favorite:hover {
+  .apartment-row__favorite:hover {
     transform: none;
   }
 }
@@ -1401,12 +1475,34 @@ watch(maxPriceInput, (value) => {
     border-radius: 14px;
   }
 
-  .floor-panel__details {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  .floor-panel__details,
   .apartment-details {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 479px) {
+  .floor-panel {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    padding: 22px 16px;
+  }
+
+  .apartment-row__select {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .apartment-row__favorite {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    margin-right: 4px;
+  }
+
+  .apartment-row__status {
+    font-size: 7px;
   }
 }
 </style>
