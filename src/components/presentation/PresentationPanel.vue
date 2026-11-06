@@ -25,6 +25,7 @@ import {
 import { getMaxPriceError } from '@/utils/getMaxPriceError'
 import { getMinimumApartmentPrice } from '@/utils/getMinimumApartmentPrice'
 import { getMaximumApartmentPrice } from '@/utils/getMaximumApartmentPrice'
+import { filterFavoriteApartments } from '@/utils/filterFavoriteApartments'
 
 const props = defineProps({
   selectedFloor: {
@@ -91,7 +92,7 @@ const filteredApartments = computed(() => {
   }
 
   if (onlyFavorites.value) {
-    apartments = apartments.filter((apartment) => props.favoriteIds.includes(apartment.id))
+    apartments = filterFavoriteApartments(apartments, props.favoriteIds)
   }
 
   return apartments
