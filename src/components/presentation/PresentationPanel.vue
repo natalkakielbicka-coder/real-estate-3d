@@ -67,7 +67,7 @@ const maxPriceError = computed(() => getMaxPriceError(maxPrice.value))
 const hasActiveFilters = computed(() => {
   const hasPriceFilter = !maxPriceError.value && maxPrice.value !== null && maxPrice.value > 0
 
-  return hasPriceFilter || onlyWithBalcony.value
+  return hasPriceFilter || onlyWithBalcony.value || onlyFavorites.value
 })
 
 const resetFilters = () => {
@@ -173,6 +173,10 @@ const clearPriceFilter = () => {
 }
 
 const favoritesCount = computed(() => props.favoriteIds.length)
+
+const hasFavoritesOnFloor = computed(() =>
+  props.selectedFloor.apartments.some((apartment) => props.favoriteIds.includes(apartment.id)),
+)
 
 let priceFilterTimeout
 
@@ -525,12 +529,23 @@ watch(maxPriceInput, (value) => {
           </button>
 
           <div v-if="filteredApartmentsCount === 0" class="floor-panel__empty" role="status">
-            <strong>Nie znaleziono mieszkań</strong>
+            <template v-if="onlyFavorites && !hasFavoritesOnFloor">
+              <strong>Brak ulubionych mieszkań</strong>
 
-            <p>
-              Żadne mieszkanie nie spełnia wybranych kryteriów. Zmień filtry lub wyczyść je, aby
-              zobaczyć wszystkie mieszkania.
-            </p>
+              <p>
+                Nie masz jeszcze ulubionych mieszkań na tym piętrze. Wyłącz filtr „Tylko ulubione” i
+                kliknij serduszko przy wybranym mieszkaniu.
+              </p>
+            </template>
+
+            <template v-else>
+              <strong>Nie znaleziono mieszkań</strong>
+
+              <p>
+                Żadne mieszkanie nie spełnia wybranych kryteriów. Zmień filtry lub wyczyść je, aby
+                zobaczyć wszystkie mieszkania.
+              </p>
+            </template>
           </div>
 
           <div v-else class="floor-panel__apartments-list">
@@ -1476,6 +1491,7 @@ watch(maxPriceInput, (value) => {
   color: #975555;
   font-size: 0.6875rem;
   font-weight: 600;
+  margin-top: 1rem;
   white-space: nowrap;
 }
 
