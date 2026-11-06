@@ -27,6 +27,7 @@ import { getMinimumApartmentPrice } from '@/utils/getMinimumApartmentPrice'
 import { getMaximumApartmentPrice } from '@/utils/getMaximumApartmentPrice'
 import { filterFavoriteApartments } from '@/utils/filterFavoriteApartments'
 import { sortApartmentsByPricePerSquareMeter } from '@/utils/sortApartmentsByPricePerSquareMeter'
+import { getAverageApartmentArea } from '@/utils/getAverageApartmentArea'
 
 const props = defineProps({
   selectedFloor: {
@@ -164,6 +165,8 @@ onBeforeUnmount(() => {
 })
 
 const averagePrice = computed(() => getAverageApartmentPrice(props.selectedFloor.apartments))
+
+const averageArea = computed(() => getAverageApartmentArea(props.selectedFloor.apartments))
 
 const minimumPrice = computed(() => getMinimumApartmentPrice(props.selectedFloor.apartments))
 
@@ -410,6 +413,11 @@ watch(maxPriceInput, (value) => {
             <strong>
               {{ formatPrice(averagePrice) }}
             </strong>
+          </div>
+
+          <div class="floor-panel__detail">
+            <span>Średnia powierzchnia</span>
+            <strong>{{ averageArea.toFixed(1) }} m²</strong>
           </div>
 
           <div class="floor-panel__detail">
