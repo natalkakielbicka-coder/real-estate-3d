@@ -577,6 +577,10 @@ watch(maxPriceInput, (value) => {
                   <span class="apartment-row__price">
                     {{ formatPrice(apartment.price) }}
                   </span>
+
+                  <span class="apartment-row__price-per-meter">
+                    {{ formatPricePerSquareMeter(apartment.price, apartment.area) }}
+                  </span>
                 </div>
 
                 <span
@@ -952,6 +956,14 @@ watch(maxPriceInput, (value) => {
   color: #4f554c !important;
   font-size: 12px !important;
   font-weight: 600;
+}
+
+.apartment-row__price-per-meter {
+  display: block;
+  margin-top: 0.25rem;
+  color: #7b8577;
+  font-size: 0.6875rem;
+  line-height: 1.4;
 }
 
 .apartment-row__status {
