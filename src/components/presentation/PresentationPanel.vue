@@ -26,6 +26,7 @@ import { getMaxPriceError } from '@/utils/getMaxPriceError'
 import { getMinimumApartmentPrice } from '@/utils/getMinimumApartmentPrice'
 import { getMaximumApartmentPrice } from '@/utils/getMaximumApartmentPrice'
 import { filterFavoriteApartments } from '@/utils/filterFavoriteApartments'
+import { sortApartmentsByPricePerSquareMeter } from '@/utils/sortApartmentsByPricePerSquareMeter'
 
 const props = defineProps({
   selectedFloor: {
@@ -112,6 +113,9 @@ const sortedApartments = computed(() => {
       break
     case 'area':
       apartments = sortApartmentsByArea(apartments)
+      break
+    case 'pricePerMeter':
+      apartments = sortApartmentsByPricePerSquareMeter(apartments)
       break
     default:
       apartments = sortApartmentsByStatus(apartments)
@@ -236,11 +240,6 @@ watch(maxPriceInput, (value) => {
             <strong class="floor-panel__title">
               {{ selectedApartment.number }}
             </strong>
-
-            <div class="floor-panel__favorites-count">
-              <span aria-hidden="true">♥</span>
-              <span>Ulubione: {{ favoritesCount }}</span>
-            </div>
           </div>
 
           <span
@@ -497,6 +496,11 @@ watch(maxPriceInput, (value) => {
             <span>Tylko ulubione</span>
           </label>
 
+          <div class="floor-panel__favorites-count">
+            <span aria-hidden="true">♥</span>
+            <span>Ulubione: {{ favoritesCount }}</span>
+          </div>
+
           <div class="floor-panel__sort">
             <label for="apartment-sort">Sortuj mieszkania</label>
 
@@ -508,6 +512,7 @@ watch(maxPriceInput, (value) => {
               <option value="status">Według statusu</option>
               <option value="priceAsc">Cena: od najniższej</option>
               <option value="priceDesc">Cena: od najwyższej</option>
+              <option value="pricePerMeter">Cena za m²: od najniższej</option>
               <option value="area">Powierzchnia: od najmniejszej</option>
             </select>
 
@@ -1492,7 +1497,7 @@ watch(maxPriceInput, (value) => {
   color: #975555;
   font-size: 0.6875rem;
   font-weight: 600;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
   white-space: nowrap;
 }
 
