@@ -173,6 +173,23 @@ const availableApartmentsCount = computed(
   () => getAvailableApartments(props.selectedFloor.apartments).length,
 )
 
+const availabilityPercentage = computed(() => {
+  const total = props.selectedFloor.apartmentCount
+  const available = props.selectedFloor.availableApartments
+
+  if (!Number.isFinite(total) || total <= 0) {
+    return 0
+  }
+
+  if (!Number.isFinite(available)) {
+    return 0
+  }
+
+  const percentage = (available / total) * 100
+
+  return Math.min(100, Math.max(0, percentage))
+})
+
 const minimumPrice = computed(() => getMinimumApartmentPrice(props.selectedFloor.apartments))
 
 const maximumPrice = computed(() => getMaximumApartmentPrice(props.selectedFloor.apartments))
@@ -375,9 +392,7 @@ watch(maxPriceInput, (value) => {
           <div class="floor-panel__availability-track">
             <span
               class="floor-panel__availability-progress"
-              :style="{
-                width: `${(selectedFloor.availableApartments / selectedFloor.apartmentCount) * 100}%`,
-              }"
+              :style="{ width: `${availabilityPercentage}%` }"
             ></span>
           </div>
 
