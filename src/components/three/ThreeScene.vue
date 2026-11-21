@@ -264,6 +264,14 @@ defineExpose({
   clearSearchMatches,
 })
 
+const clearSceneHover = () => {
+  clearHoveredFloor()
+  clearHoveredApartment()
+  hideTooltip()
+
+  renderer.domElement.style.cursor = 'default'
+}
+
 const handlePointerMove = (event) => {
   trackPointerMove(event)
 
@@ -388,6 +396,7 @@ const animate = () => {
 
 const addSceneEventListeners = () => {
   renderer.domElement.addEventListener('pointermove', handlePointerMove)
+  renderer.domElement.addEventListener('pointerleave', clearSceneHover)
   renderer.domElement.addEventListener('click', handleSceneClick)
   renderer.domElement.addEventListener('pointerdown', handlePointerDown)
   renderer.domElement.addEventListener('pointerup', handlePointerUp)
@@ -399,6 +408,7 @@ const removeSceneEventListeners = () => {
   }
 
   renderer.domElement.removeEventListener('pointermove', handlePointerMove)
+  renderer.domElement.removeEventListener('pointerleave', clearSceneHover)
   renderer.domElement.removeEventListener('click', handleSceneClick)
   renderer.domElement.removeEventListener('pointerdown', handlePointerDown)
   renderer.domElement.removeEventListener('pointerup', handlePointerUp)
