@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { formatPrice, formatFloorLabel } from '../utils/apartmentFormatters'
+import { getAvailableApartments } from '../utils/getAvailableApartments'
 
 export const useSceneTooltip = () => {
   const tooltip = ref({
@@ -38,10 +39,11 @@ export const useSceneTooltip = () => {
     }
 
     if (object.userData.type === 'floor') {
-      tooltip.value.title = formatFloorLabel(object.userData.floorNumber)
+      const { apartments, floorNumber } = object.userData
+      const availableCount = getAvailableApartments(apartments).length
 
-      tooltip.value.description = `${object.userData.availableApartments} z ${object.userData.apartmentCount} dostępnych`
-
+      tooltip.value.title = formatFloorLabel(floorNumber)
+      tooltip.value.description = `${availableCount} z ${apartments.length} dostępnych`
       tooltip.value.type = 'floor'
     }
 
