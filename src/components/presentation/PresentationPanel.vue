@@ -169,25 +169,21 @@ const averagePrice = computed(() => getAverageApartmentPrice(props.selectedFloor
 
 const averageArea = computed(() => getAverageApartmentArea(props.selectedFloor.apartments))
 
+const totalApartmentsCount = computed(() => props.selectedFloor.apartments.length)
+
 const availableApartmentsCount = computed(
   () => getAvailableApartments(props.selectedFloor.apartments).length,
 )
 
 const availabilityPercentage = computed(() => {
-  const total = props.selectedFloor.apartmentCount
-  const available = props.selectedFloor.availableApartments
+  const total = totalApartmentsCount.value
+  const available = availableApartmentsCount.value
 
-  if (!Number.isFinite(total) || total <= 0) {
+  if (total === 0) {
     return 0
   }
 
-  if (!Number.isFinite(available)) {
-    return 0
-  }
-
-  const percentage = (available / total) * 100
-
-  return Math.min(100, Math.max(0, percentage))
+  return (available / total) * 100
 })
 
 const minimumPrice = computed(() => getMinimumApartmentPrice(props.selectedFloor.apartments))
@@ -384,9 +380,7 @@ watch(maxPriceInput, (value) => {
           <div class="floor-panel__availability-header">
             <span>Dostępność</span>
 
-            <strong>
-              {{ selectedFloor.availableApartments }} z {{ selectedFloor.apartmentCount }}
-            </strong>
+            <strong> {{ availableApartmentsCount }} z {{ totalApartmentsCount }} </strong>
           </div>
 
           <div class="floor-panel__availability-track">
@@ -418,14 +412,12 @@ watch(maxPriceInput, (value) => {
 
           <div class="floor-panel__detail">
             <span>Mieszkania</span>
-            <strong>{{ selectedFloor.apartmentCount }}</strong>
+            <strong>{{ totalApartmentsCount }}</strong>
           </div>
 
           <div class="floor-panel__detail">
             <span>Dostępne mieszkania</span>
-            <strong>
-              {{ availableApartmentsCount }} z {{ selectedFloor.apartments.length }}
-            </strong>
+            <strong> {{ availableApartmentsCount }} z {{ totalApartmentsCount }} </strong>
           </div>
 
           <div class="floor-panel__detail">
