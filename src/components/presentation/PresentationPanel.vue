@@ -462,7 +462,7 @@ watch(maxPriceInput, (value) => {
             <span class="floor-panel__apartments-title"> Mieszkania na kondygnacji </span>
 
             <span class="floor-panel__apartments-count">
-              {{ filteredApartmentsCount }} z {{ selectedFloor.apartmentCount }}
+              {{ filteredApartmentsCount }} z {{ totalApartmentsCount }}
             </span>
           </div>
 
