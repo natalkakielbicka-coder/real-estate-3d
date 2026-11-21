@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { countApartmentsByStatus } from './countApartmentsByStatus'
 
 export const createBuildingMesh = ({
   buildingData,
@@ -34,8 +33,6 @@ export const createBuildingMesh = ({
       buildingId: buildingData.id,
       buildingName: buildingData.name,
       ...floorData,
-      apartmentCount: floorData.apartments.length,
-      availableApartments: countApartmentsByStatus(floorData.apartments).available,
     }
 
     floor.position.y = floorHeight / 2 + i * (floorHeight + floorGap)
