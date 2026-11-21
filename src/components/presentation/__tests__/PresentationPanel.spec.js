@@ -4,7 +4,7 @@ import PresentationPanel from '../PresentationPanel.vue'
 
 enableAutoUnmount(afterEach)
 
-describe('PresentationPanel availability progress', () => {
+describe('PresentationPanel', () => {
   const createFloor = (statuses) => ({
     buildingId: 'building-a',
     buildingName: 'Budynek A',
@@ -62,6 +62,27 @@ describe('PresentationPanel availability progress', () => {
     expect(getDetailValue(wrapper, 'Mieszkania')).toBe('4')
     expect(getDetailValue(wrapper, 'Dostępne mieszkania')).toBe('2 z 4')
     expect(getProgressWidth(wrapper)).toBe('50%')
+  })
+
+  it('keeps the apartment list total based on the floor when filtering', async () => {
+    const floor = createFloor(['available', 'available', 'reserved', 'sold'])
+    floor.apartments[0].balcony = true
+    floor.apartments[2].balcony = true
+
+    const wrapper = mountPanel({ ...floor, apartmentCount: 10 })
+    const count = wrapper.get('.floor-panel__apartments-count')
+    const balconyFilter = wrapper
+      .findAll('.floor-panel__checkbox')
+      .find((label) => label.text() === 'Tylko mieszkania z balkonem')
+      .get('input')
+
+    expect(count.text()).toBe('4 z 4')
+
+    await balconyFilter.setValue(true)
+    expect(count.text()).toBe('2 z 4')
+
+    await balconyFilter.setValue(false)
+    expect(count.text()).toBe('4 z 4')
   })
 
   it('updates progress when selected floor changes', async () => {
