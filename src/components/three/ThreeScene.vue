@@ -90,6 +90,7 @@ const {
   handlePointerDown,
   handlePointerMove: trackPointerMove,
   handlePointerUp,
+  handlePointerCancel,
   consumePointerDrag,
 } = usePointerDrag({
   dragThreshold: interaction.dragThreshold,
@@ -402,7 +403,7 @@ const addSceneEventListeners = () => {
   renderer.domElement.addEventListener('click', handleSceneClick)
   renderer.domElement.addEventListener('pointerdown', handlePointerDown)
   renderer.domElement.addEventListener('pointerup', handlePointerUp)
-  renderer.domElement.addEventListener('pointercancel', handlePointerUp)
+  renderer.domElement.addEventListener('pointercancel', handlePointerCancel)
 }
 
 const removeSceneEventListeners = () => {
@@ -415,7 +416,7 @@ const removeSceneEventListeners = () => {
   renderer.domElement.removeEventListener('click', handleSceneClick)
   renderer.domElement.removeEventListener('pointerdown', handlePointerDown)
   renderer.domElement.removeEventListener('pointerup', handlePointerUp)
-  renderer.domElement.removeEventListener('pointercancel', handlePointerUp)
+  renderer.domElement.removeEventListener('pointercancel', handlePointerCancel)
 }
 
 onMounted(() => {

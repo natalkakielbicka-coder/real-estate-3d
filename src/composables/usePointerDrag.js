@@ -30,6 +30,11 @@ export const usePointerDrag = ({ dragThreshold }) => {
     isPointerDown = false
   }
 
+  const handlePointerCancel = () => {
+    isPointerDown = false
+    pointerDragged = false
+  }
+
   const consumePointerDrag = () => {
     if (!pointerDragged) {
       return false
@@ -44,6 +49,7 @@ export const usePointerDrag = ({ dragThreshold }) => {
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
+    handlePointerCancel,
     consumePointerDrag,
   }
 }
