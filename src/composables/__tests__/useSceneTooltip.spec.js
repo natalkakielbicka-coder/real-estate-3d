@@ -62,4 +62,34 @@ describe('useSceneTooltip floor availability', () => {
       description,
     })
   })
+
+  describe('useSceneTooltip apartment details', () => {
+    it.each(['available', 'sold'])('shows details for a %s apartment', (status) => {
+      const { tooltip, showTooltip } = useSceneTooltip()
+
+      const apartment = {
+        userData: {
+          type: 'apartment',
+          number: 'A-12',
+          status,
+          area: 48.5,
+          floorNumber: 2,
+          rooms: 2,
+          price: 420_000,
+        },
+      }
+
+      showTooltip(apartment, { clientX: 100, clientY: 80 }, { left: 0, top: 0 })
+
+      expect(tooltip.value).toMatchObject({
+        visible: true,
+        type: 'apartment',
+        title: 'A-12',
+        status,
+        area: '48.5 m²',
+        floor: 'Piętro 2',
+        rooms: 2,
+      })
+    })
+  })
 })
