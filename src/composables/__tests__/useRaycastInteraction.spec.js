@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { OrthographicCamera, Mesh, BoxGeometry, MeshBasicMaterial } from 'three'
+import { OrthographicCamera, Group, Mesh, BoxGeometry, MeshBasicMaterial } from 'three'
 import { useRaycastInteraction } from '../useRaycastInteraction'
 
 describe('useRaycastInteraction', () => {
@@ -47,5 +47,38 @@ describe('useRaycastInteraction', () => {
     expect(getInteractiveIntersection({ clientX: 70, clientY: 80 }).intersection?.object).toBe(
       floor,
     )
+  })
+
+  it('finds the visible floor behind an apartment in a hidden group', () => {
+    const camera = new OrthographicCamera(-1, 1, 1, -1, 0.1, 10)
+    camera.position.z = 5
+    camera.updateMatrixWorld()
+
+    const floor = new Mesh(new BoxGeometry(), new MeshBasicMaterial())
+    floor.userData.type = 'floor'
+
+    const apartment = new Mesh(floor.geometry, floor.material)
+    apartment.userData.type = 'apartment'
+
+    const preview = new Group()
+    preview.position.z = 2
+    preview.add(apartment)
+
+    const building = new Group()
+    building.add(floor, preview)
+    building.updateMatrixWorld(true)
+
+    const { getInteractiveIntersection } = useRaycastInteraction({
+      sceneContainer: { value: { getBoundingClientRect: () => rect } },
+      camera,
+      building,
+    })
+    const event = { clientX: 70, clientY: 80 }
+
+    expect(getInteractiveIntersection(event).intersection?.object).toBe(apartment)
+
+    preview.visible = false
+
+    expect(getInteractiveIntersection(event).intersection?.object).toBe(floor)
   })
 })
