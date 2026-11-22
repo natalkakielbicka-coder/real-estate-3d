@@ -8,8 +8,22 @@ export const useRaycastInteraction = ({ sceneContainer, camera, building }) => {
     const container = sceneContainer.value
     const rect = container.getBoundingClientRect()
 
-    pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-    pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+
+    if (
+      rect.width <= 0 ||
+      rect.height <= 0 ||
+      x < 0 ||
+      y < 0 ||
+      x >= rect.width ||
+      y >= rect.height
+    ) {
+      return { intersection: undefined, rect }
+    }
+
+    pointer.x = (x / rect.width) * 2 - 1
+    pointer.y = 1 - (y / rect.height) * 2
 
     raycaster.setFromCamera(pointer, camera)
 
