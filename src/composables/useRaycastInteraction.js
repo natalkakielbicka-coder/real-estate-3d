@@ -33,7 +33,17 @@ export const useRaycastInteraction = ({ sceneContainer, camera, building }) => {
       const object = item.object
       const type = object.userData.type
 
-      return object.visible && (type === 'apartment' || type === 'floor')
+      if (type !== 'apartment' && type !== 'floor') {
+        return false
+      }
+
+      for (let node = object; node; node = node.parent) {
+        if (!node.visible) {
+          return false
+        }
+      }
+
+      return true
     })
 
     return {
