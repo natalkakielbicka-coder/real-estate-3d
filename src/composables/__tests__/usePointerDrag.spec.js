@@ -31,3 +31,16 @@ describe('usePointerDrag', () => {
     expect(drag.consumePointerDrag()).toBe(false)
   })
 })
+
+it('clears the active drag and pending click suppression on cancellation', () => {
+  const drag = usePointerDrag({ dragThreshold: 5 })
+  const pointBeyondThreshold = { clientX: 16, clientY: 10 }
+
+  drag.handlePointerDown(start)
+  expect(drag.handlePointerMove(pointBeyondThreshold)).toBe(true)
+
+  drag.handlePointerCancel()
+
+  expect(drag.handlePointerMove(pointBeyondThreshold)).toBe(false)
+  expect(drag.consumePointerDrag()).toBe(false)
+})
