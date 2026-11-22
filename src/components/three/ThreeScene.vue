@@ -297,20 +297,13 @@ const handlePointerMove = (event) => {
 
     if (!isApartmentSelectable(hoveredObject.userData)) {
       clearHoveredApartment()
-
-      showTooltip(hoveredObject, event, rect, selectedFloor)
-
       renderer.domElement.style.cursor = 'not-allowed'
-
-      return
+    } else {
+      setHoveredApartment(hoveredObject)
+      renderer.domElement.style.cursor = 'pointer'
     }
 
-    setHoveredApartment(hoveredObject)
-
     showTooltip(hoveredObject, event, rect, selectedFloor)
-
-    renderer.domElement.style.cursor = 'pointer'
-
     return
   }
 
