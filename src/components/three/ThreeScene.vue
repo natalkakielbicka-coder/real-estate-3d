@@ -93,7 +93,6 @@ const {
   consumePointerDrag,
 } = usePointerDrag({
   dragThreshold: interaction.dragThreshold,
-  onDragStart: hideTooltip,
 })
 
 const { defaultPosition, defaultTarget } = cameraConfig
@@ -273,7 +272,10 @@ const clearSceneHover = () => {
 }
 
 const handlePointerMove = (event) => {
-  trackPointerMove(event)
+  if (trackPointerMove(event)) {
+    clearSceneHover()
+    return
+  }
 
   const { intersection: interactiveIntersection, rect } = getInteractiveIntersection(event)
 
@@ -400,6 +402,7 @@ const addSceneEventListeners = () => {
   renderer.domElement.addEventListener('click', handleSceneClick)
   renderer.domElement.addEventListener('pointerdown', handlePointerDown)
   renderer.domElement.addEventListener('pointerup', handlePointerUp)
+  renderer.domElement.addEventListener('pointercancel', handlePointerUp)
 }
 
 const removeSceneEventListeners = () => {
@@ -412,6 +415,7 @@ const removeSceneEventListeners = () => {
   renderer.domElement.removeEventListener('click', handleSceneClick)
   renderer.domElement.removeEventListener('pointerdown', handlePointerDown)
   renderer.domElement.removeEventListener('pointerup', handlePointerUp)
+  renderer.domElement.removeEventListener('pointercancel', handlePointerUp)
 }
 
 onMounted(() => {

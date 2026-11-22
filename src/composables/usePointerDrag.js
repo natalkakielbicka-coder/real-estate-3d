@@ -1,4 +1,4 @@
-export const usePointerDrag = ({ dragThreshold, onDragStart }) => {
+export const usePointerDrag = ({ dragThreshold }) => {
   let isPointerDown = false
   let pointerDragged = false
   let pointerDownX = 0
@@ -14,20 +14,16 @@ export const usePointerDrag = ({ dragThreshold, onDragStart }) => {
 
   const handlePointerMove = (event) => {
     if (!isPointerDown) {
-      return
+      return false
     }
 
     const distance = Math.hypot(event.clientX - pointerDownX, event.clientY - pointerDownY)
 
-    if (distance <= dragThreshold) {
-      return
+    if (distance > dragThreshold) {
+      pointerDragged = true
     }
 
-    if (!pointerDragged) {
-      onDragStart?.()
-    }
-
-    pointerDragged = true
+    return pointerDragged
   }
 
   const handlePointerUp = () => {
