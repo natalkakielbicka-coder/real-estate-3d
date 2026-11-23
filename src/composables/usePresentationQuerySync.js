@@ -42,7 +42,12 @@ export const usePresentationQuerySync = ({
     )
 
     if (apartmentId && !apartment) {
-      router.replace({ query: buildPresentationQuery({ floor: selectedFloor.value }) })
+      router.replace({
+        query: {
+          ...withoutPresentationSelection(query),
+          ...buildPresentationQuery({ floor: selectedFloor.value }),
+        },
+      })
     }
 
     if (apartment && apartment.id !== selectedApartment.value?.id) {
@@ -64,7 +69,10 @@ export const usePresentationQuerySync = ({
       return
     }
 
-    const query = buildPresentationQuery({ floor, apartment })
+    const query = {
+      ...withoutPresentationSelection(route.query),
+      ...buildPresentationQuery({ floor, apartment }),
+    }
 
     if (apartment && previousApartment) {
       router.replace({ query })
