@@ -161,3 +161,36 @@ it('keeps unrelated query parameters when the linked floor does not exist', asyn
   expect(onClose).toHaveBeenCalled()
   expect(onApartmentSelect).not.toHaveBeenCalled()
 })
+
+it('opens an available apartment from a direct link', async () => {
+  const apartment = { id: 'A-2-1', status: 'available' }
+  const floor = { floorNumber: 2, apartments: [apartment] }
+  const selectedFloor = ref(null)
+  const selectedApartment = ref(null)
+  const selectFloorByNumber = vi.fn(() => {
+    selectedFloor.value = floor
+  })
+  const onApartmentSelect = vi.fn((item) => {
+    selectedApartment.value = item
+  })
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/', component: { render: () => null } }],
+  })
+
+  await router.push('/?floor=2&apartment=A-2-1')
+
+  mountQuerySync(router, {
+    threeScene: ref({ selectFloorByNumber }),
+    selectedFloor,
+    selectedApartment,
+    onClose: vi.fn(),
+    onApartmentSelect,
+    onApartmentBack: vi.fn(),
+  })
+
+  expect(selectFloorByNumber).toHaveBeenCalledWith(2)
+  expect(selectedFloor.value).toEqual(floor)
+  expect(onApartmentSelect).toHaveBeenCalledWith(apartment)
+  expect(selectedApartment.value).toEqual(apartment)
+})
