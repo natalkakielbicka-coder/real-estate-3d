@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { buildings } from '../../data/buildings'
 import {
   getRoomsLabel,
@@ -15,6 +15,7 @@ const emit = defineEmits(['select-apartment', 'filter-results', 'clear-filter-re
 const isOpen = ref(false)
 const showResults = ref(false)
 const searchRef = ref(null)
+const searchPanelId = useId()
 
 const roomOptions = [1, 2, 3, 4]
 const statusOptions = [
@@ -107,6 +108,8 @@ onBeforeUnmount(() => {
       type="button"
       class="apartment-search__trigger"
       :class="{ 'apartment-search__trigger--active': isOpen }"
+      :aria-expanded="isOpen"
+      :aria-controls="searchPanelId"
       @click="isOpen = !isOpen"
     >
       Znajdź mieszkanie
@@ -117,7 +120,7 @@ onBeforeUnmount(() => {
     </button>
 
     <Transition name="search-panel">
-      <div v-if="isOpen" class="apartment-search__panel">
+      <div v-show="isOpen" :id="searchPanelId" class="apartment-search__panel">
         <div class="apartment-search__heading">
           <div>
             <span>Wyszukiwarka</span>
