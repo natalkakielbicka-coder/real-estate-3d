@@ -61,4 +61,10 @@ describe('parseStoredFavorites', () => {
     const storedValue = '[]'
     expect(parseStoredFavorites(storedValue)).toEqual([])
   })
+
+  it('removes duplicate favorite IDs in order of first appearance', () => {
+    const storedValue = '["b", "a", "b", "c", "a"]'
+
+    expect(parseStoredFavorites(storedValue)).toEqual(['b', 'a', 'c'])
+  })
 })
