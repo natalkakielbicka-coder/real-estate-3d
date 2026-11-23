@@ -3,7 +3,8 @@ const getFirstValue = (value) => (Array.isArray(value) ? value[0] : value)
 export const parsePresentationQuery = (query = {}) => {
   const floor = getFirstValue(query.floor)
   const apartment = getFirstValue(query.apartment)
-  const floorNumber = floor == null || floor === '' ? null : Number(floor)
+  const isBlankFloor = typeof floor === 'string' && floor.trim() === ''
+  const floorNumber = floor == null || isBlankFloor ? null : Number(floor)
 
   return {
     floorNumber: Number.isInteger(floorNumber) ? floorNumber : null,
