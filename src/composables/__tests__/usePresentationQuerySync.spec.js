@@ -90,3 +90,47 @@ it('preserves unrelated query parameters when selecting a floor and apartment', 
     })
   })
 })
+
+it.each(['missing', 'A-2-sold'])('keeps the floor for invalid apartment link %s', async (id) => {
+  const floor = {
+    floorNumber: 2,
+    apartments: [{ id: 'A-2-sold', status: 'sold' }],
+  }
+  const selectedFloor = ref(null)
+  const selectedApartment = ref(null)
+  const onApartmentSelect = vi.fn()
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/', component: { render: () => null } }],
+  })
+
+  await router.push({ path: '/', query: { floor: '2', apartment: id, utm_source: 'test' } })
+
+  mount(
+    {
+      setup() {
+        usePresentationQuerySync({
+          threeScene: ref({
+            selectFloorByNumber: () => {
+              selectedFloor.value = floor
+            },
+          }),
+          selectedFloor,
+          selectedApartment,
+          onClose: vi.fn(),
+          onApartmentSelect,
+          onApartmentBack: vi.fn(),
+        })
+
+        return () => null
+      },
+    },
+    { global: { plugins: [router] } },
+  )
+
+  await vi.waitFor(() => {
+    expect(router.currentRoute.value.query).toEqual({ floor: '2', utm_source: 'test' })
+  })
+  expect(selectedFloor.value).toEqual(floor)
+  expect(onApartmentSelect).not.toHaveBeenCalled()
+})
