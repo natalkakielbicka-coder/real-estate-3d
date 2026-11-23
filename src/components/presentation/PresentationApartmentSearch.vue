@@ -15,6 +15,7 @@ const emit = defineEmits(['select-apartment', 'filter-results', 'clear-filter-re
 const isOpen = ref(false)
 const showResults = ref(false)
 const searchRef = ref(null)
+const searchTriggerRef = ref(null)
 const searchPanelId = useId()
 
 const roomOptions = [1, 2, 3, 4]
@@ -80,8 +81,9 @@ const resetFilters = () => {
 }
 
 const handleKeydown = (event) => {
-  if (event.key === 'Escape') {
+  if (event.key === 'Escape' && isOpen.value) {
     isOpen.value = false
+    searchTriggerRef.value?.focus()
   }
 }
 
@@ -106,6 +108,7 @@ onBeforeUnmount(() => {
   <div ref="searchRef" class="apartment-search">
     <button
       type="button"
+      ref="searchTriggerRef"
       class="apartment-search__trigger"
       :class="{ 'apartment-search__trigger--active': isOpen }"
       :aria-expanded="isOpen"
