@@ -3,6 +3,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
 import { buildPresentationQuery, parsePresentationQuery } from '@/utils/presentationQuery'
 
+const withoutPresentationSelection = (query) => {
+  const remainingQuery = { ...query }
+  delete remainingQuery.floor
+  delete remainingQuery.apartment
+  return remainingQuery
+}
+
 export const usePresentationQuerySync = ({
   threeScene,
   selectedFloor,
@@ -26,7 +33,7 @@ export const usePresentationQuerySync = ({
 
     if (selectedFloor.value?.floorNumber !== floorNumber) {
       onClose()
-      router.replace({ query: {} })
+      router.replace({ query: withoutPresentationSelection(query) })
       return
     }
 
@@ -53,7 +60,7 @@ export const usePresentationQuerySync = ({
 
   watch([selectedFloor, selectedApartment], ([floor, apartment], [, previousApartment]) => {
     if (!floor) {
-      router.push({ query: {} })
+      router.push({ query: withoutPresentationSelection(route.query) })
       return
     }
 
