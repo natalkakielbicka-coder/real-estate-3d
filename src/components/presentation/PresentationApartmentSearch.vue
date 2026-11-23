@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { buildings } from '../../data/buildings'
 import {
   getRoomsLabel,
@@ -41,6 +41,13 @@ const {
   toggleStatus,
   resetFilters: resetSearchFilters,
 } = useApartmentSearch(getAllApartments(buildings))
+
+watch(rangeError, (error) => {
+  if (error) {
+    showResults.value = false
+    emit('clear-filter-results')
+  }
+})
 
 const handleSubmit = () => {
   if (rangeError.value) {
