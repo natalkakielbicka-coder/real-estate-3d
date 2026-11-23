@@ -132,3 +132,32 @@ it.each(['missing', 'A-2-sold'])('keeps the floor for invalid apartment link %s'
   expect(selectedFloor.value).toEqual(floor)
   expect(onApartmentSelect).not.toHaveBeenCalled()
 })
+
+it('keeps unrelated query parameters when the linked floor does not exist', async () => {
+  const selectFloorByNumber = vi.fn()
+  const onClose = vi.fn()
+  const onApartmentSelect = vi.fn()
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/', component: { render: () => null } }],
+  })
+
+  await router.push('/?floor=999&apartment=missing&utm_source=test')
+
+  mountQuerySync(router, {
+    threeScene: ref({ selectFloorByNumber }),
+    selectedFloor: ref(null),
+    selectedApartment: ref(null),
+    onClose,
+    onApartmentSelect,
+    onApartmentBack: vi.fn(),
+  })
+
+  await vi.waitFor(() => {
+    expect(router.currentRoute.value.query).toEqual({ utm_source: 'test' })
+  })
+
+  expect(selectFloorByNumber).toHaveBeenCalledWith(999)
+  expect(onClose).toHaveBeenCalled()
+  expect(onApartmentSelect).not.toHaveBeenCalled()
+})
