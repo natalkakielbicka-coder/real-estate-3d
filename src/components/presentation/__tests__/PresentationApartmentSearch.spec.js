@@ -52,3 +52,19 @@ it('exposes the search panel state and its relationship to the toggle', async ()
   expect(trigger.attributes('aria-expanded')).toBe('false')
   expect(panel.element.style.display).toBe('none')
 })
+
+it('returns focus to the search toggle when Escape closes the panel', async () => {
+  const wrapper = mount(PresentationApartmentSearch, { attachTo: document.body })
+  const trigger = wrapper.get('.apartment-search__trigger')
+
+  await trigger.trigger('click')
+
+  const priceInput = wrapper.get('input[placeholder="400000"]')
+  priceInput.element.focus()
+  expect(document.activeElement).toBe(priceInput.element)
+
+  await priceInput.trigger('keydown', { key: 'Escape' })
+
+  expect(trigger.attributes('aria-expanded')).toBe('false')
+  expect(document.activeElement).toBe(trigger.element)
+})
