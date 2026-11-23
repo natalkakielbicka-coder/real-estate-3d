@@ -48,3 +48,29 @@ it('keeps favorites usable when storage writes fail', async () => {
     getItem.mockRestore()
   }
 })
+
+it('persists favorites after toggling an apartment on and off', async () => {
+  const storageKey = 'favoriteApartments'
+  const previousValue = localStorage.getItem(storageKey)
+  const scope = effectScope()
+
+  try {
+    localStorage.setItem(storageKey, '["b-03"]')
+    const { toggleFavorite } = scope.run(useFavorites)
+
+    toggleFavorite('a-12')
+    await nextTick()
+    expect(localStorage.getItem(storageKey)).toBe('["b-03","a-12"]')
+
+    toggleFavorite('a-12')
+    await nextTick()
+    expect(localStorage.getItem(storageKey)).toBe('["b-03"]')
+  } finally {
+    scope.stop()
+    if (previousValue === null) {
+      localStorage.removeItem(storageKey)
+    } else {
+      localStorage.setItem(storageKey, previousValue)
+    }
+  }
+})
