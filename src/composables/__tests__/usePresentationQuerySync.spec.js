@@ -194,3 +194,33 @@ it('opens an available apartment from a direct link', async () => {
   expect(onApartmentSelect).toHaveBeenCalledWith(apartment)
   expect(selectedApartment.value).toEqual(apartment)
 })
+
+it('preserves floor and unrelated query parameters when leaving apartment details', async () => {
+  const apartment = { id: 'A-2-1', status: 'available' }
+  const floor = { floorNumber: 2, apartments: [apartment] }
+  const selectedFloor = ref(floor)
+  const selectedApartment = ref(apartment)
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/', component: { render: () => null } }],
+  })
+
+  await router.push('/?floor=2&apartment=A-2-1&utm_source=test')
+
+  mountQuerySync(router, {
+    threeScene: ref({ selectFloorByNumber: vi.fn() }),
+    selectedFloor,
+    selectedApartment,
+    onClose: vi.fn(),
+    onApartmentSelect: vi.fn(),
+    onApartmentBack: vi.fn(),
+  })
+
+  selectedApartment.value = null
+
+  await vi.waitFor(() => {
+    expect(router.currentRoute.value.query).toEqual({ floor: '2', utm_source: 'test' })
+  })
+
+  expect(selectedFloor.value).toEqual(floor)
+})
