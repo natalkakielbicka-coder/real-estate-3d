@@ -25,6 +25,13 @@ describe('parsePresentationQuery', () => {
   it('takes first value from repeated params', () => {
     expect(parsePresentationQuery({ floor: ['3', '4'] }).floorNumber).toBe(3)
   })
+
+  it.each([{ floor: '   ' }, { floor: ['   ', '0'] }])(
+    'ignores a blank floor (%j)',
+    ({ floor }) => {
+      expect(parsePresentationQuery({ floor }).floorNumber).toBeNull()
+    },
+  )
 })
 
 describe('buildPresentationQuery', () => {
