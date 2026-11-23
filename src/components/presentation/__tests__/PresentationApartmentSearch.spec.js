@@ -30,3 +30,25 @@ it('clears previous search results when the price range becomes invalid', async 
   expect(wrapper.find('.apartment-search__apartments').exists()).toBe(false)
   expect(wrapper.emitted('filter-results')).toHaveLength(1)
 })
+
+it('exposes the search panel state and its relationship to the toggle', async () => {
+  const wrapper = mount(PresentationApartmentSearch)
+  const trigger = wrapper.get('.apartment-search__trigger')
+  const panel = wrapper.get('.apartment-search__panel')
+
+  const panelId = panel.attributes('id')
+  expect(panelId).toBeTruthy()
+  expect(trigger.attributes('aria-controls')).toBe(panelId)
+  expect(trigger.attributes('aria-expanded')).toBe('false')
+  expect(panel.element.style.display).toBe('none')
+
+  await trigger.trigger('click')
+
+  expect(trigger.attributes('aria-expanded')).toBe('true')
+  expect(panel.element.style.display).not.toBe('none')
+
+  await trigger.trigger('click')
+
+  expect(trigger.attributes('aria-expanded')).toBe('false')
+  expect(panel.element.style.display).toBe('none')
+})
