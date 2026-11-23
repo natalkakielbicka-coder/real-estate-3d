@@ -107,8 +107,8 @@ onBeforeUnmount(() => {
 <template>
   <div ref="searchRef" class="apartment-search">
     <button
-      type="button"
       ref="searchTriggerRef"
+      type="button"
       class="apartment-search__trigger"
       :class="{ 'apartment-search__trigger--active': isOpen }"
       :aria-expanded="isOpen"
