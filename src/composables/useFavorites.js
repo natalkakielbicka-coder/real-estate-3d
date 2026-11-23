@@ -37,7 +37,11 @@ export const useFavorites = () => {
   loadFavorites()
 
   watch(favoriteIds, (newFavorites) => {
-    localStorage.setItem('favoriteApartments', JSON.stringify(newFavorites))
+    try {
+      localStorage.setItem('favoriteApartments', JSON.stringify(newFavorites))
+    } catch {
+      // Favorites remain available in memory until the page reloads.
+    }
   })
 
   return {
