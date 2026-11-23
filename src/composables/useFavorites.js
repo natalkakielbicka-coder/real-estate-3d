@@ -23,7 +23,14 @@ export const useFavorites = () => {
   }
 
   const loadFavorites = () => {
-    const storedFavorites = localStorage.getItem('favoriteApartments')
+    let storedFavorites
+
+    try {
+      storedFavorites = localStorage.getItem('favoriteApartments')
+    } catch {
+      return
+    }
+
     favoriteIds.value = parseStoredFavorites(storedFavorites)
   }
 
