@@ -77,4 +77,47 @@ describe('useSceneResize', () => {
     expect(controls.update).not.toHaveBeenCalled()
     expect(camera.position.toArray()).toEqual([0, 0, 5])
   })
+
+  it('disconnects the observer and stops handling window resize events', () => {
+    const observe = vi.fn()
+    const disconnect = vi.fn()
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe = observe
+        disconnect = disconnect
+      },
+    )
+
+    const container = { getBoundingClientRect: () => ({ width: 1000, height: 400 }) }
+    const sceneContainer = { value: container }
+    const camera = new PerspectiveCamera()
+    const controls = { target: new Vector3(), update: vi.fn() }
+    const renderer = { setSize: vi.fn() }
+    const { handleResize, startResizeObserver, stopResizeObserver } = useSceneResize({
+      sceneContainer,
+      camera,
+      renderer,
+      controls,
+    })
+
+    try {
+      startResizeObserver()
+      expect(observe).toHaveBeenCalledWith(container)
+
+      renderer.setSize.mockClear()
+      window.dispatchEvent(new Event('resize'))
+      expect(renderer.setSize).toHaveBeenCalledOnce()
+
+      stopResizeObserver()
+      expect(disconnect).toHaveBeenCalledOnce()
+
+      renderer.setSize.mockClear()
+      window.dispatchEvent(new Event('resize'))
+      expect(renderer.setSize).not.toHaveBeenCalled()
+    } finally {
+      window.removeEventListener('resize', handleResize)
+      vi.unstubAllGlobals()
+    }
+  })
 })
