@@ -29,4 +29,25 @@ describe('ApartmentFloorPlan', () => {
     expect(first.get('g[mask]').attributes('mask')).toBe(`url(#${firstId})`)
     expect(second.get('g[mask]').attributes('mask')).toBe(`url(#${secondId})`)
   })
+
+  it('includes the room area in the accessible label only when available', () => {
+    const wrapper = mount(ApartmentFloorPlan, {
+      props: {
+        apartment: {
+          id: 'a',
+          number: 'A-1',
+          floorPlanType: 'studio',
+          roomDetails: [
+            { id: 'kitchen', name: 'Kuchnia', area: 8.5 },
+            { id: 'hall', name: 'Przedpokój' },
+          ],
+        },
+      },
+    })
+
+    const labels = wrapper.findAll('.floor-plan__room').map((room) => room.attributes('aria-label'))
+
+    expect(labels).toContain('Kuchnia, 8,50 m²')
+    expect(labels).toContain('Przedpokój')
+  })
 })
