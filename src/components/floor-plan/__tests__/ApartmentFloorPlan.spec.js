@@ -100,4 +100,15 @@ describe('ApartmentFloorPlan', () => {
     expect(wrapper.get(kitchen).attributes('aria-pressed')).toBe('false')
     expect(wrapper.find('.floor-plan__details').exists()).toBe(false)
   })
+
+  it('shows an empty state when the floor plan type is unknown', () => {
+    const wrapper = mount(ApartmentFloorPlan, {
+      props: {
+        apartment: { id: 'a', number: 'A-1', floorPlanType: 'unknown' },
+      },
+    })
+
+    expect(wrapper.get('.floor-plan__empty').text()).toBe('Brak rzutu dla wybranego mieszkania.')
+    expect(wrapper.find('svg').exists()).toBe(false)
+  })
 })
