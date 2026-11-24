@@ -54,4 +54,15 @@ describe('Presentation3DView floor plan dialog', () => {
 
     expect(document.activeElement).toBe(closeButton.element)
   })
+
+  it('restores focus to the opener after closing the floor plan with Escape', async () => {
+    const { wrapper, trigger } = await openFloorPlan()
+    const closeButton = wrapper.get('[aria-label="Zamknij rzut mieszkania"]')
+
+    await closeButton.trigger('keydown', { key: 'Escape' })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+    expect(document.activeElement).toBe(trigger.element)
+  })
 })
