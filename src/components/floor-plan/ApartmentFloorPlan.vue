@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, useId } from 'vue'
 import { getFloorPlanLayout } from '@/data/floorPlanLayouts'
 
 const props = defineProps({
@@ -8,6 +8,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const wallMaskId = `floor-plan-wall-mask-${useId()}`
 
 const layout = computed(() => getFloorPlanLayout(props.apartment.floorPlanType))
 
@@ -92,7 +94,7 @@ watch(
         :aria-label="`Rzut mieszkania ${apartment.number}`"
       >
         <defs>
-          <mask id="floor-plan-wall-mask" maskUnits="userSpaceOnUse">
+          <mask :id="wallMaskId" maskUnits="userSpaceOnUse">
             <rect
               x="-20"
               y="-20"
@@ -169,7 +171,7 @@ watch(
         </g>
 
         <!-- Ściany działowe i zewnętrzne -->
-        <g mask="url(#floor-plan-wall-mask)">
+        <g :mask="`url(#${wallMaskId})`">
           <rect
             v-for="room in rooms"
             :key="room.id"
