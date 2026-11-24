@@ -43,6 +43,11 @@ const formatArea = (area) => {
   })} m²`
 }
 
+const getRoomAriaLabel = (room) => {
+  const area = formatArea(room.area)
+  return area ? `${room.name}, ${area}` : room.name
+}
+
 const viewBox = computed(() => {
   if (!layout.value) return '0 0 1000 700'
 
@@ -128,7 +133,7 @@ watch(
           }"
           role="button"
           tabindex="0"
-          :aria-label="`${room.name}, ${formatArea(room.area)}`"
+          :aria-label="getRoomAriaLabel(room)"
           :aria-pressed="selectedRoomId === room.id"
           @mouseenter="handleRoomHover(room)"
           @mouseleave="handleRoomLeave"
