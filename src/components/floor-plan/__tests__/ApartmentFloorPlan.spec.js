@@ -50,4 +50,33 @@ describe('ApartmentFloorPlan', () => {
     expect(labels).toContain('Kuchnia, 8,50 m²')
     expect(labels).toContain('Przedpokój')
   })
+
+  it.each(['Enter', ' '])('toggles room details with key %j', async (key) => {
+    const wrapper = mount(ApartmentFloorPlan, {
+      props: {
+        apartment: {
+          id: 'a',
+          number: 'A-1',
+          floorPlanType: 'studio',
+          roomDetails: [{ id: 'kitchen', name: 'Kuchnia', area: 8.5 }],
+        },
+      },
+    })
+
+    const room = wrapper.get('[aria-label="Kuchnia, 8,50 m²"]')
+    const details = '.floor-plan__details'
+
+    expect(room.attributes('aria-pressed')).toBe('false')
+    expect(wrapper.find(details).exists()).toBe(false)
+
+    await room.trigger('keydown', { key })
+
+    expect(room.attributes('aria-pressed')).toBe('true')
+    expect(wrapper.get(details).text()).toContain('Kuchnia')
+
+    await room.trigger('keydown', { key })
+
+    expect(room.attributes('aria-pressed')).toBe('false')
+    expect(wrapper.find(details).exists()).toBe(false)
+  })
 })
