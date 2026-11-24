@@ -79,4 +79,25 @@ describe('ApartmentFloorPlan', () => {
     expect(room.attributes('aria-pressed')).toBe('false')
     expect(wrapper.find(details).exists()).toBe(false)
   })
+
+  it('clears the selected room when the apartment changes', async () => {
+    const apartment = {
+      id: 'a',
+      number: 'A-1',
+      floorPlanType: 'studio',
+      roomDetails: [{ id: 'kitchen', name: 'Kuchnia', area: 8.5 }],
+    }
+    const wrapper = mount(ApartmentFloorPlan, { props: { apartment } })
+    const kitchen = '[aria-label="Kuchnia, 8,50 m²"]'
+
+    await wrapper.get(kitchen).trigger('click')
+
+    expect(wrapper.get(kitchen).attributes('aria-pressed')).toBe('true')
+    expect(wrapper.get('.floor-plan__details').text()).toContain('Kuchnia')
+
+    await wrapper.setProps({ apartment: { ...apartment, id: 'b', number: 'B-1' } })
+
+    expect(wrapper.get(kitchen).attributes('aria-pressed')).toBe('false')
+    expect(wrapper.find('.floor-plan__details').exists()).toBe(false)
+  })
 })
