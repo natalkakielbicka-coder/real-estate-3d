@@ -173,6 +173,15 @@ watch(
               {{ formatArea(room.area) }}
             </tspan>
           </text>
+
+          <rect
+            class="floor-plan__room-focus-ring"
+            :x="room.x + 12"
+            :y="room.y + 12"
+            :width="room.width - 24"
+            :height="room.height - 24"
+            aria-hidden="true"
+          />
         </g>
 
         <!-- Ściany działowe i zewnętrzne -->
@@ -336,7 +345,14 @@ watch(
   outline: none;
 }
 
-.floor-plan__room:focus-visible .floor-plan__room-fill {
+.floor-plan__room-focus-ring {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.floor-plan__room:focus-visible .floor-plan__room-focus-ring {
+  visibility: visible;
+  fill: none;
   stroke: #34452f;
   stroke-width: 6;
 }
