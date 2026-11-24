@@ -30,6 +30,7 @@ const openFloorPlan = async () => {
   await wrapper.vm.$nextTick()
 
   const trigger = wrapper.get('button')
+  trigger.element.focus()
   await trigger.trigger('click')
 
   return { wrapper, trigger }
@@ -45,5 +46,12 @@ describe('Presentation3DView floor plan dialog', () => {
     expect(headingId).toBeTruthy()
     expect(dialog.attributes('aria-labelledby')).toBe(headingId)
     expect(heading.text()).toBe('Mieszkanie A-1')
+  })
+
+  it('moves focus to the close button when opening the floor plan', async () => {
+    const { wrapper } = await openFloorPlan()
+    const closeButton = wrapper.get('[aria-label="Zamknij rzut mieszkania"]')
+
+    expect(document.activeElement).toBe(closeButton.element)
   })
 })
