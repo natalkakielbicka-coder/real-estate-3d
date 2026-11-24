@@ -1,5 +1,6 @@
 export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) => {
   let resizeObserver = null
+  let previousWidth
 
   const updateCameraForViewport = (width) => {
     let distance = 9.5
@@ -41,7 +42,10 @@ export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) =
 
     renderer.setSize(width, height, false)
 
-    updateCameraForViewport(width)
+    if (width !== previousWidth) {
+      updateCameraForViewport(width)
+      previousWidth = width
+    }
   }
 
   const startResizeObserver = () => {
