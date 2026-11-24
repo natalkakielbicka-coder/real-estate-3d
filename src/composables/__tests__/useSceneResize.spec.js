@@ -31,4 +31,28 @@ describe('useSceneResize', () => {
     expect(camera.aspect).toBeCloseTo(width / height)
     expect(camera.position.distanceTo(controls.target)).toBeCloseTo(distance)
   })
+
+  it('preserves the camera distance when only the scene height changes', () => {
+    const width = 1000
+    let height = 400
+    const camera = new PerspectiveCamera()
+    camera.position.set(0, 0, 5)
+
+    const controls = { target: new Vector3(), update: vi.fn() }
+    const renderer = { setSize: vi.fn() }
+    const sceneContainer = {
+      value: { getBoundingClientRect: () => ({ width, height }) },
+    }
+    const { handleResize } = useSceneResize({ sceneContainer, camera, renderer, controls })
+
+    handleResize()
+    camera.position.set(0, 0, 7)
+    height = 500
+
+    handleResize()
+
+    expect(renderer.setSize).toHaveBeenLastCalledWith(1000, 500, false)
+    expect(camera.aspect).toBeCloseTo(2)
+    expect(camera.position.distanceTo(controls.target)).toBeCloseTo(7)
+  })
 })
