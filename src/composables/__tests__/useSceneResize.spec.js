@@ -55,4 +55,26 @@ describe('useSceneResize', () => {
     expect(camera.aspect).toBeCloseTo(2)
     expect(camera.position.distanceTo(controls.target)).toBeCloseTo(7)
   })
+
+  it.each([
+    [0, 400],
+    [1000, 0],
+  ])('ignores a scene measuring %i × %i px', (width, height) => {
+    const camera = new PerspectiveCamera()
+    camera.position.set(0, 0, 5)
+    const updateProjectionMatrix = vi.spyOn(camera, 'updateProjectionMatrix')
+    const controls = { target: new Vector3(), update: vi.fn() }
+    const renderer = { setSize: vi.fn() }
+    const sceneContainer = {
+      value: { getBoundingClientRect: () => ({ width, height }) },
+    }
+    const { handleResize } = useSceneResize({ sceneContainer, camera, renderer, controls })
+
+    handleResize()
+
+    expect(renderer.setSize).not.toHaveBeenCalled()
+    expect(updateProjectionMatrix).not.toHaveBeenCalled()
+    expect(controls.update).not.toHaveBeenCalled()
+    expect(camera.position.toArray()).toEqual([0, 0, 5])
+  })
 })
