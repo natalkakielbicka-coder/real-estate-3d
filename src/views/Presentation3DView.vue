@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, ref, watch, useId } from 'vue'
 import ThreeScene from '../components/three/ThreeScene.vue'
 import PresentationPanel from '../components/presentation/PresentationPanel.vue'
 import PresentationHeader from '../components/presentation/PresentationHeader.vue'
@@ -14,6 +14,7 @@ const threeScene = ref(null)
 const isFloorPlanOpen = ref(false)
 
 const floorPlanDialog = ref(null)
+const floorPlanTitleId = `floor-plan-title-${useId()}`
 const floorPlanCloseButton = ref(null)
 
 const { favoriteIds, toggleFavorite, removeFavorite } = useFavorites()
@@ -190,7 +191,7 @@ usePresentationQuerySync({
           class="floor-plan-modal__dialog"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="floor-plan-title"
+          :aria-labelledby="floorPlanTitleId"
           tabindex="-1"
           @keydown="handleFloorPlanKeydown"
         >
@@ -198,7 +199,7 @@ usePresentationQuerySync({
             <div>
               <span class="floor-plan-modal__eyebrow"> Rzut mieszkania </span>
 
-              <h2 id="floor-plan-title">Mieszkanie {{ selectedApartment.number }}</h2>
+              <h2 :id="floorPlanTitleId">Mieszkanie {{ selectedApartment.number }}</h2>
 
               <p>Powierzchnia: {{ selectedApartment.area }} m²</p>
             </div>
