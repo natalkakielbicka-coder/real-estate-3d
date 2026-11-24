@@ -65,4 +65,23 @@ describe('Presentation3DView floor plan dialog', () => {
     expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
     expect(document.activeElement).toBe(trigger.element)
   })
+
+  it('restores the previous body overflow after closing the floor plan', async () => {
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'auto'
+
+    try {
+      const { wrapper } = await openFloorPlan()
+      const closeButton = wrapper.get('[aria-label="Zamknij rzut mieszkania"]')
+
+      expect(document.body.style.overflow).toBe('hidden')
+
+      await closeButton.trigger('click')
+
+      expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+      expect(document.body.style.overflow).toBe('auto')
+    } finally {
+      document.body.style.overflow = originalOverflow
+    }
+  })
 })
