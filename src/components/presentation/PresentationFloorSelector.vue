@@ -45,6 +45,7 @@ const getFloorAriaLabel = (floor) => {
           'floor-selector__item--active': selectedFloor?.floorNumber === floor.floorNumber,
         }"
         :aria-label="getFloorAriaLabel(floor)"
+        :aria-pressed="selectedFloor?.floorNumber === floor.floorNumber"
         :title="getFloorAriaLabel(floor)"
         @click="emit('select-floor', floor.floorNumber)"
       >
