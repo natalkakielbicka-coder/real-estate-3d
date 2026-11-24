@@ -30,4 +30,13 @@ describe('PresentationFloorSelector', () => {
 
     expect(buttons.every((button) => button.attributes('aria-pressed') === 'false')).toBe(true)
   })
+
+  it('emits zero when selecting the ground floor', async () => {
+    const wrapper = mount(PresentationFloorSelector)
+    const groundFloor = wrapper.get('[aria-label^="Parter:"]')
+
+    await groundFloor.trigger('click')
+
+    expect(wrapper.emitted('select-floor')).toEqual([[0]])
+  })
 })
