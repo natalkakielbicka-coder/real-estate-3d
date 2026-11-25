@@ -146,6 +146,8 @@ let copyFeedbackTimeout
 
 const copyApartmentLink = async () => {
   clearTimeout(copyFeedbackTimeout)
+  linkCopied.value = false
+  linkCopyFailed.value = false
 
   try {
     await navigator.clipboard.writeText(window.location.href)
