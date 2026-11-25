@@ -244,4 +244,31 @@ describe('PresentationPanel', () => {
       vi.useRealTimers()
     }
   })
+
+  it('applies the maximum price immediately when Enter is pressed', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const floor = createFloor(['available', 'available'])
+      floor.apartments[0].number = 'A-1'
+      floor.apartments[1].number = 'A-2'
+      floor.apartments[1].price = 500_000
+
+      const wrapper = mountPanel(floor)
+      const input = wrapper.get('#max-price')
+      const count = wrapper.get('.floor-panel__apartments-count')
+
+      await input.setValue('450000')
+      expect(count.text()).toBe('2 z 2')
+
+      await input.trigger('keydown', { key: 'Enter' })
+
+      expect(count.text()).toBe('1 z 2')
+      expect(wrapper.findAll('.apartment-row')).toHaveLength(1)
+      expect(wrapper.get('.apartment-row').text()).toContain('A-1')
+    } finally {
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
+  })
 })
