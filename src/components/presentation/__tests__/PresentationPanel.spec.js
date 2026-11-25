@@ -218,4 +218,30 @@ describe('PresentationPanel', () => {
       vi.unstubAllGlobals()
     }
   })
+
+  it('validates the maximum price before the filter delay elapses', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const wrapper = mountPanel(createFloor(['available']))
+      const input = wrapper.get('#max-price')
+
+      await input.setValue('-1')
+
+      expect(input.attributes('aria-invalid')).toBe('true')
+      expect(input.attributes('aria-describedby')).toBe('max-price-error')
+      expect(wrapper.get('#max-price-error').text()).toBe(
+        'Podaj poprawną cenę, nie mniejszą niż 0.',
+      )
+
+      await input.setValue('450000')
+
+      expect(input.attributes('aria-invalid')).toBe('false')
+      expect(input.attributes('aria-describedby')).toBeUndefined()
+      expect(wrapper.find('#max-price-error').exists()).toBe(false)
+    } finally {
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
+  })
 })
