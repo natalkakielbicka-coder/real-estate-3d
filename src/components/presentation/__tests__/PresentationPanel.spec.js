@@ -324,4 +324,28 @@ describe('PresentationPanel', () => {
       vi.useRealTimers()
     }
   })
+
+  it('shows an empty list when all apartments exceed the maximum price', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const wrapper = mountPanel(createFloor(['available', 'available']))
+      const count = wrapper.get('.floor-panel__apartments-count')
+
+      expect(count.text()).toBe('2 z 2')
+      expect(wrapper.find('.floor-panel__empty').exists()).toBe(false)
+
+      await wrapper.get('#max-price').setValue('350000')
+      await vi.advanceTimersByTimeAsync(600)
+
+      expect(count.text()).toBe('0 z 2')
+      expect(wrapper.findAll('.apartment-row')).toHaveLength(0)
+      expect(wrapper.get('.floor-panel__empty[role="status"]').text()).toContain(
+        'Nie znaleziono mieszkań',
+      )
+    } finally {
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
+  })
 })
