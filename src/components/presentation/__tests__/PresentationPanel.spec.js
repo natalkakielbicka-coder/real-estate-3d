@@ -125,4 +125,34 @@ describe('PresentationPanel', () => {
       vi.unstubAllGlobals()
     }
   })
+
+  it('ignores a second copy click while the first clipboard write is pending', async () => {
+    const { promise, resolve } = Promise.withResolvers()
+    const writeText = vi.fn().mockReturnValue(promise)
+    vi.stubGlobal('navigator', { clipboard: { writeText } })
+
+    try {
+      const selectedFloor = createFloor(['available'])
+      const wrapper = shallowMount(PresentationPanel, {
+        props: { selectedFloor, selectedApartment: selectedFloor.apartments[0] },
+      })
+      const copyButton = wrapper.get('.apartment-details__share')
+
+      await copyButton.trigger('click')
+
+      expect(copyButton.element.disabled).toBe(true)
+
+      await copyButton.trigger('click')
+
+      expect(writeText).toHaveBeenCalledTimes(1)
+
+      resolve()
+      await flushPromises()
+
+      expect(copyButton.element.disabled).toBe(false)
+      expect(copyButton.text()).toBe('Skopiowano link ✓')
+    } finally {
+      vi.unstubAllGlobals()
+    }
+  })
 })
