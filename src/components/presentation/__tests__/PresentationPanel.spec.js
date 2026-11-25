@@ -348,4 +348,21 @@ describe('PresentationPanel', () => {
       vi.useRealTimers()
     }
   })
+
+  it('includes apartments priced exactly at the maximum price', async () => {
+    const floor = createFloor(['available', 'available'])
+    floor.apartments[0].number = 'A-1'
+    floor.apartments[1].number = 'A-2'
+    floor.apartments[1].price = 500_000
+
+    const wrapper = mountPanel(floor)
+    const input = wrapper.get('#max-price')
+
+    await input.setValue('400000')
+    await input.trigger('keydown', { key: 'Enter' })
+
+    expect(wrapper.get('.floor-panel__apartments-count').text()).toBe('1 z 2')
+    expect(wrapper.findAll('.apartment-row')).toHaveLength(1)
+    expect(wrapper.get('.apartment-row').text()).toContain('A-1')
+  })
 })
