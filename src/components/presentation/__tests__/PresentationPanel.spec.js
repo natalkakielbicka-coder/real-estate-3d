@@ -299,4 +299,29 @@ describe('PresentationPanel', () => {
       vi.useRealTimers()
     }
   })
+
+  it('cancels a pending maximum price update when clearing filters', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const wrapper = mountPanel(createFloor(['available', 'available']))
+      const input = wrapper.get('#max-price')
+      const count = wrapper.get('.floor-panel__apartments-count')
+
+      await input.setValue('350000')
+      await vi.advanceTimersByTimeAsync(300)
+
+      await wrapper.get('.floor-panel__reset').trigger('click')
+
+      expect(input.element.value).toBe('')
+      expect(count.text()).toBe('2 z 2')
+
+      await vi.advanceTimersByTimeAsync(600)
+
+      expect(count.text()).toBe('2 z 2')
+    } finally {
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
+  })
 })
