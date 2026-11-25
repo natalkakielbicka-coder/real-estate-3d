@@ -271,4 +271,32 @@ describe('PresentationPanel', () => {
       vi.useRealTimers()
     }
   })
+
+  it('applies only the latest maximum price after the typing delay', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const floor = createFloor(['available', 'available'])
+      floor.apartments[1].price = 500_000
+      const wrapper = mountPanel(floor)
+      const input = wrapper.get('#max-price')
+      const count = wrapper.get('.floor-panel__apartments-count')
+
+      await input.setValue('350000')
+      await vi.advanceTimersByTimeAsync(300)
+      await input.setValue('450000')
+
+      await vi.advanceTimersByTimeAsync(300)
+      expect(count.text()).toBe('2 z 2')
+
+      await vi.advanceTimersByTimeAsync(299)
+      expect(count.text()).toBe('2 z 2')
+
+      await vi.advanceTimersByTimeAsync(1)
+      expect(count.text()).toBe('1 z 2')
+    } finally {
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
+  })
 })
