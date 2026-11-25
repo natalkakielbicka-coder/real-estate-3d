@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it } from 'vitest'
-import { enableAutoUnmount, shallowMount } from '@vue/test-utils'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { enableAutoUnmount, flushPromises, shallowMount } from '@vue/test-utils'
 import PresentationPanel from '../PresentationPanel.vue'
 
 enableAutoUnmount(afterEach)
@@ -97,5 +97,32 @@ describe('PresentationPanel', () => {
     })
 
     expect(getProgressWidth(wrapper)).toBe('20%')
+  })
+
+  it('shows the latest result when retrying apartment link copy', async () => {
+    const writeText = vi
+      .fn()
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error('Clipboard access denied'))
+    vi.stubGlobal('navigator', { clipboard: { writeText } })
+
+    try {
+      const selectedFloor = createFloor(['available'])
+      const wrapper = shallowMount(PresentationPanel, {
+        props: { selectedFloor, selectedApartment: selectedFloor.apartments[0] },
+      })
+      const copyButton = wrapper.get('.apartment-details__share')
+
+      await copyButton.trigger('click')
+      await flushPromises()
+      expect(copyButton.text()).toBe('Skopiowano link ✓')
+
+      await copyButton.trigger('click')
+      await flushPromises()
+      expect(copyButton.text()).toBe('Nie udało się skopiować')
+      expect(writeText).toHaveBeenCalledTimes(2)
+    } finally {
+      vi.unstubAllGlobals()
+    }
   })
 })
