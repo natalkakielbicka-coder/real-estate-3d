@@ -188,4 +188,33 @@ describe('PresentationPanel', () => {
       }
     },
   )
+  it('ignores a clipboard failure after switching apartments', async () => {
+    const { promise, reject } = Promise.withResolvers()
+    const writeText = vi.fn().mockReturnValue(promise)
+    vi.stubGlobal('navigator', { clipboard: { writeText } })
+
+    try {
+      const selectedFloor = createFloor(['available', 'available'])
+      const [firstApartment, secondApartment] = selectedFloor.apartments
+      const wrapper = shallowMount(PresentationPanel, {
+        props: { selectedFloor, selectedApartment: firstApartment },
+      })
+      const copyButton = '.apartment-details__share'
+
+      await wrapper.get(copyButton).trigger('click')
+      expect(writeText).toHaveBeenCalledOnce()
+      expect(wrapper.get(copyButton).element.disabled).toBe(true)
+
+      await wrapper.setProps({ selectedApartment: secondApartment })
+
+      reject(new Error('Clipboard access denied'))
+      await flushPromises()
+
+      expect(wrapper.get(copyButton).element.disabled).toBe(false)
+      expect(wrapper.get(copyButton).text()).toBe('Kopiuj link do mieszkania')
+      expect(wrapper.find('.apartment-details__share-fallback').exists()).toBe(false)
+    } finally {
+      vi.unstubAllGlobals()
+    }
+  })
 })
