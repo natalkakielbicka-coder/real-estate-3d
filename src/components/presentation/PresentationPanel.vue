@@ -242,6 +242,13 @@ const hasFavoritesOnFloor = computed(() =>
 
 let priceFilterTimeout
 
+const applyMaxPriceImmediately = () => {
+  if (maxPriceInputError.value) return
+
+  clearTimeout(priceFilterTimeout)
+  maxPrice.value = maxPriceInput.value
+}
+
 watch(maxPriceInput, (value) => {
   clearTimeout(priceFilterTimeout)
 
@@ -547,6 +554,7 @@ watch(maxPriceInput, (value) => {
               placeholder="Wpisz maksymalną cenę"
               :aria-invalid="Boolean(maxPriceInputError)"
               :aria-describedby="maxPriceInputError ? 'max-price-error' : undefined"
+              @keydown.enter.prevent="applyMaxPriceImmediately"
             />
 
             <p
