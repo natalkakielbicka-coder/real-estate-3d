@@ -155,4 +155,37 @@ describe('PresentationPanel', () => {
       vi.unstubAllGlobals()
     }
   })
+
+  it.each(['denied', 'unavailable'])(
+    'shows a selectable apartment link when clipboard access is %s',
+    async (clipboardAccess) => {
+      const writeText = vi.fn().mockRejectedValue(new Error('Clipboard access denied'))
+      const clipboard = clipboardAccess === 'denied' ? { writeText } : undefined
+      vi.stubGlobal('navigator', { clipboard })
+
+      try {
+        const selectedFloor = createFloor(['available'])
+        const wrapper = shallowMount(PresentationPanel, {
+          props: { selectedFloor, selectedApartment: selectedFloor.apartments[0] },
+        })
+        const fallback = '.apartment-details__share-fallback input'
+
+        expect(wrapper.find(fallback).exists()).toBe(false)
+
+        await wrapper.get('.apartment-details__share').trigger('click')
+        await flushPromises()
+
+        const input = wrapper.get(fallback)
+        expect(input.element.readOnly).toBe(true)
+        expect(input.element.value).toBe(window.location.href)
+
+        await input.trigger('focus')
+
+        expect(input.element.selectionStart).toBe(0)
+        expect(input.element.selectionEnd).toBe(input.element.value.length)
+      } finally {
+        vi.unstubAllGlobals()
+      }
+    },
+  )
 })
