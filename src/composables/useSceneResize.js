@@ -1,22 +1,15 @@
+const getViewportCameraDistance = (width) => {
+  if (width < 700) return 12.5
+  if (width < 900) return 11.5
+  if (width < 1200) return 10.5
+  return 9.5
+}
+
 export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) => {
   let resizeObserver = null
-  let previousWidth
+  let previousViewportDistance
 
-  const updateCameraForViewport = (width) => {
-    let distance = 9.5
-
-    if (width < 1200) {
-      distance = 10.5
-    }
-
-    if (width < 900) {
-      distance = 11.5
-    }
-
-    if (width < 700) {
-      distance = 12.5
-    }
-
+  const updateCameraForViewport = (distance) => {
     const direction = camera.position.clone().sub(controls.target).normalize()
 
     camera.position.copy(controls.target.clone().add(direction.multiplyScalar(distance)))
@@ -42,9 +35,11 @@ export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) =
 
     renderer.setSize(width, height, false)
 
-    if (width !== previousWidth) {
-      updateCameraForViewport(width)
-      previousWidth = width
+    const viewportDistance = getViewportCameraDistance(width)
+
+    if (viewportDistance !== previousViewportDistance) {
+      updateCameraForViewport(viewportDistance)
+      previousViewportDistance = viewportDistance
     }
   }
 
