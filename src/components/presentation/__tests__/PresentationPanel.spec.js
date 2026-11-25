@@ -188,6 +188,7 @@ describe('PresentationPanel', () => {
       }
     },
   )
+
   it('ignores a clipboard failure after switching apartments', async () => {
     const { promise, reject } = Promise.withResolvers()
     const writeText = vi.fn().mockReturnValue(promise)

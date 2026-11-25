@@ -68,6 +68,8 @@ const sortBy = ref('status')
 
 const maxPriceError = computed(() => getMaxPriceError(maxPrice.value))
 
+const maxPriceInputError = computed(() => getMaxPriceError(maxPriceInput.value))
+
 const hasActiveFilters = computed(() => {
   const hasPriceFilter = !maxPriceError.value && maxPrice.value !== null && maxPrice.value > 0
 
@@ -543,17 +545,17 @@ watch(maxPriceInput, (value) => {
               min="0"
               step="10000"
               placeholder="Wpisz maksymalną cenę"
-              :aria-invalid="Boolean(maxPriceError)"
-              :aria-describedby="maxPriceError ? 'max-price-error' : undefined"
+              :aria-invalid="Boolean(maxPriceInputError)"
+              :aria-describedby="maxPriceInputError ? 'max-price-error' : undefined"
             />
 
             <p
-              v-if="maxPriceError"
+              v-if="maxPriceInputError"
               id="max-price-error"
               class="floor-panel__price-error"
               role="alert"
             >
-              {{ maxPriceError }}
+              {{ maxPriceInputError }}
             </p>
           </div>
 
