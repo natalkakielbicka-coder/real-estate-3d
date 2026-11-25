@@ -145,12 +145,15 @@ const linkCopyFailed = ref(false)
 const isCopyingLink = ref(false)
 const manualCopyLink = ref('')
 let copyFeedbackTimeout
+let activeCopyRequest
 
 const copyApartmentLink = async () => {
   if (isCopyingLink.value) return
 
+  const request = Symbol()
   const link = window.location.href
 
+  activeCopyRequest = request
   isCopyingLink.value = true
   clearTimeout(copyFeedbackTimeout)
   linkCopied.value = false
@@ -159,19 +162,37 @@ const copyApartmentLink = async () => {
 
   try {
     await navigator.clipboard.writeText(link)
+    if (activeCopyRequest !== request) return
+
     linkCopied.value = true
   } catch {
+    if (activeCopyRequest !== request) return
+
     linkCopyFailed.value = true
     manualCopyLink.value = link
-  } finally {
-    isCopyingLink.value = false
   }
+
+  activeCopyRequest = undefined
+  isCopyingLink.value = false
 
   copyFeedbackTimeout = setTimeout(() => {
     linkCopied.value = false
     linkCopyFailed.value = false
   }, 2000)
 }
+
+watch(
+  () => props.selectedApartment?.id,
+  () => {
+    activeCopyRequest = undefined
+    clearTimeout(copyFeedbackTimeout)
+    isCopyingLink.value = false
+    linkCopied.value = false
+    linkCopyFailed.value = false
+    manualCopyLink.value = ''
+  },
+  { flush: 'sync' },
+)
 
 onBeforeUnmount(() => {
   clearTimeout(copyFeedbackTimeout)
