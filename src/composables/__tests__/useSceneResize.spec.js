@@ -168,4 +168,34 @@ describe('useSceneResize', () => {
     expect(renderer.setSize).toHaveBeenLastCalledWith(899, 400, false)
     expect(camera.position.distanceTo(controls.target)).toBeCloseTo(11.5)
   })
+
+  it('starts only one resize observer when called twice', () => {
+    const observe = vi.fn()
+    const disconnect = vi.fn()
+    const ResizeObserverMock = vi.fn(function () {
+      this.observe = observe
+      this.disconnect = disconnect
+    })
+
+    const container = { getBoundingClientRect: () => ({ width: 1000, height: 400 }) }
+    const { startResizeObserver, stopResizeObserver } = useSceneResize({
+      sceneContainer: { value: container },
+      camera: new PerspectiveCamera(),
+      renderer: { setSize: vi.fn() },
+      controls: { target: new Vector3(), update: vi.fn() },
+    })
+
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock)
+
+    try {
+      startResizeObserver()
+      startResizeObserver()
+
+      expect(ResizeObserverMock).toHaveBeenCalledOnce()
+      expect(observe).toHaveBeenCalledExactlyOnceWith(container)
+    } finally {
+      stopResizeObserver()
+      vi.unstubAllGlobals()
+    }
+  })
 })
