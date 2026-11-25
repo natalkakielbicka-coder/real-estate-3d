@@ -144,4 +144,28 @@ describe('useSceneResize', () => {
     expect(camera.aspect).toBeCloseTo(1050 / 400)
     expect(camera.position.distanceTo(controls.target)).toBeCloseTo(7)
   })
+
+  it('updates the camera distance when the scene crosses a width breakpoint', () => {
+    let width = 900
+    const height = 400
+    const camera = new PerspectiveCamera()
+    camera.position.set(0, 0, 5)
+
+    const controls = { target: new Vector3(), update: vi.fn() }
+    const renderer = { setSize: vi.fn() }
+    const sceneContainer = {
+      value: { getBoundingClientRect: () => ({ width, height }) },
+    }
+    const { handleResize } = useSceneResize({ sceneContainer, camera, renderer, controls })
+
+    handleResize()
+    expect(camera.position.distanceTo(controls.target)).toBeCloseTo(10.5)
+
+    camera.position.set(0, 0, 7)
+    width = 899
+    handleResize()
+
+    expect(renderer.setSize).toHaveBeenLastCalledWith(899, 400, false)
+    expect(camera.position.distanceTo(controls.target)).toBeCloseTo(11.5)
+  })
 })
