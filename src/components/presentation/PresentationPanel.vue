@@ -143,21 +143,26 @@ const statusCounts = computed(() => countApartmentsByStatus(props.selectedFloor.
 const linkCopied = ref(false)
 const linkCopyFailed = ref(false)
 const isCopyingLink = ref(false)
+const manualCopyLink = ref('')
 let copyFeedbackTimeout
 
 const copyApartmentLink = async () => {
   if (isCopyingLink.value) return
 
+  const link = window.location.href
+
   isCopyingLink.value = true
   clearTimeout(copyFeedbackTimeout)
   linkCopied.value = false
   linkCopyFailed.value = false
+  manualCopyLink.value = ''
 
   try {
-    await navigator.clipboard.writeText(window.location.href)
+    await navigator.clipboard.writeText(link)
     linkCopied.value = true
   } catch {
     linkCopyFailed.value = true
+    manualCopyLink.value = link
   } finally {
     isCopyingLink.value = false
   }
@@ -361,6 +366,11 @@ watch(maxPriceInput, (value) => {
                 : 'Kopiuj link do mieszkania'
           }}
         </button>
+
+        <label v-if="manualCopyLink" class="apartment-details__share-fallback">
+          <span>Skopiuj link ręcznie</span>
+          <input type="text" :value="manualCopyLink" readonly @focus="$event.target.select()" />
+        </label>
       </div>
 
       <!-- PIĘTRO -->
@@ -1557,6 +1567,20 @@ watch(maxPriceInput, (value) => {
   color: #b65d5d;
   font-size: 0.875rem;
   line-height: 1;
+}
+
+.apartment-details__share-fallback {
+  display: grid;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+.apartment-details__share-fallback input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 0.5rem;
+  font: inherit;
 }
 
 /* Dostępność i responsywność */
