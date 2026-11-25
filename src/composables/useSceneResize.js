@@ -44,9 +44,11 @@ export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) =
   }
 
   const startResizeObserver = () => {
-    resizeObserver = new ResizeObserver(handleResize)
+    const container = sceneContainer.value
+    if (resizeObserver || !container) return
 
-    resizeObserver.observe(sceneContainer.value)
+    resizeObserver = new ResizeObserver(handleResize)
+    resizeObserver.observe(container)
 
     window.addEventListener('resize', handleResize)
 
@@ -55,6 +57,7 @@ export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) =
 
   const stopResizeObserver = () => {
     resizeObserver?.disconnect()
+    resizeObserver = null
 
     window.removeEventListener('resize', handleResize)
   }
