@@ -120,4 +120,28 @@ describe('useSceneResize', () => {
       vi.unstubAllGlobals()
     }
   })
+
+  it('preserves the camera distance when the width stays in the same range', () => {
+    let width = 1000
+    const height = 400
+    const camera = new PerspectiveCamera()
+    camera.position.set(0, 0, 5)
+
+    const controls = { target: new Vector3(), update: vi.fn() }
+    const renderer = { setSize: vi.fn() }
+    const sceneContainer = {
+      value: { getBoundingClientRect: () => ({ width, height }) },
+    }
+    const { handleResize } = useSceneResize({ sceneContainer, camera, renderer, controls })
+
+    handleResize()
+    camera.position.set(0, 0, 7)
+    width = 1050
+
+    handleResize()
+
+    expect(renderer.setSize).toHaveBeenLastCalledWith(1050, 400, false)
+    expect(camera.aspect).toBeCloseTo(1050 / 400)
+    expect(camera.position.distanceTo(controls.target)).toBeCloseTo(7)
+  })
 })
