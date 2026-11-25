@@ -142,9 +142,13 @@ const statusCounts = computed(() => countApartmentsByStatus(props.selectedFloor.
 
 const linkCopied = ref(false)
 const linkCopyFailed = ref(false)
+const isCopyingLink = ref(false)
 let copyFeedbackTimeout
 
 const copyApartmentLink = async () => {
+  if (isCopyingLink.value) return
+
+  isCopyingLink.value = true
   clearTimeout(copyFeedbackTimeout)
   linkCopied.value = false
   linkCopyFailed.value = false
@@ -154,6 +158,8 @@ const copyApartmentLink = async () => {
     linkCopied.value = true
   } catch {
     linkCopyFailed.value = true
+  } finally {
+    isCopyingLink.value = false
   }
 
   copyFeedbackTimeout = setTimeout(() => {
@@ -341,7 +347,12 @@ watch(maxPriceInput, (value) => {
           <span>→</span>
         </button>
 
-        <button type="button" class="apartment-details__share" @click="copyApartmentLink">
+        <button
+          type="button"
+          class="apartment-details__share"
+          :disabled="isCopyingLink"
+          @click="copyApartmentLink"
+        >
           {{
             linkCopied
               ? 'Skopiowano link ✓'
