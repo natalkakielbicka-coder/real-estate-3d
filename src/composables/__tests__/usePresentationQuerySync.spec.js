@@ -195,7 +195,7 @@ it('opens an available apartment from a direct link', async () => {
   expect(selectedApartment.value).toEqual(apartment)
 })
 
-it('preserves floor and unrelated query parameters when leaving apartment details', async () => {
+it('preserves floor, unrelated query parameters and the URL fragment when leaving apartment details', async () => {
   const apartment = { id: 'A-2-1', status: 'available' }
   const floor = { floorNumber: 2, apartments: [apartment] }
   const selectedFloor = ref(floor)
@@ -205,7 +205,7 @@ it('preserves floor and unrelated query parameters when leaving apartment detail
     routes: [{ path: '/', component: { render: () => null } }],
   })
 
-  await router.push('/?floor=2&apartment=A-2-1&utm_source=test')
+  await router.push('/?floor=2&apartment=A-2-1&utm_source=test#model')
 
   mountQuerySync(router, {
     threeScene: ref({ selectFloorByNumber: vi.fn() }),
@@ -219,6 +219,7 @@ it('preserves floor and unrelated query parameters when leaving apartment detail
   selectedApartment.value = null
 
   await vi.waitFor(() => {
+    expect(router.currentRoute.value.hash).toBe('#model')
     expect(router.currentRoute.value.query).toEqual({ floor: '2', utm_source: 'test' })
   })
 
