@@ -27,7 +27,7 @@ it('keeps unrelated query parameters when closing the floor panel', async () => 
     routes: [{ path: '/', component: { render: () => null } }],
   })
 
-  await router.push('/?floor=2&apartment=A-2-1&utm_source=test')
+  await router.push('/?floor=2&apartment=A-2-1&utm_source=test#model')
 
   const close = () => {
     selectedFloor.value = null
@@ -46,6 +46,7 @@ it('keeps unrelated query parameters when closing the floor panel', async () => 
   close()
 
   await vi.waitFor(() => {
+    expect(router.currentRoute.value.hash).toBe('#model')
     expect(router.currentRoute.value.query).toEqual({ utm_source: 'test' })
   })
 })
