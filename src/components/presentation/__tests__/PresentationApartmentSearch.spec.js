@@ -68,3 +68,21 @@ it('returns focus to the search toggle when Escape closes the panel', async () =
   expect(trigger.attributes('aria-expanded')).toBe('false')
   expect(document.activeElement).toBe(trigger.element)
 })
+
+it('returns focus to the search toggle when the close button is clicked', async () => {
+  const wrapper = mount(PresentationApartmentSearch, { attachTo: document.body })
+  const trigger = wrapper.get('.apartment-search__trigger')
+
+  await trigger.trigger('click')
+
+  const closeButton = wrapper.get('[aria-label="Zamknij wyszukiwarkę"]')
+  closeButton.element.focus()
+
+  expect(trigger.attributes('aria-expanded')).toBe('true')
+  expect(document.activeElement).toBe(closeButton.element)
+
+  await closeButton.trigger('click')
+
+  expect(trigger.attributes('aria-expanded')).toBe('false')
+  expect(document.activeElement).toBe(trigger.element)
+})
