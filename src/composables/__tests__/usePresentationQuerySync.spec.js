@@ -229,3 +229,40 @@ it('preserves floor, unrelated query parameters and the URL fragment when leavin
 
   expect(selectedFloor.value).toEqual(floor)
 })
+
+it('keeps the current floor when the URL points to another apartment on it', async () => {
+  const firstApartment = { id: 'A-2-1', status: 'available' }
+  const secondApartment = { id: 'A-2-2', status: 'available' }
+  const floor = { floorNumber: 2, apartments: [firstApartment, secondApartment] }
+  const selectedFloor = ref(floor)
+  const selectedApartment = ref(firstApartment)
+  const selectFloorByNumber = vi.fn()
+  const onApartmentSelect = vi.fn((apartment) => {
+    selectedApartment.value = apartment
+  })
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/', component: { render: () => null } }],
+  })
+
+  await router.push('/?floor=2&apartment=A-2-1')
+
+  mountQuerySync(router, {
+    threeScene: ref({ selectFloorByNumber }),
+    selectedFloor,
+    selectedApartment,
+    onClose: vi.fn(),
+    onApartmentSelect,
+    onApartmentBack: vi.fn(),
+  })
+
+  await router.push('/?floor=2&apartment=A-2-2')
+
+  await vi.waitFor(() => {
+    expect(onApartmentSelect).toHaveBeenCalledExactlyOnceWith(secondApartment)
+  })
+
+  expect(selectedApartment.value).toEqual(secondApartment)
+  expect(selectedFloor.value).toEqual(floor)
+  expect(selectFloorByNumber).not.toHaveBeenCalled()
+})
