@@ -80,10 +80,14 @@ const resetFilters = () => {
   emit('clear-filter-results')
 }
 
+const closeSearchAndRestoreFocus = () => {
+  isOpen.value = false
+  searchTriggerRef.value?.focus()
+}
+
 const handleKeydown = (event) => {
   if (event.key === 'Escape' && isOpen.value) {
-    isOpen.value = false
-    searchTriggerRef.value?.focus()
+    closeSearchAndRestoreFocus()
   }
 }
 
@@ -134,7 +138,7 @@ onBeforeUnmount(() => {
             type="button"
             class="apartment-search__close"
             aria-label="Zamknij wyszukiwarkę"
-            @click="isOpen = false"
+            @click="closeSearchAndRestoreFocus"
           >
             ×
           </button>
