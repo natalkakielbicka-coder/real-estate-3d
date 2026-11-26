@@ -1,4 +1,4 @@
-import { onMounted, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { isApartmentSelectable } from '@/utils/isApartmentSelectable'
 import { buildPresentationQuery, parsePresentationQuery } from '@/utils/presentationQuery'
@@ -20,6 +20,8 @@ export const usePresentationQuerySync = ({
 }) => {
   const router = useRouter()
   const route = useRoute()
+
+  const presentationSelection = computed(() => parsePresentationQuery(route.query))
 
   const openFromQuery = (query) => {
     const { floorNumber, apartmentId } = parsePresentationQuery(query)
@@ -64,7 +66,10 @@ export const usePresentationQuerySync = ({
     openFromQuery(route.query)
   })
 
-  watch(() => route.query, openFromQuery)
+  watch(
+    [() => presentationSelection.value.floorNumber, () => presentationSelection.value.apartmentId],
+    () => openFromQuery(route.query),
+  )
 
   watch([selectedFloor, selectedApartment], ([floor, apartment], [, previousApartment]) => {
     if (!floor) {
