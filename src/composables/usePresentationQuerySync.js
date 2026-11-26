@@ -29,7 +29,9 @@ export const usePresentationQuerySync = ({
       return
     }
 
-    threeScene.value?.selectFloorByNumber(floorNumber)
+    if (selectedFloor.value?.floorNumber !== floorNumber) {
+      threeScene.value?.selectFloorByNumber(floorNumber)
+    }
 
     if (selectedFloor.value?.floorNumber !== floorNumber) {
       onClose()
