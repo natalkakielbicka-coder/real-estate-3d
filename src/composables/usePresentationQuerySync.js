@@ -41,13 +41,15 @@ export const usePresentationQuerySync = ({
       (item) => item.id === apartmentId && isApartmentSelectable(item),
     )
 
-    router.replace({
-      hash: route.hash,
-      query: {
-        ...withoutPresentationSelection(query),
-        ...buildPresentationQuery({ floor: selectedFloor.value }),
-      },
-    })
+    if (apartmentId && !apartment) {
+      router.replace({
+        hash: route.hash,
+        query: {
+          ...withoutPresentationSelection(query),
+          ...buildPresentationQuery({ floor: selectedFloor.value }),
+        },
+      })
+    }
 
     if (apartment && apartment.id !== selectedApartment.value?.id) {
       onApartmentSelect(apartment)
