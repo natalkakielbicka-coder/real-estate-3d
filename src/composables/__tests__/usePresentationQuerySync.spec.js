@@ -1,4 +1,4 @@
-import { defineComponent, ref } from 'vue'
+import { defineComponent, nextTick, ref } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { afterEach, expect, it, vi } from 'vitest'
 import { enableAutoUnmount, mount } from '@vue/test-utils'
@@ -265,4 +265,47 @@ it('keeps the current floor when the URL points to another apartment on it', asy
   expect(selectedApartment.value).toEqual(secondApartment)
   expect(selectedFloor.value).toEqual(floor)
   expect(selectFloorByNumber).not.toHaveBeenCalled()
+})
+
+it('does not resolve the selection again when unrelated URL values change', async () => {
+  const apartment = { id: 'A-2-1', status: 'available' }
+  const readApartments = vi.fn(() => [apartment])
+  const selectedFloor = ref({
+    floorNumber: 2,
+    get apartments() {
+      return readApartments()
+    },
+  })
+  const selectedApartment = ref(apartment)
+  const selectFloorByNumber = vi.fn()
+  const onApartmentSelect = vi.fn()
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/', component: { render: () => null } }],
+  })
+
+  await router.push('/?floor=2&apartment=A-2-1&utm_source=old#model')
+
+  mountQuerySync(router, {
+    threeScene: ref({ selectFloorByNumber }),
+    selectedFloor,
+    selectedApartment,
+    onClose: vi.fn(),
+    onApartmentSelect,
+    onApartmentBack: vi.fn(),
+  })
+
+  expect(readApartments).toHaveBeenCalledOnce()
+  readApartments.mockClear()
+
+  await router.push('/?floor=2&apartment=A-2-1&utm_source=new#details')
+  await nextTick()
+
+  expect(router.currentRoute.value.query.utm_source).toBe('new')
+  expect(router.currentRoute.value.hash).toBe('#details')
+  expect(selectedFloor.value.floorNumber).toBe(2)
+  expect(selectedApartment.value).toEqual(apartment)
+  expect(readApartments).not.toHaveBeenCalled()
+  expect(selectFloorByNumber).not.toHaveBeenCalled()
+  expect(onApartmentSelect).not.toHaveBeenCalled()
 })
