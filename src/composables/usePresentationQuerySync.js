@@ -33,7 +33,7 @@ export const usePresentationQuerySync = ({
 
     if (selectedFloor.value?.floorNumber !== floorNumber) {
       onClose()
-      router.replace({ query: withoutPresentationSelection(query) })
+      router.replace({ query: withoutPresentationSelection(query), hash: route.hash })
       return
     }
 
@@ -41,14 +41,13 @@ export const usePresentationQuerySync = ({
       (item) => item.id === apartmentId && isApartmentSelectable(item),
     )
 
-    if (apartmentId && !apartment) {
-      router.replace({
-        query: {
-          ...withoutPresentationSelection(query),
-          ...buildPresentationQuery({ floor: selectedFloor.value }),
-        },
-      })
-    }
+    router.replace({
+      hash: route.hash,
+      query: {
+        ...withoutPresentationSelection(query),
+        ...buildPresentationQuery({ floor: selectedFloor.value }),
+      },
+    })
 
     if (apartment && apartment.id !== selectedApartment.value?.id) {
       onApartmentSelect(apartment)
@@ -65,7 +64,7 @@ export const usePresentationQuerySync = ({
 
   watch([selectedFloor, selectedApartment], ([floor, apartment], [, previousApartment]) => {
     if (!floor) {
-      router.push({ query: withoutPresentationSelection(route.query) })
+      router.push({ query: withoutPresentationSelection(route.query), hash: route.hash })
       return
     }
 
@@ -75,9 +74,9 @@ export const usePresentationQuerySync = ({
     }
 
     if (apartment && previousApartment) {
-      router.replace({ query })
+      router.replace({ query, hash: route.hash })
     } else {
-      router.push({ query })
+      router.push({ query, hash: route.hash })
     }
   })
 }
