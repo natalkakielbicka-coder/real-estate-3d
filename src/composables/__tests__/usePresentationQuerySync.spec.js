@@ -107,6 +107,7 @@ it.each(['missing', 'A-2-sold'])('keeps the floor for invalid apartment link %s'
 
   await router.push({
     path: '/',
+    hash: '#model',
     query: { floor: '2', apartment: id, utm_source: 'test' },
   })
 
@@ -124,6 +125,7 @@ it.each(['missing', 'A-2-sold'])('keeps the floor for invalid apartment link %s'
   })
 
   await vi.waitFor(() => {
+    expect(router.currentRoute.value.hash).toBe('#model')
     expect(router.currentRoute.value.query).toEqual({
       floor: '2',
       utm_source: 'test',
@@ -143,7 +145,7 @@ it('keeps unrelated query parameters when the linked floor does not exist', asyn
     routes: [{ path: '/', component: { render: () => null } }],
   })
 
-  await router.push('/?floor=999&apartment=missing&utm_source=test')
+  await router.push('/?floor=999&apartment=missing&utm_source=test#model')
 
   mountQuerySync(router, {
     threeScene: ref({ selectFloorByNumber }),
@@ -155,6 +157,7 @@ it('keeps unrelated query parameters when the linked floor does not exist', asyn
   })
 
   await vi.waitFor(() => {
+    expect(router.currentRoute.value.hash).toBe('#model')
     expect(router.currentRoute.value.query).toEqual({ utm_source: 'test' })
   })
 
