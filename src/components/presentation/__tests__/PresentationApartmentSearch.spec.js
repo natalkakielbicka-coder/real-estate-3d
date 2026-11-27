@@ -133,3 +133,19 @@ it.each(['30', '80', '400000', '800000'])(
     expect(wrapper.find('.apartment-search__apartments').exists()).toBe(true)
   },
 )
+
+it('does not submit an invalid price range with Enter', async () => {
+  const wrapper = mount(PresentationApartmentSearch)
+  await wrapper.get('.apartment-search__trigger').trigger('click')
+
+  const minPrice = wrapper.get('input[placeholder="400000"]')
+  const maxPrice = wrapper.get('input[placeholder="800000"]')
+  await minPrice.setValue('800000')
+  await maxPrice.setValue('400000')
+
+  await maxPrice.trigger('keydown', { key: 'Enter' })
+
+  expect(wrapper.get('[role="alert"]').text()).toContain('Minimalna cena')
+  expect(wrapper.emitted('filter-results')).toBeUndefined()
+  expect(wrapper.find('.apartment-search__apartments').exists()).toBe(false)
+})
