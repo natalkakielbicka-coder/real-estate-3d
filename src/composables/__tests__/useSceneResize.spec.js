@@ -89,7 +89,8 @@ describe('useSceneResize', () => {
       },
     )
 
-    const container = { getBoundingClientRect: () => ({ width: 1000, height: 400 }) }
+    let width = 1000
+    const container = { getBoundingClientRect: () => ({ width, height: 400 }) }
     const sceneContainer = { value: container }
     const camera = new PerspectiveCamera()
     const controls = { target: new Vector3(), update: vi.fn() }
@@ -106,6 +107,7 @@ describe('useSceneResize', () => {
       expect(observe).toHaveBeenCalledWith(container)
 
       renderer.setSize.mockClear()
+      width += 50
       window.dispatchEvent(new Event('resize'))
       expect(renderer.setSize).toHaveBeenCalledOnce()
 
@@ -113,6 +115,7 @@ describe('useSceneResize', () => {
       expect(disconnect).toHaveBeenCalledOnce()
 
       renderer.setSize.mockClear()
+      width += 50
       window.dispatchEvent(new Event('resize'))
       expect(renderer.setSize).not.toHaveBeenCalled()
     } finally {

@@ -9,6 +9,8 @@ export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) =
   let resizeObserver = null
   let isObservingResize = false
   let previousViewportDistance
+  let previousWidth
+  let previousHeight
 
   const updateCameraForViewport = (distance) => {
     const direction = camera.position.clone().sub(controls.target).normalize()
@@ -31,10 +33,17 @@ export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) =
       return
     }
 
+    if (width === previousWidth && height === previousHeight) {
+      return
+    }
+
     camera.aspect = width / height
     camera.updateProjectionMatrix()
 
     renderer.setSize(width, height, false)
+
+    previousWidth = width
+    previousHeight = height
 
     const viewportDistance = getViewportCameraDistance(width)
 
