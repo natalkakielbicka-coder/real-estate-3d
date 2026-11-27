@@ -155,6 +155,7 @@ onBeforeUnmount(() => {
               :class="{
                 'apartment-search__option--active': selectedRooms.includes(rooms),
               }"
+              :aria-pressed="selectedRooms.includes(rooms)"
               @click="toggleRoom(rooms)"
             >
               {{ rooms === 4 ? '4+' : rooms }}
@@ -225,6 +226,7 @@ onBeforeUnmount(() => {
               :class="{
                 'apartment-search__option--active': selectedStatuses.includes(status.value),
               }"
+              :aria-pressed="selectedStatuses.includes(status.value)"
               @click="toggleStatus(status.value)"
             >
               {{ status.label }}
