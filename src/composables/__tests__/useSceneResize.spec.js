@@ -238,4 +238,39 @@ describe('useSceneResize', () => {
       vi.unstubAllGlobals()
     }
   })
+
+  it('starts observing once the scene container becomes available', () => {
+    const sceneContainer = { value: null }
+    const renderer = { setSize: vi.fn() }
+    const observe = vi.fn()
+    const ResizeObserverMock = vi.fn(function () {
+      this.observe = observe
+      this.disconnect = vi.fn()
+    })
+    const { startResizeObserver, stopResizeObserver } = useSceneResize({
+      sceneContainer,
+      camera: new PerspectiveCamera(),
+      renderer,
+      controls: { target: new Vector3(), update: vi.fn() },
+    })
+
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock)
+
+    try {
+      startResizeObserver()
+      expect(ResizeObserverMock).not.toHaveBeenCalled()
+      expect(renderer.setSize).not.toHaveBeenCalled()
+
+      const container = { getBoundingClientRect: () => ({ width: 1000, height: 400 }) }
+      sceneContainer.value = container
+      startResizeObserver()
+
+      expect(ResizeObserverMock).toHaveBeenCalledOnce()
+      expect(observe).toHaveBeenCalledExactlyOnceWith(container)
+      expect(renderer.setSize).toHaveBeenCalledExactlyOnceWith(1000, 400, false)
+    } finally {
+      stopResizeObserver()
+      vi.unstubAllGlobals()
+    }
+  })
 })
