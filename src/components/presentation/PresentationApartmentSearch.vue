@@ -171,7 +171,13 @@ onBeforeUnmount(() => {
               <span>Od</span>
 
               <div>
-                <input v-model="minArea" type="number" min="0" placeholder="30" />
+                <input
+                  v-model="minArea"
+                  type="number"
+                  min="0"
+                  placeholder="30"
+                  @keydown.enter.prevent="handleSubmit"
+                />
 
                 <span>m²</span>
               </div>
@@ -181,7 +187,13 @@ onBeforeUnmount(() => {
               <span>Do</span>
 
               <div>
-                <input v-model="maxArea" type="number" min="0" placeholder="80" />
+                <input
+                  v-model="maxArea"
+                  type="number"
+                  min="0"
+                  placeholder="80"
+                  @keydown.enter.prevent="handleSubmit"
+                />
 
                 <span>m²</span>
               </div>
@@ -197,7 +209,14 @@ onBeforeUnmount(() => {
               <span>Od</span>
 
               <div>
-                <input v-model="minPrice" type="number" min="0" step="10000" placeholder="400000" />
+                <input
+                  v-model="minPrice"
+                  type="number"
+                  min="0"
+                  step="10000"
+                  placeholder="400000"
+                  @keydown.enter.prevent="handleSubmit"
+                />
 
                 <span>zł</span>
               </div>
@@ -207,7 +226,14 @@ onBeforeUnmount(() => {
               <span>Do</span>
 
               <div>
-                <input v-model="maxPrice" type="number" min="0" step="10000" placeholder="800000" />
+                <input
+                  v-model="maxPrice"
+                  type="number"
+                  min="0"
+                  step="10000"
+                  placeholder="800000"
+                  @keydown.enter.prevent="handleSubmit"
+                />
 
                 <span>zł</span>
               </div>
