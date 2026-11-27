@@ -3,6 +3,35 @@ import { PerspectiveCamera, Vector3 } from 'three'
 import { useSceneResize } from '../useSceneResize'
 
 describe('useSceneResize', () => {
+  it('skips renderer and projection updates for repeated scene dimensions', () => {
+    let width = 1000
+    const camera = new PerspectiveCamera()
+    const updateProjectionMatrix = vi.spyOn(camera, 'updateProjectionMatrix')
+    const renderer = { setSize: vi.fn() }
+    const { handleResize } = useSceneResize({
+      sceneContainer: {
+        value: { getBoundingClientRect: () => ({ width, height: 400 }) },
+      },
+      camera,
+      renderer,
+      controls: { target: new Vector3(), update: vi.fn() },
+    })
+
+    handleResize()
+    handleResize()
+
+    expect(renderer.setSize).toHaveBeenCalledExactlyOnceWith(1000, 400, false)
+    expect(updateProjectionMatrix).toHaveBeenCalledOnce()
+
+    width = 1050
+    handleResize()
+
+    expect(renderer.setSize).toHaveBeenCalledTimes(2)
+    expect(renderer.setSize).toHaveBeenLastCalledWith(1050, 400, false)
+    expect(updateProjectionMatrix).toHaveBeenCalledTimes(2)
+    expect(camera.aspect).toBeCloseTo(1050 / 400)
+  })
+
   it.each([
     [699, 12.5],
     [700, 11.5],
