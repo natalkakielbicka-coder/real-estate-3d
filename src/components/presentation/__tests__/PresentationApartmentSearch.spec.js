@@ -113,3 +113,23 @@ it('updates the pressed state when toggling and clearing search filters', async 
   expect(room.attributes('aria-pressed')).toBe('false')
   expect(status.attributes('aria-pressed')).toBe('false')
 })
+
+it.each(['30', '80', '400000', '800000'])(
+  'submits a valid search with Enter in the field with placeholder %s',
+  async (placeholder) => {
+    const wrapper = mount(PresentationApartmentSearch)
+    await wrapper.get('.apartment-search__trigger').trigger('click')
+
+    const input = wrapper.get(`input[placeholder="${placeholder}"]`)
+    await input.setValue(placeholder)
+
+    expect(wrapper.emitted('filter-results')).toBeUndefined()
+
+    await input.trigger('keydown', { key: 'Enter' })
+
+    const results = wrapper.emitted('filter-results')
+    expect(results).toHaveLength(1)
+    expect(results[0][0]).toContain('A-0-1')
+    expect(wrapper.find('.apartment-search__apartments').exists()).toBe(true)
+  },
+)
