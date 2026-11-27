@@ -86,3 +86,30 @@ it('returns focus to the search toggle when the close button is clicked', async 
   expect(trigger.attributes('aria-expanded')).toBe('false')
   expect(document.activeElement).toBe(trigger.element)
 })
+
+it('updates the pressed state when toggling and clearing search filters', async () => {
+  const wrapper = mount(PresentationApartmentSearch)
+  await wrapper.get('.apartment-search__trigger').trigger('click')
+
+  const room = wrapper.get('.apartment-search__options button')
+  const status = wrapper.get('.apartment-search__options--wide button')
+
+  expect(room.attributes('aria-pressed')).toBe('false')
+  expect(status.attributes('aria-pressed')).toBe('false')
+
+  await room.trigger('click')
+  await status.trigger('click')
+
+  expect(room.attributes('aria-pressed')).toBe('true')
+  expect(status.attributes('aria-pressed')).toBe('true')
+
+  await room.trigger('click')
+  expect(room.attributes('aria-pressed')).toBe('false')
+  expect(status.attributes('aria-pressed')).toBe('true')
+
+  await room.trigger('click')
+  await wrapper.get('.apartment-search__reset').trigger('click')
+
+  expect(room.attributes('aria-pressed')).toBe('false')
+  expect(status.attributes('aria-pressed')).toBe('false')
+})
