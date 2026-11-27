@@ -149,3 +149,25 @@ it('does not submit an invalid price range with Enter', async () => {
   expect(wrapper.emitted('filter-results')).toBeUndefined()
   expect(wrapper.find('.apartment-search__apartments').exists()).toBe(false)
 })
+
+it('preserves focus on an outside control when the search closes', async () => {
+  const outsideButton = document.createElement('button')
+  document.body.append(outsideButton)
+
+  try {
+    const wrapper = mount(PresentationApartmentSearch, { attachTo: document.body })
+    const trigger = wrapper.get('.apartment-search__trigger')
+    await trigger.trigger('click')
+    expect(trigger.attributes('aria-expanded')).toBe('true')
+
+    outsideButton.focus()
+    outsideButton.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    outsideButton.click()
+    await wrapper.vm.$nextTick()
+
+    expect(trigger.attributes('aria-expanded')).toBe('false')
+    expect(document.activeElement).toBe(outsideButton)
+  } finally {
+    outsideButton.remove()
+  }
+})
