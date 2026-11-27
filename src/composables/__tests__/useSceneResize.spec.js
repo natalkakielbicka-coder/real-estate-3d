@@ -339,4 +339,37 @@ describe('useSceneResize', () => {
       vi.unstubAllGlobals()
     }
   })
+
+  it('applies the current scene size immediately after restarting observation', () => {
+    let height = 400
+    const renderer = { setSize: vi.fn() }
+    const camera = new PerspectiveCamera()
+    const { startResizeObserver, stopResizeObserver } = useSceneResize({
+      sceneContainer: {
+        value: { getBoundingClientRect: () => ({ width: 1000, height }) },
+      },
+      camera,
+      renderer,
+      controls: { target: new Vector3(), update: vi.fn() },
+    })
+
+    vi.stubGlobal('ResizeObserver', undefined)
+
+    try {
+      startResizeObserver()
+      expect(renderer.setSize).toHaveBeenCalledExactlyOnceWith(1000, 400, false)
+
+      stopResizeObserver()
+      height = 500
+
+      startResizeObserver()
+
+      expect(renderer.setSize).toHaveBeenCalledTimes(2)
+      expect(renderer.setSize).toHaveBeenLastCalledWith(1000, 500, false)
+      expect(camera.aspect).toBe(2)
+    } finally {
+      stopResizeObserver()
+      vi.unstubAllGlobals()
+    }
+  })
 })
