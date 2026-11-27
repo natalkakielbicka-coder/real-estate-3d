@@ -7,6 +7,7 @@ const getViewportCameraDistance = (width) => {
 
 export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) => {
   let resizeObserver = null
+  let isObservingResize = false
   let previousViewportDistance
 
   const updateCameraForViewport = (distance) => {
@@ -45,13 +46,15 @@ export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) =
 
   const startResizeObserver = () => {
     const container = sceneContainer.value
-    if (resizeObserver || !container) return
+    if (isObservingResize || !container) return
 
-    resizeObserver = new ResizeObserver(handleResize)
-    resizeObserver.observe(container)
+    if (typeof ResizeObserver === 'function') {
+      resizeObserver = new ResizeObserver(handleResize)
+      resizeObserver.observe(container)
+    }
 
     window.addEventListener('resize', handleResize)
-
+    isObservingResize = true
     handleResize()
   }
 
@@ -60,6 +63,7 @@ export const useSceneResize = ({ sceneContainer, camera, renderer, controls }) =
     resizeObserver = null
 
     window.removeEventListener('resize', handleResize)
+    isObservingResize = false
   }
 
   return {
