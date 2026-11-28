@@ -1,3 +1,9 @@
+const priceFormatter = new Intl.NumberFormat('pl-PL', {
+  style: 'currency',
+  currency: 'PLN',
+  maximumFractionDigits: 0,
+})
+
 export const getRoomsLabel = (rooms) => {
   if (rooms === 1) {
     return '1 pokój'
@@ -25,13 +31,7 @@ export const getApartmentsCountLabel = (count) => {
   return `${count} mieszkań`
 }
 
-export const formatPrice = (price) => {
-  return new Intl.NumberFormat('pl-PL', {
-    style: 'currency',
-    currency: 'PLN',
-    maximumFractionDigits: 0,
-  }).format(price)
-}
+export const formatPrice = (price) => priceFormatter.format(price)
 
 export const formatFloorLabel = (floorNumber) => {
   return floorNumber === 0 ? 'Parter' : `Piętro ${floorNumber}`
