@@ -33,14 +33,12 @@ describe('apartmentFormatters', () => {
   })
 
   describe('formatPrice', () => {
-    it('formats price in PLN', () => {
-      expect(formatPrice(450000)).toContain('450')
-      expect(formatPrice(450000)).toContain('000')
-      expect(formatPrice(450000)).toContain('zł')
-    })
-
-    it('rounds to whole currency units', () => {
-      expect(formatPrice(450000.49)).toBe(formatPrice(450000))
+    it.each([
+      [450_000, '450 000 zł'],
+      [450_000.49, '450 000 zł'],
+      [450_000.5, '450 001 zł'],
+    ])('formats %s in PLN with whole złoty amounts', (price, expected) => {
+      expect(formatPrice(price).replace(/\s/g, ' ')).toBe(expected)
     })
   })
 
